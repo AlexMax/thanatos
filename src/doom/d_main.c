@@ -52,7 +52,6 @@
 #include "m_menu.h"
 #include "p_saveg.h"
 
-#include "i_endoom.h"
 #include "i_input.h"
 #include "i_joystick.h"
 #include "i_system.h"
@@ -1114,27 +1113,6 @@ void PrintGameVersion(void)
     }
 }
 
-// Function called at exit to display the ENDOOM screen
-
-static void D_Endoom(void)
-{
-    byte *endoom;
-
-    // Don't show ENDOOM if we have it disabled, or we're running
-    // in screensaver or control test mode. Only show it once the
-    // game has actually started.
-
-    if (!show_endoom || !main_loop_started
-     || screensaver_mode || M_CheckParm("-testcontrols") > 0)
-    {
-        return;
-    }
-
-    endoom = W_CacheLumpName(DEH_String("ENDOOM"), PU_STATIC);
-
-    I_Endoom(endoom);
-}
-
 // Load dehacked patches needed for certain IWADs.
 static void LoadIwadDeh(void)
 {
@@ -1219,8 +1197,6 @@ void D_DoomMain (void)
     char file[256];
     char demolumpname[9];
     int numiwadlumps;
-
-    I_AtExit(D_Endoom, false);
 
     // print banner
 
