@@ -419,27 +419,41 @@ typedef struct
 
 //
 // Now what is a visplane, anyway?
+//
+// A visplane is a section of floor or ceiling that can be rendered in a
+// single run.  There is not a 1:1 relationship between sectors and visplanes,
+// however, due to the fact that 
 // 
 typedef struct
 {
-  fixed_t		height;
-  int			picnum;
-  int			lightlevel;
-  int			minx;
-  int			maxx;
-  
-  // leave pads for [minx-1]/[maxx+1]
-  
-  byte		pad1;
-  // Here lies the rub for all
-  //  dynamic resize/change of resolution.
-  byte		top[SCREENWIDTH];
-  byte		pad2;
-  byte		pad3;
-  // See above.
-  byte		bottom[SCREENWIDTH];
-  byte		pad4;
+    // Perspective height of the underlying visplane.
+    fixed_t             height;
 
+    // Flat texture number.
+    int                 picnum;
+
+    // Light level.
+    int                 lightlevel;
+
+    // Minimum X column of the plane.
+    int                 minx;
+
+    // Maximum X column of the plane.
+    int                 maxx;
+
+    // Padding bytes are used to prevent out-of-bounds indexes into the top
+    // and bottom arrays from crashing the renderer.  This should probably be
+    // fixed at some point...
+
+    uint16_t pad1;
+    // The top Y-coordinate of the visplane at a specific X-coordinate.
+    uint16_t top[SCREENWIDTH];
+    uint16_t pad2;
+
+    uint16_t pad3;
+    // The bottom Y-coordinate of the visplane at a specific X-coordinate.
+    uint16_t bottom[SCREENWIDTH];
+    uint16_t pad4;
 } visplane_t;
 
 
