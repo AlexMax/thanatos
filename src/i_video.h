@@ -24,12 +24,21 @@
 
 // Screen width and height.
 
-#define SCREENWIDTH  320
-#define SCREENHEIGHT 200
+#define SCREENWIDTH  640
+#define SCREENHEIGHT 400
+
+// Virtual screen width and height
+
+#define VIRTUALWIDTH 320
+#define VIRTUALHEIGHT 200
+
+// How much to scale the screen up and down by
+
+#define SCREENSCALE (SCREENHEIGHT / VIRTUALHEIGHT)
 
 // Screen height used when aspect_ratio_correct=true.
 
-#define SCREENHEIGHT_4_3 240
+#define SCREENHEIGHT_4_3 480
 
 typedef boolean (*grabmouse_callback_t)(void);
 
