@@ -10,7 +10,7 @@ if(NOT CMAKE_GENERATOR MATCHES "^Visual Studio.+" AND NOT CMAKE_GENERATOR STREQU
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS None Debug Release RelWithDebInfo MinSizeRel)
 endif()
 
-project("Chocolate Doom" VERSION "3.0.0" LANGUAGES C)
+project("Chocolate Doom" VERSION "3.0.0" LANGUAGES CXX)
 
 set(PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
 set(PACKAGE_VERSION "${PROJECT_VERSION}-beta1")
@@ -25,7 +25,7 @@ if(MSVC)
 else()
     # If this is gcc, we have some options we'd like to turn on.  Turn on 
     # optimisation and debugging symbols.
-    add_compile_options(-Wall -Wdeclaration-after-statement -Wredundant-decls)
+    add_compile_options(-Wall -Wredundant-decls)
 endif()
 
 find_package(SDL2 2.0.1)
