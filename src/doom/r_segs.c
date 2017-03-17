@@ -159,7 +159,7 @@ R_RenderMaskedSegRange
 	{
 	    if (!fixedcolormap)
 	    {
-		index = spryscale>>LIGHTSCALESHIFT;
+		index = (fixed_t)(spryscale * SCREENINVSCALE) >> LIGHTSCALESHIFT;
 
 		if (index >=  MAXLIGHTSCALE )
 		    index = MAXLIGHTSCALE-1;
@@ -256,8 +256,15 @@ void R_RenderSegLoop (void)
 	    angle = (rw_centerangle + xtoviewangle[rw_x])>>ANGLETOFINESHIFT;
 	    texturecolumn = rw_offset-FixedMul(finetangent[angle],rw_distance);
 	    texturecolumn >>= FRACBITS;
-	    // calculate lighting - scale of wall divided by resolution
-	    index = rw_scale / SCREENSCALE >> LIGHTSCALESHIFT;
+
+	    // calculate lighting
+	    //
+	    // Doom did a neat little trick to light walls + sprites, simply
+	    // take the scale of the wall and shift the scale into a light
+	    // scale level.  The original code only had the shift, but since
+	    // the wall scale is resolution-dependant, this caused undesirable
+	    // lighting effects in higher resolutions.
+	    index = (fixed_t)(rw_scale * SCREENINVSCALE) >> LIGHTSCALESHIFT;
 
 	    if (index >=  MAXLIGHTSCALE )
 		index = MAXLIGHTSCALE-1;

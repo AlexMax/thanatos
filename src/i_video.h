@@ -35,6 +35,7 @@
 // How much to scale the screen up and down by
 
 #define SCREENSCALE (SCREENHEIGHT / VIRTUALHEIGHT)
+#define SCREENINVSCALE (VIRTUALHEIGHT / (double)SCREENHEIGHT)
 
 // Screen height used when aspect_ratio_correct=true.
 
