@@ -73,11 +73,11 @@ static void *DEH_FrameStart(deh_context_t *context, char *line)
 // This is noticable in Batman Doom where it is impossible to switch weapons
 // away from the fist once selected.
 
-static void DEH_FrameOverflow(deh_context_t *context, char *varname, int value)
+static void DEH_FrameOverflow(deh_context_t *context, char *varname, statenum_t value)
 {
     if (!strcasecmp(varname, "Duration"))
     {
-        weaponinfo[0].ammo = value;
+        weaponinfo[0].ammo = static_cast<ammotype_t>(value);
     }
     else if (!strcasecmp(varname, "Codep frame")) 
     {
@@ -129,7 +129,7 @@ static void DEH_FrameParseLine(deh_context_t *context, char *line, void *tag)
     
     if (state == &states[NUMSTATES - 1])
     {
-        DEH_FrameOverflow(context, variable_name, ivalue);
+        DEH_FrameOverflow(context, variable_name, static_cast<statenum_t>(ivalue));
     }
     else
     {

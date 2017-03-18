@@ -236,7 +236,7 @@ static void ParseVorbisComments(file_metadata_t *metadata, FILE *fs)
         comment_len = LONG(buf);
 
         // Read actual comment data into string buffer.
-        comment = calloc(1, comment_len + 1);
+        comment = static_cast<char*>(calloc(1, comment_len + 1));
         if (comment == NULL
          || fread(comment, 1, comment_len, fs) < comment_len)
         {
@@ -434,7 +434,7 @@ static char *GetSubstituteMusicFile(void *data, size_t data_len)
     }
 
     SHA1_Init(&context);
-    SHA1_Update(&context, data, data_len);
+    SHA1_Update(&context, static_cast<byte*>(data), data_len);
     SHA1_Final(hash, &context);
 
     // Look for a hash that matches.
@@ -470,7 +470,7 @@ static void AddSubstituteMusic(subst_music_t *subst)
 {
     ++subst_music_len;
     subst_music =
-        realloc(subst_music, sizeof(subst_music_t) * subst_music_len);
+        static_cast<subst_music_t*>(realloc(subst_music, sizeof(subst_music_t) * subst_music_len));
     memcpy(&subst_music[subst_music_len - 1], subst, sizeof(subst_music_t));
 }
 
@@ -724,7 +724,7 @@ static boolean IsMusicLump(int lumpnum)
         return false;
     }
 
-    data = W_CacheLumpNum(lumpnum, PU_STATIC);
+    data = static_cast<byte*>(W_CacheLumpNum(lumpnum, PU_STATIC));
 
     result = memcmp(data, MUS_HEADER_MAGIC, 4) == 0
           || memcmp(data, MID_HEADER_MAGIC, 4) == 0;
@@ -769,7 +769,7 @@ static void DumpSubstituteConfig(char *filename)
         }
 
         // Calculate hash.
-        data = W_CacheLumpNum(lumpnum, PU_STATIC);
+        data = static_cast<byte*>(W_CacheLumpNum(lumpnum, PU_STATIC));
         SHA1_Init(&context);
         SHA1_Update(&context, data, W_LumpLength(lumpnum));
         SHA1_Final(digest, &context);
@@ -1174,7 +1174,7 @@ static void *I_SDL_RegisterSong(void *data, int len)
 
     filename = M_TempFile("doom.mid");
 
-    if (IsMid(data, len) && len < MAXMIDLENGTH)
+    if (IsMid(static_cast<byte*>(data), len) && len < MAXMIDLENGTH)
     {
         M_WriteFile(filename, data, len);
     }
@@ -1182,7 +1182,7 @@ static void *I_SDL_RegisterSong(void *data, int len)
     {
 	// Assume a MUS file and try to convert
 
-        ConvertMus(data, len, filename);
+        ConvertMus(static_cast<byte*>(data), len, filename);
     }
 
     // Load the MIDI. In an ideal world we'd be using Mix_LoadMUS_RW()

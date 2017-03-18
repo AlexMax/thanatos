@@ -149,7 +149,7 @@ wad_file_t *W_AddFile (char *filename)
         // them back.  Effectively we're constructing a "fake WAD directory"
         // here, as it would appear on disk.
 
-	fileinfo = Z_Malloc(sizeof(filelump_t), PU_STATIC, 0);
+	fileinfo = static_cast<filelump_t*>(Z_Malloc(sizeof(filelump_t), PU_STATIC, 0));
 	fileinfo->filepos = LONG(0);
 	fileinfo->size = LONG(wad_file->length);
 
@@ -190,14 +190,14 @@ wad_file_t *W_AddFile (char *filename)
 
 	header.infotableofs = LONG(header.infotableofs);
 	length = header.numlumps*sizeof(filelump_t);
-	fileinfo = Z_Malloc(length, PU_STATIC, 0);
+	fileinfo = static_cast<filelump_t*>(Z_Malloc(length, PU_STATIC, 0));
 
         W_Read(wad_file, header.infotableofs, fileinfo, length);
 	numfilelumps = header.numlumps;
     }
 
     // Increase size of numlumps array to accomodate the new file.
-    filelumps = calloc(numfilelumps, sizeof(lumpinfo_t));
+    filelumps = static_cast<lumpinfo_t*>(calloc(numfilelumps, sizeof(lumpinfo_t)));
     if (filelumps == NULL)
     {
         W_CloseFile(wad_file);
@@ -206,7 +206,7 @@ wad_file_t *W_AddFile (char *filename)
 
     startlump = numlumps;
     numlumps += numfilelumps;
-    lumpinfo = realloc(lumpinfo, numlumps * sizeof(lumpinfo_t *));
+    lumpinfo = static_cast<lumpinfo_t**>(realloc(lumpinfo, numlumps * sizeof(lumpinfo_t *)));
     if (lumpinfo == NULL)
     {
         W_CloseFile(wad_file);
@@ -414,7 +414,7 @@ void *W_CacheLumpNum(lumpindex_t lumpnum, int tag)
     {
         // Already cached, so just switch the zone tag.
 
-        result = lump->cache;
+        result = static_cast<byte*>(lump->cache);
         Z_ChangeTag(lump->cache, tag);
     }
     else
@@ -423,7 +423,7 @@ void *W_CacheLumpNum(lumpindex_t lumpnum, int tag)
 
         lump->cache = Z_Malloc(W_LumpLength(lumpnum), tag, &lump->cache);
 	W_ReadLump (lumpnum, lump->cache);
-        result = lump->cache;
+        result = static_cast<byte*>(lump->cache);
     }
 	
     return result;
@@ -556,7 +556,7 @@ void W_GenerateHashTable(void)
     // Generate hash table
     if (numlumps > 0)
     {
-        lumphash = Z_Malloc(sizeof(lumpindex_t) * numlumps, PU_STATIC, NULL);
+        lumphash = static_cast<lumpindex_t*>(Z_Malloc(sizeof(lumpindex_t) * numlumps, PU_STATIC, NULL));
 
         for (i = 0; i < numlumps; ++i)
         {

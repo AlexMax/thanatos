@@ -208,7 +208,7 @@ void F_Ticker (void)
     {
 	finalecount = 0;
 	finalestage = F_STAGE_ARTSCREEN;
-	wipegamestate = -1;		// force a wipe
+	wipegamestate = GS_NONE;		// force a wipe
 	if (gameepisode == 3)
 	    S_StartMusic (mus_bunny);
     }
@@ -237,7 +237,7 @@ void F_TextWrite (void)
     int		cy;
     
     // erase the entire screen to a tiled background
-    src = W_CacheLumpName ( finaleflat , PU_CACHE);
+    src = static_cast<byte*>(W_CacheLumpName ( finaleflat , PU_CACHE));
     dest = I_VideoBuffer;
 	
     for (y=0 ; y<SCREENHEIGHT ; y++)
@@ -322,7 +322,7 @@ castinfo_t	castorder[] = {
     {CC_CYBER, MT_CYBORG},
     {CC_HERO, MT_PLAYER},
 
-    {NULL,0}
+    {NULL,MT_PLAYER /* 0 */}
 };
 
 int		castnum;
@@ -339,7 +339,7 @@ boolean		castattacking;
 //
 void F_StartCast (void)
 {
-    wipegamestate = -1;		// force a screen wipe
+    wipegamestate = GS_NONE;		// force a screen wipe
     castnum = 0;
     caststate = &states[mobjinfo[castorder[castnum].type].seestate];
     casttics = caststate->tics;
@@ -547,7 +547,7 @@ void F_CastDrawer (void)
     patch_t*		patch;
     
     // erase the entire screen to a background
-    V_DrawPatch (0, 0, W_CacheLumpName (DEH_String("BOSSBACK"), PU_CACHE));
+    V_DrawPatch (0, 0, static_cast<patch_t*>(W_CacheLumpName (DEH_String("BOSSBACK"), PU_CACHE)));
 
     F_CastPrint (DEH_String(castorder[castnum].name));
     
@@ -557,7 +557,7 @@ void F_CastDrawer (void)
     lump = sprframe->lump[0];
     flip = (boolean)sprframe->flip[0];
 			
-    patch = W_CacheLumpNum (lump+firstspritelump, PU_CACHE);
+    patch = static_cast<patch_t*>(W_CacheLumpNum (lump+firstspritelump, PU_CACHE));
     if (flip)
 	V_DrawPatchFlipped(SCREENWIDTH/2, 170, patch);
     else
@@ -613,8 +613,8 @@ void F_BunnyScroll (void)
     int		stage;
     static int	laststage;
 		
-    p1 = W_CacheLumpName (DEH_String("PFUB2"), PU_LEVEL);
-    p2 = W_CacheLumpName (DEH_String("PFUB1"), PU_LEVEL);
+    p1 = static_cast<patch_t*>(W_CacheLumpName (DEH_String("PFUB2"), PU_LEVEL));
+    p2 = static_cast<patch_t*>(W_CacheLumpName (DEH_String("PFUB1"), PU_LEVEL));
 
     V_MarkRect (0, 0, SCREENWIDTH, SCREENHEIGHT);
 	
@@ -638,7 +638,7 @@ void F_BunnyScroll (void)
     {
         V_DrawPatch((SCREENWIDTH - 13 * 8) / 2,
                     (SCREENHEIGHT - 8 * 8) / 2, 
-                    W_CacheLumpName(DEH_String("END0"), PU_CACHE));
+                    static_cast<patch_t*>(W_CacheLumpName(DEH_String("END0"), PU_CACHE)));
 	laststage = 0;
 	return;
     }
@@ -655,7 +655,7 @@ void F_BunnyScroll (void)
     DEH_snprintf(name, 10, "END%i", stage);
     V_DrawPatch((SCREENWIDTH - 13 * 8) / 2, 
                 (SCREENHEIGHT - 8 * 8) / 2, 
-                W_CacheLumpName (name,PU_CACHE));
+                static_cast<patch_t*>(W_CacheLumpName (name,PU_CACHE)));
 }
 
 static void F_ArtScreenDrawer(void)
@@ -692,7 +692,7 @@ static void F_ArtScreenDrawer(void)
 
         lumpname = DEH_String(lumpname);
 
-        V_DrawPatch (0, 0, W_CacheLumpName(lumpname, PU_CACHE));
+        V_DrawPatch (0, 0, static_cast<patch_t*>(W_CacheLumpName(lumpname, PU_CACHE)));
     }
 }
 

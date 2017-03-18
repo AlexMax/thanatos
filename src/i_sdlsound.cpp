@@ -208,7 +208,7 @@ static allocated_sound_t *AllocateSound(sfxinfo_t *sfxinfo, size_t len)
 
     do
     {
-        snd = malloc(sizeof(allocated_sound_t) + len);
+        snd = static_cast<allocated_sound_t*>(malloc(sizeof(allocated_sound_t) + len));
 
         // Out of memory?  Try to free an old sound, then loop round
         // and try again.
@@ -718,7 +718,7 @@ static boolean CacheSFX(sfxinfo_t *sfxinfo)
     // need to load the sound
 
     lumpnum = sfxinfo->lumpnum;
-    data = W_CacheLumpNum(lumpnum, PU_STATIC);
+    data = static_cast<byte*>(W_CacheLumpNum(lumpnum, PU_STATIC));
     lumplen = W_LumpLength(lumpnum);
 
     // Check the header, and ensure this is a valid sound

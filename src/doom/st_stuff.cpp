@@ -1179,7 +1179,7 @@ static void ST_loadUnloadGraphics(load_callback_t callback)
 
 static void ST_loadCallback(char *lumpname, patch_t **variable)
 {
-    *variable = W_CacheLumpName(lumpname, PU_STATIC);
+    *variable = static_cast<patch_t*>(W_CacheLumpName(lumpname, PU_STATIC));
 }
 
 void ST_loadGraphics(void)
@@ -1422,7 +1422,7 @@ void ST_Stop (void)
     if (st_stopped)
 	return;
 
-    I_SetPalette (W_CacheLumpNum (lu_palette, PU_CACHE));
+    I_SetPalette (static_cast<byte*>(W_CacheLumpNum (lu_palette, PU_CACHE)));
 
     st_stopped = true;
 }

@@ -1703,7 +1703,7 @@ static void WI_loadUnloadData(load_callback_t callback)
 
 static void WI_loadCallback(char *name, patch_t **variable)
 {
-    *variable = W_CacheLumpName(name, PU_STATIC);
+    *variable = static_cast<patch_t*>(W_CacheLumpName(name, PU_STATIC));
 }
 
 void WI_loadData(void)
@@ -1726,10 +1726,10 @@ void WI_loadData(void)
     // them with the status bar code
 
     // your face
-    star = W_CacheLumpName(DEH_String("STFST01"), PU_STATIC);
+    star = static_cast<patch_t*>(W_CacheLumpName(DEH_String("STFST01"), PU_STATIC));
 
     // dead face
-    bstar = W_CacheLumpName(DEH_String("STFDEAD0"), PU_STATIC);
+    bstar = static_cast<patch_t*>(W_CacheLumpName(DEH_String("STFDEAD0"), PU_STATIC));
 }
 
 static void WI_unloadCallback(char *name, patch_t **variable)

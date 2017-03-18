@@ -145,8 +145,8 @@ static void InitSpriteList(void)
     if (sprite_frames == NULL)
     {
         sprite_frames_alloced = 128;
-        sprite_frames = Z_Malloc(sizeof(*sprite_frames) * sprite_frames_alloced,
-                                 PU_STATIC, NULL);
+        sprite_frames = static_cast<sprite_frame_t*>(Z_Malloc(sizeof(*sprite_frames) * sprite_frames_alloced,
+                                 PU_STATIC, NULL));
     }
 
     num_sprite_frames = 0;
@@ -204,8 +204,8 @@ static sprite_frame_t *FindSpriteFrame(char *name, int frame)
     {
         sprite_frame_t *newframes;
 
-        newframes = Z_Malloc(sprite_frames_alloced * 2 * sizeof(*sprite_frames),
-                             PU_STATIC, NULL);
+        newframes = static_cast<sprite_frame_t*>(Z_Malloc(sprite_frames_alloced * 2 * sizeof(*sprite_frames),
+                             PU_STATIC, NULL));
         memcpy(newframes, sprite_frames,
                sprite_frames_alloced * sizeof(*sprite_frames));
         Z_Free(sprite_frames);
@@ -392,7 +392,7 @@ static void DoMerge(void)
     int i, n;
 
     // Can't ever have more lumps than we already have
-    newlumps = calloc(numlumps, sizeof(lumpinfo_t *));
+    newlumps = static_cast<lumpinfo_t**>(calloc(numlumps, sizeof(lumpinfo_t *)));
     num_newlumps = 0;
 
     // Add IWAD lumps

@@ -171,7 +171,7 @@ void D_Display (void)
     static  boolean		menuactivestate = false;
     static  boolean		inhelpscreensstate = false;
     static  boolean		fullscreen = false;
-    static  gamestate_t		oldgamestate = -1;
+    static  gamestate_t		oldgamestate = GS_NONE;
     static  int			borderdrawcount;
     int				nowtime;
     int				tics;
@@ -190,7 +190,7 @@ void D_Display (void)
     if (setsizeneeded)
     {
 	R_ExecuteSetViewSize ();
-	oldgamestate = -1;                      // force background redraw
+	oldgamestate = GS_NONE;                      // force background redraw
 	borderdrawcount = 3;
     }
 
@@ -247,7 +247,7 @@ void D_Display (void)
     
     // clean up border stuff
     if (gamestate != oldgamestate && gamestate != GS_LEVEL)
-	I_SetPalette (W_CacheLumpName (DEH_String("PLAYPAL"),PU_CACHE));
+	I_SetPalette (static_cast<byte*>(W_CacheLumpName (DEH_String("PLAYPAL"),PU_CACHE)));
 
     // see if the border needs to be initially drawn
     if (gamestate == GS_LEVEL && oldgamestate != GS_LEVEL)
@@ -289,7 +289,7 @@ void D_Display (void)
 	else
 	    y = viewwindowy+4;
 	V_DrawPatchDirect(viewwindowx + (scaledviewwidth - 68) / 2, y,
-                          W_CacheLumpName (DEH_String("M_PAUSE"), PU_CACHE));
+                          static_cast<patch_t*>(W_CacheLumpName (DEH_String("M_PAUSE"), PU_CACHE)));
     }
 
 
@@ -502,7 +502,7 @@ void D_PageTicker (void)
 //
 void D_PageDrawer (void)
 {
-    V_DrawPatch (0, 0, W_CacheLumpName(pagename, PU_CACHE));
+    V_DrawPatch (0, 0, static_cast<patch_t*>(W_CacheLumpName(pagename, PU_CACHE)));
 }
 
 
@@ -686,7 +686,7 @@ static char *GetGameName(char *gamename)
             // We also need to cut off spaces to get the basic name
 
             gamename_size = strlen(deh_sub) + 10;
-            gamename = Z_Malloc(gamename_size, PU_STATIC, 0);
+            gamename = static_cast<char*>(Z_Malloc(gamename_size, PU_STATIC, 0));
             version = G_VanillaVersionCode();
             M_snprintf(gamename, gamename_size, deh_sub,
                        version / 100, version % 100);
@@ -725,7 +725,7 @@ static void SetMissionForPackName(char *pack_name)
     {
         if (!strcasecmp(pack_name, packs[i].name))
         {
-            gamemission = packs[i].mission;
+            gamemission = static_cast<GameMission_t>(packs[i].mission);
             return;
         }
     }
@@ -960,7 +960,7 @@ static struct
     {"Final Doom",           "final",      exe_final},
     {"Final Doom (alt)",     "final2",     exe_final2},
     {"Chex Quest",           "chex",       exe_chex},
-    { NULL,                  NULL,         0},
+    { NULL,                  NULL,         exe_null},
 };
 
 // Initialize the game version
@@ -1037,7 +1037,7 @@ static void InitGameVersion(void)
                 M_snprintf(demolumpname, 6, "demo%i", i);
                 if (W_CheckNumForName(demolumpname) > 0)
                 {
-                    demolump = W_CacheLumpName(demolumpname, PU_STATIC);
+                    demolump = static_cast<byte*>(W_CacheLumpName(demolumpname, PU_STATIC));
                     demoversion = demolump[0];
                     W_ReleaseLumpName(demolumpname);
                     status = true;
@@ -1148,7 +1148,7 @@ static void LoadIwadDeh(void)
         if (sep != NULL)
         {
             size_t chex_deh_len = strlen(iwadfile) + 9;
-            chex_deh = malloc(chex_deh_len);
+            chex_deh = static_cast<char*>(malloc(chex_deh_len));
             M_StringCopy(chex_deh, iwadfile, chex_deh_len);
             chex_deh[sep - iwadfile + 1] = '\0';
             M_StringConcat(chex_deh, "chex.deh", chex_deh_len);
@@ -1591,7 +1591,7 @@ void D_DoomMain (void)
     {
 	// These are the lumps that will be checked in IWAD,
 	// if any one is not present, execution will be aborted.
-	char name[23][8]=
+	char name[23][9]=
 	{
 	    "e2m1","e2m2","e2m3","e2m4","e2m5","e2m6","e2m7","e2m8","e2m9",
 	    "e3m1","e3m3","e3m3","e3m4","e3m5","e3m6","e3m7","e3m8","e3m9",
@@ -1666,7 +1666,7 @@ void D_DoomMain (void)
 
     if (p)
     {
-	startskill = myargv[p+1][0]-'1';
+	startskill = static_cast<skill_t>(myargv[p+1][0]-'1');
 	autostart = true;
     }
 

@@ -363,7 +363,7 @@ void P_NewChaseDir (mobj_t*	actor)
     if (!actor->target)
 	I_Error ("P_NewChaseDir: called with no target");
 		
-    olddir = actor->movedir;
+    olddir = static_cast<dirtype_t>(actor->movedir);
     turnaround=opposite[olddir];
 
     deltax = actor->target->x - actor->x;
@@ -398,7 +398,7 @@ void P_NewChaseDir (mobj_t*	actor)
     {
 	tdir=d[1];
 	d[1]=d[2];
-	d[2]=tdir;
+	d[2]=static_cast<dirtype_t>(tdir);
     }
 
     if (d[1]==turnaround)

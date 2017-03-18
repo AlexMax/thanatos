@@ -202,7 +202,7 @@ static query_target_t *GetTargetForAddr(net_addr_t *addr, boolean create)
         return NULL;
     }
 
-    targets = realloc(targets, sizeof(query_target_t) * (num_targets + 1));
+    targets = static_cast<query_target_t*>(realloc(targets, sizeof(query_target_t) * (num_targets + 1)));
 
     target = &targets[num_targets];
     target->type = QUERY_TARGET_SERVER;
@@ -729,8 +729,9 @@ static void NET_QueryPrintCallback(net_addr_t *addr,
 
     if (data->gamemode != indetermined)
     {
-        printf("(%s) ", GameDescription(data->gamemode, 
-                                        data->gamemission));
+        printf("(%s) ", GameDescription(
+            static_cast<GameMode_t>(data->gamemode), 
+            static_cast<GameMission_t>(data->gamemission)));
     }
 
     if (data->server_state)

@@ -110,7 +110,7 @@ static void LoadGameSettings(net_gamesettings_t *settings)
     deathmatch = settings->deathmatch;
     startepisode = settings->episode;
     startmap = settings->map;
-    startskill = settings->skill;
+    startskill = static_cast<skill_t>(settings->skill);
     startloadgame = settings->loadgame;
     lowres_turn = settings->lowres_turn;
     nomonsters = settings->nomonsters;

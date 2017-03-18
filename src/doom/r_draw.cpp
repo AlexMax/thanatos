@@ -531,7 +531,7 @@ void R_InitTranslationTables (void)
 {
     int		i;
 	
-    translationtables = Z_Malloc (256*3, PU_STATIC, 0);
+    translationtables = static_cast<byte*>(Z_Malloc (256*3, PU_STATIC, 0));
     
     // translate just the 16 green colors
     for (i=0 ; i<256 ; i++)
@@ -843,8 +843,8 @@ void R_FillBackScreen (void)
 	
     if (background_buffer == NULL)
     {
-        background_buffer = Z_Malloc(SCREENWIDTH * (SCREENHEIGHT - SBARHEIGHT) * sizeof(*background_buffer),
-                                     PU_STATIC, NULL);
+        background_buffer = static_cast<pixel_t*>(Z_Malloc(SCREENWIDTH * (SCREENHEIGHT - SBARHEIGHT) * sizeof(*background_buffer),
+                                     PU_STATIC, NULL));
     }
 
     if (gamemode == commercial)
@@ -852,7 +852,7 @@ void R_FillBackScreen (void)
     else
 	name = name1;
     
-    src = W_CacheLumpName(name, PU_CACHE); 
+    src = static_cast<byte*>(W_CacheLumpName(name, PU_CACHE));
     dest = background_buffer;
 	 
     for (y=0 ; y<SCREENHEIGHT-SBARHEIGHT ; y++) 
@@ -874,19 +874,19 @@ void R_FillBackScreen (void)
 
     V_UseBuffer(background_buffer);
 
-    patch = W_CacheLumpName(DEH_String("brdr_t"),PU_CACHE);
+    patch = static_cast<patch_t*>(W_CacheLumpName(DEH_String("brdr_t"),PU_CACHE));
 
     for (x=0 ; x<scaledviewwidth ; x+=8)
 	V_DrawPatch(viewwindowx+x, viewwindowy-8, patch);
-    patch = W_CacheLumpName(DEH_String("brdr_b"),PU_CACHE);
+    patch = static_cast<patch_t*>(W_CacheLumpName(DEH_String("brdr_b"),PU_CACHE));
 
     for (x=0 ; x<scaledviewwidth ; x+=8)
 	V_DrawPatch(viewwindowx+x, viewwindowy+viewheight, patch);
-    patch = W_CacheLumpName(DEH_String("brdr_l"),PU_CACHE);
+    patch = static_cast<patch_t*>(W_CacheLumpName(DEH_String("brdr_l"),PU_CACHE));
 
     for (y=0 ; y<viewheight ; y+=8)
 	V_DrawPatch(viewwindowx-8, viewwindowy+y, patch);
-    patch = W_CacheLumpName(DEH_String("brdr_r"),PU_CACHE);
+    patch = static_cast<patch_t*>(W_CacheLumpName(DEH_String("brdr_r"),PU_CACHE));
 
     for (y=0 ; y<viewheight ; y+=8)
 	V_DrawPatch(viewwindowx+scaledviewwidth, viewwindowy+y, patch);
@@ -894,19 +894,19 @@ void R_FillBackScreen (void)
     // Draw beveled edge. 
     V_DrawPatch(viewwindowx-8,
                 viewwindowy-8,
-                W_CacheLumpName(DEH_String("brdr_tl"),PU_CACHE));
+                static_cast<patch_t*>(W_CacheLumpName(DEH_String("brdr_tl"),PU_CACHE)));
     
     V_DrawPatch(viewwindowx+scaledviewwidth,
                 viewwindowy-8,
-                W_CacheLumpName(DEH_String("brdr_tr"),PU_CACHE));
+                static_cast<patch_t*>(W_CacheLumpName(DEH_String("brdr_tr"),PU_CACHE)));
     
     V_DrawPatch(viewwindowx-8,
                 viewwindowy+viewheight,
-                W_CacheLumpName(DEH_String("brdr_bl"),PU_CACHE));
+                static_cast<patch_t*>(W_CacheLumpName(DEH_String("brdr_bl"),PU_CACHE)));
     
     V_DrawPatch(viewwindowx+scaledviewwidth,
                 viewwindowy+viewheight,
-                W_CacheLumpName(DEH_String("brdr_br"),PU_CACHE));
+                static_cast<patch_t*>(W_CacheLumpName(DEH_String("brdr_br"),PU_CACHE)));
 
     V_RestoreBuffer();
 } 

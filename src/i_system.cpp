@@ -68,7 +68,7 @@ void I_AtExit(atexit_func_t func, boolean run_on_error)
 {
     atexit_listentry_t *entry;
 
-    entry = malloc(sizeof(*entry));
+    entry = static_cast<atexit_listentry_t*>(malloc(sizeof(*entry)));
 
     entry->func = func;
     entry->run_on_error = run_on_error;
@@ -110,7 +110,7 @@ static byte *AutoAllocMemory(int *size, int default_ram, int min_ram)
 
         *size = default_ram * 1024 * 1024;
 
-        zonemem = malloc(*size);
+        zonemem = static_cast<byte*>(malloc(*size));
 
         // Failed to allocate?  Reduce zone size until we reach a size
         // that is acceptable.

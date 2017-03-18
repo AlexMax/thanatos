@@ -128,7 +128,7 @@ static void InitSfxModule(boolean use_sfx_prefix)
         // Is the sfx device in the list of devices supported by
         // this module?
 
-        if (SndDeviceInList(snd_sfxdevice, 
+        if (SndDeviceInList(static_cast<snddevice_t>(snd_sfxdevice),
                             sound_modules[i]->sound_devices,
                             sound_modules[i]->num_sound_devices))
         {
@@ -156,7 +156,7 @@ static void InitMusicModule(void)
         // Is the music device in the list of devices supported
         // by this module?
 
-        if (SndDeviceInList(snd_musicdevice, 
+        if (SndDeviceInList(static_cast<snddevice_t>(snd_musicdevice),
                             music_modules[i]->sound_devices,
                             music_modules[i]->num_sound_devices))
         {

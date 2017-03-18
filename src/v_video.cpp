@@ -486,7 +486,7 @@ void V_DrawShadowedPatch(int x, int y, patch_t *patch)
 
 void V_LoadTintTable(void)
 {
-    tinttable = W_CacheLumpName("TINTTAB", PU_STATIC);
+    tinttable = static_cast<byte*>(W_CacheLumpName("TINTTAB", PU_STATIC));
 }
 
 //
@@ -497,7 +497,7 @@ void V_LoadTintTable(void)
 
 void V_LoadXlaTable(void)
 {
-    xlatab = W_CacheLumpName("XLATAB", PU_STATIC);
+    xlatab = static_cast<byte*>(W_CacheLumpName("XLATAB", PU_STATIC));
 }
 
 //
@@ -664,7 +664,7 @@ void WritePCXfile(char *filename, byte *data,
     pcx_t*	pcx;
     byte*	pack;
 	
-    pcx = Z_Malloc (width*height*2+1000, PU_STATIC, NULL);
+    pcx = static_cast<pcx_t*>(Z_Malloc (width*height*2+1000, PU_STATIC, NULL));
 
     pcx->manufacturer = 0x0a;		// PCX id
     pcx->version = 5;			// 256 color
@@ -874,7 +874,7 @@ void V_ScreenShot(char *format)
     // save the pcx file
     WritePCXfile(lbmname, I_VideoBuffer,
                  SCREENWIDTH, SCREENHEIGHT,
-                 W_CacheLumpName (DEH_String("PLAYPAL"), PU_CACHE));
+        static_cast<byte*>(W_CacheLumpName (DEH_String("PLAYPAL"), PU_CACHE)));
     }
 }
 

@@ -32,7 +32,7 @@ net_packet_t *NET_NewPacket(int initial_size)
         initial_size = 256;
 
     packet->alloced = initial_size;
-    packet->data = Z_Malloc(initial_size, PU_STATIC, 0);
+    packet->data = static_cast<byte*>(Z_Malloc(initial_size, PU_STATIC, 0));
     packet->len = 0;
     packet->pos = 0;
 
@@ -212,7 +212,7 @@ static void NET_IncreasePacket(net_packet_t *packet)
    
     packet->alloced *= 2;
 
-    newdata = Z_Malloc(packet->alloced, PU_STATIC, 0);
+    newdata = static_cast<byte*>(Z_Malloc(packet->alloced, PU_STATIC, 0));
 
     memcpy(newdata, packet->data, packet->len);
 

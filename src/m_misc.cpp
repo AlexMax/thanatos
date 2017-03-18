@@ -217,7 +217,7 @@ int M_ReadFile(char *name, byte **buffer)
 
     length = M_FileLength(handle);
     
-    buf = Z_Malloc (length, PU_STATIC, NULL);
+    buf = static_cast<byte*>(Z_Malloc (length, PU_STATIC, NULL));
     count = fread(buf, 1, length, handle);
     fclose (handle);
 	
@@ -422,7 +422,7 @@ char *M_StringReplace(const char *haystack, const char *needle,
 
     // Construct new string.
 
-    result = malloc(result_len);
+    result = static_cast<char*>(malloc(result_len));
     if (result == NULL)
     {
         I_Error("M_StringReplace: Failed to allocate new string");
@@ -532,7 +532,7 @@ char *M_StringJoin(const char *s, ...)
     }
     va_end(args);
 
-    result = malloc(result_len);
+    result = static_cast<char*>(malloc(result_len));
 
     if (result == NULL)
     {
@@ -610,9 +610,9 @@ char *M_OEMToUTF8(const char *oem)
     wchar_t *tmp;
     char *result;
 
-    tmp = malloc(len * sizeof(wchar_t));
+    tmp = static_cast<wchar_t*>(malloc(len * sizeof(wchar_t)));
     MultiByteToWideChar(CP_OEMCP, 0, oem, len, tmp, len);
-    result = malloc(len * 4);
+    result = static_cast<char*>(malloc(len * 4));
     WideCharToMultiByte(CP_UTF8, 0, tmp, len, result, len * 4, NULL, NULL);
     free(tmp);
 

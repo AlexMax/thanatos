@@ -17,6 +17,8 @@
 //
 
 
+#include <stdlib.h>
+
 #include "SDL.h"
 #include "SDL_opengl.h"
 
@@ -25,7 +27,7 @@
 #include <windows.h>
 #endif
 
-#include "icon.c"
+#include "icon.cpp"
 
 #include "config.h"
 #include "d_loop.h"
@@ -250,7 +252,7 @@ static void SetShowCursor(boolean show)
     {
         // When the cursor is hidden, grab the input.
         // Relative mode implicitly hides the cursor.
-        SDL_SetRelativeMouseMode(!show);
+        SDL_SetRelativeMouseMode(static_cast<SDL_bool>(!show));
         SDL_GetRelativeMouseState(NULL, NULL);
     }
 }
@@ -1236,7 +1238,7 @@ static void SetVideoMode(void)
     // Force integer scales for resolution-independent rendering.
 
 #if SDL_VERSION_ATLEAST(2, 0, 5)
-    SDL_RenderSetIntegerScale(renderer, integer_scaling);
+    SDL_RenderSetIntegerScale(renderer, static_cast<SDL_bool>(integer_scaling));
 #endif
 
     // Blank out the full screen area in case there is any junk in
@@ -1370,7 +1372,7 @@ void I_InitGraphics(void)
 
     // Set the palette
 
-    doompal = W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE);
+    doompal = static_cast<byte*>(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
     I_SetPalette(doompal);
     SDL_SetPaletteColors(screenbuffer->format->palette, palette, 0, 256);
 
@@ -1392,7 +1394,7 @@ void I_InitGraphics(void)
     // 32-bit RGBA screen buffer that gets loaded into a texture that gets
     // finally rendered into our window or full screen in I_FinishUpdate().
 
-    I_VideoBuffer = screenbuffer->pixels;
+    I_VideoBuffer = static_cast<pixel_t*>(screenbuffer->pixels);
     V_RestoreBuffer();
 
     // Clear the screen to black.

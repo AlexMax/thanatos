@@ -640,7 +640,9 @@ static void NET_SV_ParseSYN(net_packet_t *packet,
         return;
     }
 
-    if (!D_ValidGameMode(data.gamemission, data.gamemode))
+    if (!D_ValidGameMode(
+        static_cast<GameMission_t>(data.gamemission),
+        static_cast<GameMode_t>(data.gamemode)))
     {
         return;
     }
@@ -944,7 +946,9 @@ static void NET_SV_ParseGameStart(net_packet_t *packet, net_client_t *client)
 
         // Check the game settings are valid
 
-        if (!NET_ValidGameSettings(sv_gamemode, sv_gamemission, &settings))
+        if (!NET_ValidGameSettings(
+            static_cast<GameMode_t>(sv_gamemode),
+            static_cast<GameMission_t>(sv_gamemission), &settings))
         {
             return;
         }

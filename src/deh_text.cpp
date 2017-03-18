@@ -69,8 +69,8 @@ static void *DEH_TextStart(deh_context_t *context, char *line)
         return NULL;
     }
 
-    from_text = malloc(fromlen + 1);
-    to_text = malloc(tolen + 1);
+    from_text = static_cast<char*>(malloc(fromlen + 1));
+    to_text = static_cast<char*>(malloc(tolen + 1));
 
     // read in the "from" text
 

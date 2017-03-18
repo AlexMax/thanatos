@@ -53,6 +53,7 @@ typedef enum
     GS_INTERMISSION,
     GS_FINALE,
     GS_DEMOSCREEN,
+    GS_NONE = -1,
 } gamestate_t;
 
 typedef enum

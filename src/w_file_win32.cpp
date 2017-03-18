@@ -61,9 +61,9 @@ static void MapFile(win32_wad_file_t *wad, char *filename)
         return;
     }
 
-    wad->wad.mapped = MapViewOfFile(wad->handle_map,
+    wad->wad.mapped = static_cast<byte*>(MapViewOfFile(wad->handle_map,
                                     FILE_MAP_COPY,
-                                    0, 0, 0);
+                                    0, 0, 0));
 
     if (wad->wad.mapped == NULL)
     {
@@ -113,7 +113,7 @@ static wad_file_t *W_Win32_OpenFile(char *path)
 
     // Create a new win32_wad_file_t to hold the file handle.
 
-    result = Z_Malloc(sizeof(win32_wad_file_t), PU_STATIC, 0);
+    result = static_cast<win32_wad_file_t*>(Z_Malloc(sizeof(win32_wad_file_t), PU_STATIC, 0));
     result->wad.file_class = &win32_wad_file;
     result->wad.length = GetFileLength(handle);
     result->wad.path = M_StringDuplicate(path);
