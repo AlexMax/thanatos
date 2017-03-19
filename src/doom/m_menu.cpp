@@ -219,7 +219,7 @@ void M_DrawSelCell(menu_t *menu,int item);
 void M_WriteText(int x, int y, char *string);
 int  M_StringWidth(char *string);
 int  M_StringHeight(char *string);
-void M_StartMessage(char *string,void *routine,boolean input);
+void M_StartMessage(char *string,void (*routine)(int),boolean input);
 void M_StopMessage(void);
 void M_ClearMenus (void);
 
@@ -1217,13 +1217,13 @@ M_DrawSelCell
 void
 M_StartMessage
 ( char*		string,
-  void*		routine,
+  void (*routine)(int),
   boolean	input )
 {
     messageLastMenuActive = menuactive;
     messageToPrint = 1;
     messageString = string;
-    messageRoutine = static_cast<void (*)(int)>(routine);
+    messageRoutine = routine;
     messageNeedsInput = input;
     menuactive = true;
     return;
