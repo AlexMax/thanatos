@@ -55,7 +55,7 @@ static SDL_Renderer *renderer;
 
 // Window title
 
-static char *window_title = "";
+static const char *window_title = "";
 
 // These are (1) the 320x200x8 paletted buffer that we draw to (i.e. the one
 // that holds I_VideoBuffer), (2) the 320x200x32 RGBA intermediate buffer that
@@ -98,11 +98,11 @@ int png_screenshots = 0;
 
 // SDL video driver name
 
-char *video_driver = "";
+const char *video_driver = "";
 
 // Window position:
 
-char *window_position = "center";
+const char *window_position = "center";
 
 // SDL display number on which to run.
 
@@ -858,7 +858,7 @@ int I_GetPaletteIndex(int r, int g, int b)
 // Set the window title
 //
 
-void I_SetWindowTitle(char *title)
+void I_SetWindowTitle(const char *title)
 {
     window_title = title;
 }

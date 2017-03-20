@@ -325,7 +325,7 @@ void NET_SDL_AddrToString(net_addr_t *addr, char *buffer, int buffer_len)
     }
 }
 
-net_addr_t *NET_SDL_ResolveAddress(char *address)
+net_addr_t *NET_SDL_ResolveAddress(const char *address)
 {
     IPaddress ip;
     char *addr_hostname;
@@ -343,7 +343,7 @@ net_addr_t *NET_SDL_ResolveAddress(char *address)
     }
     else
     {
-	addr_hostname = address;
+	addr_hostname = M_StringDuplicate(address);
 	addr_port = port;
     }
     

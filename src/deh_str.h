@@ -22,11 +22,11 @@
 
 // Used to do dehacked text substitutions throughout the program
 
-char *DEH_String(char *s);
-void DEH_printf(char *fmt, ...);
-void DEH_fprintf(FILE *fstream, char *fmt, ...);
-void DEH_snprintf(char *buffer, size_t len, char *fmt, ...);
-void DEH_AddStringReplacement(char *from_text, char *to_text);
+const char *DEH_String(const char *s);
+void DEH_printf(const char *fmt, ...);
+void DEH_fprintf(FILE *fstream, const char *fmt, ...);
+void DEH_snprintf(char *buffer, size_t len, const char *fmt, ...);
+void DEH_AddStringReplacement(const char *from_text, const char *to_text);
 
 
 #if 0

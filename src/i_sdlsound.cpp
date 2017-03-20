@@ -411,13 +411,13 @@ static boolean ExpandSoundData_SRC(sfxinfo_t *sfxinfo,
     Mix_Chunk *chunk;
 
     src_data.input_frames = length;
-    data_in = malloc(length * sizeof(float));
+    data_in = static_cast<float*>(malloc(length * sizeof(float)));
     src_data.data_in = data_in;
     src_data.src_ratio = (double)mixer_freq / samplerate;
 
     // We include some extra space here in case of rounding-up.
     src_data.output_frames = src_data.src_ratio * length + (mixer_freq / 4);
-    src_data.data_out = malloc(src_data.output_frames * sizeof(float));
+    src_data.data_out = static_cast<float*>(malloc(src_data.output_frames * sizeof(float)));
 
     assert(src_data.data_in != NULL && src_data.data_out != NULL);
 

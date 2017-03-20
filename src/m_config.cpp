@@ -48,8 +48,8 @@ char *configdir;
 
 // Default filenames for configuration files.
 
-static char *default_main_config;
-static char *default_extra_config;
+static const char *default_main_config;
+static const char *default_extra_config;
 
 typedef enum 
 {
@@ -63,12 +63,12 @@ typedef enum
 typedef struct
 {
     // Name of the variable
-    char *name;
+    const char *name;
 
     // Pointer to the location in memory of the variable
     union {
         int *i;
-        char **s;
+        const char **s;
         float *f;
     } location;
 
@@ -1647,7 +1647,7 @@ static default_collection_t extra_defaults =
 
 // Search a collection for a variable
 
-static default_t *SearchCollection(default_collection_t *collection, char *name)
+static default_t *SearchCollection(default_collection_t *collection, const char *name)
 {
     int i;
 
@@ -1916,7 +1916,7 @@ static void LoadDefaultCollection(default_collection_t *collection)
 
 // Set the default filenames to use for configuration files.
 
-void M_SetConfigFilenames(char *main_config, char *extra_config)
+void M_SetConfigFilenames(const char *main_config, const char *extra_config)
 {
     default_main_config = main_config;
     default_extra_config = extra_config;
@@ -2017,7 +2017,7 @@ void M_LoadDefaults (void)
 
 // Get a configuration file variable by its name
 
-static default_t *GetDefaultForName(char *name)
+static default_t *GetDefaultForName(const char *name)
 {
     default_t *result;
 
@@ -2044,7 +2044,7 @@ static default_t *GetDefaultForName(char *name)
 // Bind a variable to a given configuration file variable, by name.
 //
 
-void M_BindIntVariable(char *name, int *location)
+void M_BindIntVariable(const char *name, int *location)
 {
     default_t *variable;
 
@@ -2057,7 +2057,7 @@ void M_BindIntVariable(char *name, int *location)
     variable->bound = true;
 }
 
-void M_BindFloatVariable(char *name, float *location)
+void M_BindFloatVariable(const char *name, float *location)
 {
     default_t *variable;
 
@@ -2068,7 +2068,7 @@ void M_BindFloatVariable(char *name, float *location)
     variable->bound = true;
 }
 
-void M_BindStringVariable(char *name, char **location)
+void M_BindStringVariable(const char *name, const char **location)
 {
     default_t *variable;
 
@@ -2200,7 +2200,7 @@ void M_SetConfigDir(char *dir)
 // Creates the directory as necessary.
 //
 
-char *M_GetSaveGameDir(char *iwadname)
+const char *M_GetSaveGameDir(const char *iwadname)
 {
     char *savegamedir;
     char *topdir;

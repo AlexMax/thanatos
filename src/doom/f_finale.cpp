@@ -61,8 +61,8 @@ typedef struct
 {
     GameMission_t mission;
     int episode, level;
-    char *background;
-    char *text;
+    const char *background;
+    const char *text;
 } textscreen_t;
 
 static textscreen_t textscreens[] =
@@ -94,8 +94,8 @@ static textscreen_t textscreens[] =
     { pack_plut, 1, 31, "RROCK19",   P6TEXT},
 };
 
-char*	finaletext;
-char*	finaleflat;
+const char*	finaletext;
+const char*	finaleflat;
 
 void	F_StartCast (void);
 void	F_CastTicker (void);
@@ -231,7 +231,7 @@ void F_TextWrite (void)
     
     int		x,y,w;
     signed int	count;
-    char*	ch;
+    const char*	ch;
     int		c;
     int		cx;
     int		cy;
@@ -299,7 +299,7 @@ void F_TextWrite (void)
 //
 typedef struct
 {
-    char		*name;
+    const char		*name;
     mobjtype_t	type;
 } castinfo_t;
 
@@ -483,9 +483,9 @@ boolean F_CastResponder (event_t* ev)
 }
 
 
-void F_CastPrint (char* text)
+void F_CastPrint (const char* text)
 {
-    char*	ch;
+    const char*	ch;
     int		c;
     int		cx;
     int		w;
@@ -660,7 +660,7 @@ void F_BunnyScroll (void)
 
 static void F_ArtScreenDrawer(void)
 {
-    char *lumpname;
+    const char *lumpname;
     
     if (gameepisode == 3)
     {

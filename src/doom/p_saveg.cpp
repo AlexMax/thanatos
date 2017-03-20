@@ -189,6 +189,18 @@ static void saveg_writep(void *p)
     saveg_write32((intptr_t) p);
 }
 
+// Strings
+
+static char *saveg_readstr(void)
+{
+    return (char *) (intptr_t) saveg_read32();
+}
+
+static void saveg_writestr(const char *string)
+{
+    saveg_write32((intptr_t) string);
+}
+
 // Enum values are 32-bit integers.
 
 #define saveg_read_enum saveg_read32
@@ -736,7 +748,7 @@ static void saveg_read_player_t(player_t *str)
     str->secretcount = saveg_read32();
 
     // char* message;
-    str->message = static_cast<char*>(saveg_readp());
+    str->message = saveg_readstr();
 
     // int damagecount;
     str->damagecount = saveg_read32();
@@ -867,7 +879,7 @@ static void saveg_write_player_t(player_t *str)
     saveg_write32(str->secretcount);
 
     // char* message;
-    saveg_writep(str->message);
+    saveg_writestr(str->message);
 
     // int damagecount;
     saveg_write32(str->damagecount);

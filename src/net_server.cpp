@@ -204,7 +204,7 @@ static void NET_SV_SendConsoleMessage(net_client_t *client, char *s, ...)
 
 // Send a message to all clients
 
-static void NET_SV_BroadcastMessage(char *s, ...)
+static void NET_SV_BroadcastMessage(const char *s, ...)
 {
     char buf[1024];
     va_list args;
@@ -544,7 +544,7 @@ static net_client_t *NET_SV_FindClient(net_addr_t *addr)
 
 // send a rejection packet to a client
 
-static void NET_SV_SendReject(net_addr_t *addr, char *msg)
+static void NET_SV_SendReject(net_addr_t *addr, const char *msg)
 {
     net_packet_t *packet;
 

@@ -86,7 +86,7 @@ boolean M_FileExists(char *filename)
 // Check if a file exists by probing for common case variation of its filename.
 // Returns a newly allocated string that the caller is responsible for freeing.
 
-char *M_FileCaseExists(char *path)
+char *M_FileCaseExists(const char *path)
 {
     char *path_dup, *filename, *ext;
 
@@ -233,9 +233,9 @@ int M_ReadFile(char *name, byte **buffer)
 //
 // The returned value must be freed with Z_Free after use.
 
-char *M_TempFile(char *s)
+char *M_TempFile(const char *s)
 {
-    char *tempdir;
+    const char *tempdir;
 
 #ifdef _WIN32
 

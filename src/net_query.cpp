@@ -642,7 +642,7 @@ int NET_StartMasterQuery(void)
 
 // -----------------------------------------------------------------------
 
-static void formatted_printf(int wide, char *s, ...)
+static void formatted_printf(int wide, const char *s, ...)
 {
     va_list args;
     int i;
@@ -658,7 +658,7 @@ static void formatted_printf(int wide, char *s, ...)
     }
 }
 
-static char *GameDescription(GameMode_t mode, GameMission_t mission)
+static const char *GameDescription(GameMode_t mode, GameMission_t mission)
 {
     switch (mission)
     {

@@ -766,7 +766,7 @@ void WritePNGfile(char *filename, byte *data,
                  8, PNG_COLOR_TYPE_PALETTE, PNG_INTERLACE_NONE,
                  PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
-    pcolor = malloc(sizeof(*pcolor) * 256);
+    pcolor = static_cast<png_colorp>(malloc(sizeof(*pcolor) * 256));
     if (!pcolor)
     {
         png_destroy_write_struct(&ppng, &pinfo);
@@ -785,7 +785,7 @@ void WritePNGfile(char *filename, byte *data,
 
     png_write_info(ppng, pinfo);
 
-    rowbuf = malloc(width);
+    rowbuf = static_cast<byte*>(malloc(width));
 
     if (rowbuf)
     {
@@ -817,11 +817,11 @@ void WritePNGfile(char *filename, byte *data,
 // V_ScreenShot
 //
 
-void V_ScreenShot(char *format)
+void V_ScreenShot(const char *format)
 {
     int i;
     char lbmname[16]; // haleyjd 20110213: BUG FIX - 12 is too small!
-    char *ext;
+    const char *ext;
     
     // find a file name to save it to
 
@@ -866,7 +866,7 @@ void V_ScreenShot(char *format)
     {
     WritePNGfile(lbmname, I_VideoBuffer,
                  SCREENWIDTH, SCREENHEIGHT,
-                 W_CacheLumpName (DEH_String("PLAYPAL"), PU_CACHE));
+                 static_cast<byte*>(W_CacheLumpName (DEH_String("PLAYPAL"), PU_CACHE)));
     }
     else
 #endif

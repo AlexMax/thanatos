@@ -87,7 +87,7 @@ int			quickSaveSlot;
  // 1 = message to be printed
 int			messageToPrint;
 // ...and here is the message string!
-char*			messageString;
+const char*			messageString;
 
 // message x & y
 int			messx;
@@ -166,7 +166,7 @@ short		whichSkull;		// which skull to draw
 
 // graphic name of skulls
 // warning: initializer-string for array of chars is too long
-char    *skullName[2] = {"M_SKULL1","M_SKULL2"};
+const char    *skullName[2] = {"M_SKULL1","M_SKULL2"};
 
 // current menudef
 menu_t*	currentMenu;                          
@@ -216,10 +216,10 @@ void M_SetupNextMenu(menu_t *menudef);
 void M_DrawThermo(int x,int y,int thermWidth,int thermDot);
 void M_DrawEmptyCell(menu_t *menu,int item);
 void M_DrawSelCell(menu_t *menu,int item);
-void M_WriteText(int x, int y, char *string);
+void M_WriteText(int x, int y, const char *string);
 int  M_StringWidth(char *string);
 int  M_StringHeight(char *string);
-void M_StartMessage(char *string,void (*routine)(int),boolean input);
+void M_StartMessage(const char *string,void (*routine)(int),boolean input);
 void M_StopMessage(void);
 void M_ClearMenus (void);
 
@@ -922,8 +922,8 @@ void M_Episode(int choice)
 //
 // M_Options
 //
-static char *detailNames[2] = {"M_GDHIGH","M_GDLOW"};
-static char *msgNames[2] = {"M_MSGOFF","M_MSGON"};
+static const char *detailNames[2] = {"M_GDHIGH","M_GDLOW"};
+static const char *msgNames[2] = {"M_MSGOFF","M_MSGON"};
 
 void M_DrawOptions(void)
 {
@@ -1073,9 +1073,9 @@ void M_QuitResponse(int key)
 }
 
 
-static char *M_SelectEndMessage(void)
+static const char *M_SelectEndMessage(void)
 {
-    char **endmsg;
+    const char **endmsg;
 
     if (logical_gamemission == doom)
     {
@@ -1216,7 +1216,7 @@ M_DrawSelCell
 
 void
 M_StartMessage
-( char*		string,
+( const char*		string,
   void (*routine)(int),
   boolean	input )
 {
@@ -1264,7 +1264,7 @@ int M_StringWidth(char* string)
 //
 //      Find string height from hu_font chars
 //
-int M_StringHeight(char* string)
+int M_StringHeight(const char* string)
 {
     size_t             i;
     int             h;
@@ -1286,10 +1286,10 @@ void
 M_WriteText
 ( int		x,
   int		y,
-  char*		string)
+  const char*		string)
 {
     int		w;
-    char*	ch;
+    const char*	ch;
     int		c;
     int		cx;
     int		cy;
@@ -1859,7 +1859,7 @@ void M_Drawer (void)
     unsigned int	i;
     unsigned int	max;
     char		string[80];
-    char               *name;
+    const char               *name;
     int			start;
 
     inhelpscreens = false;

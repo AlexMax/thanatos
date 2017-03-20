@@ -111,8 +111,8 @@ static boolean sdl_was_initialized = false;
 static boolean musicpaused = false;
 static int current_music_volume;
 
-char *music_pack_path = "";
-char *timidity_cfg_path = "";
+char const *music_pack_path = "";
+char const *timidity_cfg_path = "";
 
 static char *temp_timidity_cfg = NULL;
 
@@ -539,7 +539,7 @@ static char *GetFullPath(char *base_filename, char *path)
 // Parse a line from substitute music configuration file; returns error
 // message or NULL for no error.
 
-static char *ParseSubstituteLine(char *filename, char *line)
+static const char *ParseSubstituteLine(char *filename, char *line)
 {
     subst_music_t subst;
     char *p;
@@ -632,7 +632,7 @@ static boolean ReadSubstituteConfig(char *filename)
 {
     char line[128];
     FILE *fs;
-    char *error;
+    const char *error;
     int linenum = 1;
 //    int old_subst_music_len;
 

@@ -88,7 +88,7 @@ void D_DoomLoop (void);
 
 // Location where savegames are stored
 
-char *          savegamedir;
+const char *          savegamedir;
 
 // location of IWAD and WAD files
 
@@ -330,7 +330,7 @@ void D_Display (void)
 
 static void EnableLoadingDisk(void)
 {
-    char *disk_lump_name;
+    const char *disk_lump_name;
 
     if (show_diskicon)
     {
@@ -482,7 +482,7 @@ void D_DoomLoop (void)
 //
 int             demosequence;
 int             pagetic;
-char                    *pagename;
+const char                    *pagename;
 
 
 //
@@ -620,7 +620,7 @@ void D_StartTitle (void)
 // These are from the original source: some of them are perhaps
 // not used in any dehacked patches
 
-static char *banners[] =
+static const char *banners[] =
 {
     // doom2.wad
     "                         "
@@ -665,10 +665,10 @@ static char *banners[] =
 // Otherwise, use the name given
 // 
 
-static char *GetGameName(char *gamename)
+static const char *GetGameName(const char *gamename)
 {
     size_t i;
-    char *deh_sub;
+    const char *deh_sub;
     
     for (i=0; i<arrlen(banners); ++i)
     {
@@ -678,30 +678,27 @@ static char *GetGameName(char *gamename)
         
         if (deh_sub != banners[i])
         {
-            size_t gamename_size;
-            int version;
-
             // Has been replaced.
             // We need to expand via printf to include the Doom version number
             // We also need to cut off spaces to get the basic name
 
-            gamename_size = strlen(deh_sub) + 10;
-            gamename = static_cast<char*>(Z_Malloc(gamename_size, PU_STATIC, 0));
-            version = G_VanillaVersionCode();
-            M_snprintf(gamename, gamename_size, deh_sub,
+            size_t new_gamename_size = strlen(deh_sub) + 10;
+            char* new_gamename = static_cast<char*>(Z_Malloc(new_gamename_size, PU_STATIC, 0));
+            int version = G_VanillaVersionCode();
+            M_snprintf(new_gamename, new_gamename_size, deh_sub,
                        version / 100, version % 100);
 
-            while (gamename[0] != '\0' && isspace(gamename[0]))
+            while (new_gamename[0] != '\0' && isspace(new_gamename[0]))
             {
-                memmove(gamename, gamename + 1, gamename_size - 1);
+                memmove(new_gamename, new_gamename + 1, new_gamename_size - 1);
             }
 
-            while (gamename[0] != '\0' && isspace(gamename[strlen(gamename)-1]))
+            while (new_gamename[0] != '\0' && isspace(new_gamename[strlen(new_gamename)-1]))
             {
-                gamename[strlen(gamename) - 1] = '\0';
+                new_gamename[strlen(new_gamename) - 1] = '\0';
             }
 
-            return gamename;
+            return new_gamename;
         }
     }
 
@@ -713,7 +710,7 @@ static void SetMissionForPackName(char *pack_name)
     int i;
     static const struct
     {
-        char *name;
+        const char *name;
         int mission;
     } packs[] = {
         { "doom2",    doom2 },
@@ -899,7 +896,7 @@ static boolean D_AddFile(char *filename)
 // Some dehacked mods replace these.  These are only displayed if they are 
 // replaced by dehacked.
 
-static char *copyright_banners[] =
+static const char *copyright_banners[] =
 {
     "===========================================================================\n"
     "ATTENTION:  This version of DOOM has been modified.  If you would like to\n"
@@ -926,7 +923,7 @@ void PrintDehackedBanners(void)
 
     for (i=0; i<arrlen(copyright_banners); ++i)
     {
-        char *deh_s;
+        const char *deh_s;
 
         deh_s = DEH_String(copyright_banners[i]);
 
@@ -947,8 +944,8 @@ void PrintDehackedBanners(void)
 
 static struct 
 {
-    char *description;
-    char *cmdline;
+    const char *description;
+    const char *cmdline;
     GameVersion_t version;
 } gameversions[] = {
     {"Doom 1.666",           "1.666",      exe_doom_1_666},

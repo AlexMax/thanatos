@@ -618,7 +618,7 @@ void G_DoLoadLevel (void)
     if ((gamemode == commercial)
      && (gameversion == exe_final2 || gameversion == exe_chex))
     {
-        char *skytexturename;
+        const char *skytexturename;
 
         if (gamemap < 12)
         {
@@ -1727,7 +1727,7 @@ G_InitNew
   int		episode,
   int		map )
 {
-    char *skytexturename;
+    const char *skytexturename;
     int             i;
 
     if (paused)
@@ -2098,9 +2098,9 @@ void G_BeginRecording (void)
 // G_PlayDemo 
 //
 
-char*	defdemoname; 
+const char*	defdemoname; 
  
-void G_DeferedPlayDemo (char* name) 
+void G_DeferedPlayDemo (const char* name) 
 { 
     defdemoname = name; 
     gameaction = ga_playdemo; 
@@ -2108,7 +2108,7 @@ void G_DeferedPlayDemo (char* name)
 
 // Generate a string describing a demo version
 
-static char *DemoVersionDescription(int version)
+static const char *DemoVersionDescription(int version)
 {
     static char resultbuf[16];
 
@@ -2171,7 +2171,7 @@ void G_DoPlayDemo (void)
     }
     else if (demoversion != G_VanillaVersionCode())
     {
-        char *message = "Demo is from a different game version!\n"
+        const char *message = "Demo is from a different game version!\n"
                         "(read %i, should be %i)\n"
                         "\n"
                         "*** You may need to upgrade your version "
