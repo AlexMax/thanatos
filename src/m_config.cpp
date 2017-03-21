@@ -44,7 +44,7 @@
 // Location where all configuration data is stored - 
 // default.cfg, savegames, etc.
 
-char *configdir;
+const char *configdir;
 
 // Default filenames for configuration files.
 
@@ -1798,7 +1798,7 @@ static void SaveDefaultCollection(default_collection_t *collection)
 
 // Parses integer values in the configuration file
 
-static int ParseIntParameter(char *strparm)
+static int ParseIntParameter(const char *strparm)
 {
     int parm;
 
@@ -1810,7 +1810,7 @@ static int ParseIntParameter(char *strparm)
     return parm;
 }
 
-static void SetVariable(default_t *def, char *value)
+static void SetVariable(default_t *def, const char *value)
 {
     int intparm;
 
@@ -2082,7 +2082,7 @@ void M_BindStringVariable(const char *name, const char **location)
 // Set the value of a particular variable; an API function for other
 // parts of the program to assign values to config variables by name.
 
-boolean M_SetVariable(char *name, char *value)
+boolean M_SetVariable(const char *name, const char *value)
 {
     default_t *variable;
 
@@ -2115,7 +2115,7 @@ int M_GetIntVariable(char *name)
     return *variable->location.i;
 }
 
-const char *M_GetStringVariable(char *name)
+const char *M_GetStringVariable(const char *name)
 {
     default_t *variable;
 
@@ -2172,7 +2172,7 @@ static char *GetDefaultConfigDir(void)
 // files are stored - default.cfg, chocolate-doom.cfg, savegames, etc.
 //
 
-void M_SetConfigDir(char *dir)
+void M_SetConfigDir(const char *dir)
 {
     // Use the directory that was passed, or find the default.
 
@@ -2202,7 +2202,7 @@ void M_SetConfigDir(char *dir)
 
 const char *M_GetSaveGameDir(const char *iwadname)
 {
-    char *savegamedir;
+    const char *savegamedir;
     char *topdir;
     int p;
 

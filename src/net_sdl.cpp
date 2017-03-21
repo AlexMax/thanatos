@@ -331,7 +331,7 @@ net_addr_t *NET_SDL_ResolveAddress(const char *address)
     char *addr_hostname;
     int addr_port;
     int result;
-    char *colon;
+    const char *colon;
 
     colon = strchr(address, ':');
 

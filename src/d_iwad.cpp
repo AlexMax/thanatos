@@ -82,8 +82,8 @@ static void AddIWADDir(const char *dir)
 typedef struct 
 {
     HKEY root;
-    char *path;
-    char *value;
+    const char *path;
+    const char *value;
 } registry_value_t;
 
 #define UNINSTALLER_STRING "\\uninstl.exe /S "
@@ -189,7 +189,7 @@ static registry_value_t root_path_keys[] =
 
 // Subdirectories of the above install path, where IWADs are installed.
 
-static char *root_path_subdirs[] =
+static const char *root_path_subdirs[] =
 {
     ".",
     "Doom2",
@@ -210,7 +210,7 @@ static registry_value_t steam_install_location =
 
 // Subdirs of the steam install directory where IWADs are found
 
-static char *steam_install_subdirs[] =
+static const char *steam_install_subdirs[] =
 {
     "steamapps\\common\\doom 2\\base",
     "steamapps\\common\\final doom\\base",
@@ -565,7 +565,7 @@ static GameMission_t IdentifyIWADByName(char *name, int mask)
 // to the end of the paths before adding them.
 static void AddIWADPath(const char *path, const char *suffix)
 {
-    const char *left;
+    char *left;
 	char *p;
 
     char* new_path = M_StringDuplicate(path);

@@ -798,7 +798,8 @@ static void DumpSubstituteConfig(char *filename)
 
 static boolean WriteWrapperTimidityConfig(char *write_path)
 {
-    char *p, *path;
+    const char *p;
+    char *path;
     FILE *fstream;
 
     if (!strcmp(timidity_cfg_path, ""))

@@ -25,17 +25,17 @@
 void M_LoadDefaults(void);
 void M_SaveDefaults(void);
 void M_SaveDefaultsAlternate(char *main, char *extra);
-void M_SetConfigDir(char *dir);
+void M_SetConfigDir(const char *dir);
 void M_BindIntVariable(const char *name, int *variable);
 void M_BindFloatVariable(const char *name, float *variable);
 void M_BindStringVariable(const char *name, const char **variable);
-boolean M_SetVariable(char *name, char *value);
+boolean M_SetVariable(const char *name, const char *value);
 int M_GetIntVariable(char *name);
-const char *M_GetStringVariable(char *name);
+const char *M_GetStringVariable(const char *name);
 float M_GetFloatVariable(char *name);
 void M_SetConfigFilenames(const char *main_config, const char *extra_config);
 const char *M_GetSaveGameDir(const char *iwadname);
 
-extern char *configdir;
+extern const char *configdir;
 
 #endif
