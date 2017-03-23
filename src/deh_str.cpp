@@ -23,6 +23,7 @@
 #include "doomtype.h"
 #include "deh_str.h"
 #include "m_misc.h"
+#include "c_console.h"
 
 #include "z_zone.h"
 
@@ -394,7 +395,7 @@ void DEH_printf(const char *fmt, ...)
 
     va_start(args, fmt);
 
-    vprintf(repl, args);
+    console::vprintf(repl, args);
 
     va_end(args);
 }
