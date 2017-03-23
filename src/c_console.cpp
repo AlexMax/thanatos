@@ -93,6 +93,15 @@ void Buffer::Clear()
 }
 
 // Append the printed string to the console buffer.
+void printf(const char* format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    console::vprintf(format, args);
+    va_end(args);
+}
+
+// Append the printed string to the console buffer.
 void vprintf(const char* format, va_list args)
 {
     // WARNING: This function relies upon a C99-conforming vsnprintf().  Do

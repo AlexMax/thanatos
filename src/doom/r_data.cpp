@@ -37,6 +37,7 @@
 
 
 #include "r_data.h"
+#include "c_console.h"
 
 //
 // Graphics.
@@ -551,7 +552,7 @@ void R_InitTextures (void)
     for (i=0 ; i<numtextures ; i++, directory++)
     {
 	if (!(i&63))
-	    printf (".");
+	    console::printf (".");
 
 	if (i == numtextures1)
 	{
@@ -668,7 +669,7 @@ void R_InitSpriteLumps (void)
     for (i=0 ; i< numspritelumps ; i++)
     {
 	if (!(i&63))
-	    printf (".");
+            console::printf (".");
 
 	patch = static_cast<patch_t*>(W_CacheLumpNum (firstspritelump+i, PU_CACHE));
 	spritewidth[i] = SHORT(patch->width)<<FRACBITS;
@@ -703,11 +704,11 @@ void R_InitColormaps (void)
 void R_InitData (void)
 {
     R_InitTextures ();
-    printf (".");
+    console::printf (".");
     R_InitFlats ();
-    printf (".");
+    console::printf (".");
     R_InitSpriteLumps ();
-    printf (".");
+    console::printf (".");
     R_InitColormaps ();
 }
 

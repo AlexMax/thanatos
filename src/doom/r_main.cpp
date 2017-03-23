@@ -34,7 +34,7 @@
 
 #include "r_local.h"
 #include "r_sky.h"
-
+#include "c_console.h"
 
 
 
@@ -767,21 +767,21 @@ void R_ExecuteSetViewSize (void)
 void R_Init (void)
 {
     R_InitData ();
-    printf (".");
+    console::printf (".");
     R_InitPointToAngle ();
-    printf (".");
+    console::printf(".");
     R_InitTables ();
     // viewwidth / viewheight / detailLevel are set by the defaults
-    printf (".");
+    console::printf(".");
 
     R_SetViewSize (screenblocks, detailLevel);
     R_InitPlanes ();
-    printf (".");
+    console::printf(".");
     R_InitLightTables ();
-    printf (".");
+    console::printf(".");
     R_InitSkyMap ();
     R_InitTranslationTables ();
-    printf (".");
+    console::printf(".");
 	
     framecount = 0;
 }
