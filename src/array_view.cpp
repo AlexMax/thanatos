@@ -12,20 +12,23 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//     Console.
-//
+//     A dynamically-sized view of an array.  Does not concern itself with
+//     the underlying lifetime of the array.
 
-#ifndef __C_CONSOLE__
-#define __C_CONSOLE__
+#include "array_view.h"
 
-namespace console
+namespace theta
 {
 
-void vprintf(const char* format, va_list args);
-void printf(const char* format, ...);
-
-void Draw();
-
+const byte* ArrayView::GetData()
+{
+    return this->data;
 }
 
-#endif
+std::size_t ArrayView::GetSize()
+{
+    return this->size;
+}
+
+
+}

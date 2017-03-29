@@ -74,6 +74,7 @@
 
 
 #include "d_main.h"
+#include "c_console.h"
 
 //
 // D-DoomLoop()
@@ -292,6 +293,7 @@ void D_Display (void)
                           static_cast<patch_t*>(W_CacheLumpName (DEH_String("M_PAUSE"), PU_CACHE)));
     }
 
+    console::Draw();
 
     // menus go directly to the screen
     M_Drawer ();          // menu is drawn even on top of everything

@@ -12,19 +12,34 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//     Console.
-//
+//     A dynamically-sized view of an array.  Does not concern itself with
+//     the underlying lifetime of the array.
 
-#ifndef __C_CONSOLE__
-#define __C_CONSOLE__
+#ifndef __ARRAY_VIEW__
+#define __ARRAY_VIEW__
 
-namespace console
+#include <array>
+#include <cstddef>
+
+#include "doomtype.h"
+
+namespace theta
 {
 
-void vprintf(const char* format, va_list args);
-void printf(const char* format, ...);
+class ArrayView
+{
+private:
+    const byte* data = nullptr;
+    std::size_t size;
+public:
+    // Initialize array view with array of arbitrary size.
+    template <std::size_t SIZE>
+    ArrayView(std::array<byte, SIZE>& a)
+        : data(a.data()), size(a.size()) { }
 
-void Draw();
+    const byte* GetData();
+    std::size_t GetSize();
+};
 
 }
 

@@ -37,7 +37,9 @@ target_link_libraries("${PROGRAM_PREFIX}server"
 
 set(GAME_SOURCE_FILES
     aes_prng.cpp      aes_prng.h
+    array_view.cpp    array_view.h
     c_console.cpp     c_console.h
+    c_font.cpp        c_font.h
     d_event.cpp       d_event.h
                     doomkeys.h
                     doomtype.h

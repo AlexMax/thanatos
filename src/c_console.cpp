@@ -19,8 +19,12 @@
 #include <array>
 
 #include "c_console.h"
+#include "c_font.h"
 
 #include "m_misc.h"
+#include "w_wad.h"
+#include "i_video.h"
+#include "v_video.h"
 
 namespace console
 {
@@ -37,6 +41,9 @@ public:
     static Buffer& Buffer::Instance();
     void AppendLines(const char* str);
     void Clear();
+    const std::string& GetLast() {
+        return this->line_buffer.at(this->tail);
+    }
 };
 
 // Get the singleton instance of the class
@@ -116,6 +123,41 @@ void vprintf(const char* format, va_list args)
 
     va_end(args_again);
     free(line);
+}
+
+// Draw the console to the screen.
+void Draw()
+{
+    V_DrawFilledBox(0, 0, SCREENWIDTH, SCREENHEIGHT / 2, 0);
+
+    auto buffer = Buffer::Instance();
+    auto line = buffer.GetLast();
+
+    int x = 0, y = 0;
+    for (char& c : line)
+    {
+        Font::const_iterator it = ConsoleFont.find(c);
+        if (it == ConsoleFont.end())
+        {
+            continue;
+        }
+
+        auto letter = it->second;
+        patch_t* patch = const_cast<patch_t*>(reinterpret_cast<const patch_t*>(letter.GetData()));
+        if (SCREENWIDTH - patch->width < x)
+        {
+            x = 0;
+            y += patch->height;
+        }
+
+        if (SCREENHEIGHT / 2 - patch->height < y)
+        {
+            return;
+        }
+
+        V_DrawPatchDirect(x, y, patch);
+        x += patch->width;
+    }
 }
 
 }

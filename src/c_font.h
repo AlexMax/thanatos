@@ -12,19 +12,22 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//     Console.
+//     Console font.
 //
 
-#ifndef __C_CONSOLE__
-#define __C_CONSOLE__
+#ifndef __C_FONT__
+#define __C_FONT__
+
+#include <unordered_map>
+
+#include "array_view.h"
+#include "doomtype.h"
 
 namespace console
 {
 
-void vprintf(const char* format, va_list args);
-void printf(const char* format, ...);
-
-void Draw();
+typedef std::unordered_map<byte, theta::ArrayView> Font;
+extern Font ConsoleFont;
 
 }
 
