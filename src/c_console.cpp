@@ -37,13 +37,28 @@ private:
     size_t head;
     size_t tail;
 public:
+    class const_iterator;
     Buffer() : head(0), tail(0) { };
-    static Buffer& Buffer::Instance();
+    static Buffer& Instance();
     void AppendLines(const char* str);
     void Clear();
     const std::string& GetLast() {
         return this->line_buffer.at(this->tail);
     }
+    const_iterator begin() const;
+    const_iterator end() const;
+};
+
+class Buffer::const_iterator
+{
+private:
+    const Buffer* buffer;
+    size_t index;
+public:
+    bool operator!=(const const_iterator &b) const;
+    const_iterator& operator++();
+    const std::string& operator*() const;
+    const_iterator(const Buffer* buffer, size_t index) : buffer(buffer), index(index) { }
 };
 
 // Get the singleton instance of the class
@@ -99,6 +114,45 @@ void Buffer::Clear()
     this->line_buffer.at(0) = "";
 }
 
+// Begin iterator
+Buffer::const_iterator Buffer::begin() const
+{
+    return const_iterator(this, 0);
+}
+
+// End iterator
+Buffer::const_iterator Buffer::end() const
+{
+    // Our buffer always grows and never shrinks, so the only time
+    // we will ever have a partway-filled buffer is if the tail
+    // hasn't moved yet.
+    if (tail == 0)
+    {
+        return const_iterator(this, this->head);
+    }
+    else
+    {
+        return const_iterator(this, this->line_buffer.size());
+    }
+}
+
+bool Buffer::const_iterator::operator!=(const const_iterator &b) const
+{
+    return this->index != b.index;
+}
+
+Buffer::const_iterator& Buffer::const_iterator::operator++()
+{
+    this->index++;
+    return *this;
+}
+
+const std::string& Buffer::const_iterator::operator*() const
+{
+    size_t index = this->buffer->tail + this->index % this->buffer->line_buffer.size();
+    return this->buffer->line_buffer[index];
+}
+
 // Append the printed string to the console buffer.
 void printf(const char* format, ...)
 {
@@ -113,7 +167,8 @@ void vprintf(const char* format, va_list args)
 {
     // WARNING: This function relies upon a C99-conforming vsnprintf().  Do
     //          not replace it with _vsnprintf or M_vsnprintf.
-    va_list args_again = va_copy(args_again, args);
+    va_list args_again;
+    va_copy(args_again, args);
 
     int size = vsnprintf(NULL, 0, format, args) + 1;
     char* line = static_cast<char*>(malloc(size));
@@ -131,32 +186,43 @@ void Draw()
     V_DrawFilledBox(0, 0, SCREENWIDTH, SCREENHEIGHT / 2, 0);
 
     auto buffer = Buffer::Instance();
-    auto line = buffer.GetLast();
 
     int x = 0, y = 0;
-    for (char& c : line)
+    for (const std::string& line : buffer)
     {
-        Font::const_iterator it = ConsoleFont.find(c);
-        if (it == ConsoleFont.end())
+        if (line.empty())
         {
             continue;
         }
 
-        auto letter = it->second;
-        patch_t* patch = const_cast<patch_t*>(reinterpret_cast<const patch_t*>(letter.GetData()));
-        if (SCREENWIDTH - patch->width < x)
+        for (const char& c : line)
         {
-            x = 0;
-            y += patch->height;
+            Font::const_iterator it = ConsoleFont.find(c);
+            if (it == ConsoleFont.end())
+            {
+                continue;
+            }
+
+            auto letter = it->second;
+            patch_t* patch = const_cast<patch_t*>(reinterpret_cast<const patch_t*>(letter.GetData()));
+
+            if (SCREENWIDTH - patch->width < x)
+            {
+                x = 0;
+                y += patch->height;
+            }
+
+            if (SCREENHEIGHT / 2 - patch->height < y)
+            {
+                return;
+            }
+
+            V_DrawPatchDirect(x, y, patch);
+            x += patch->width;
         }
 
-        if (SCREENHEIGHT / 2 - patch->height < y)
-        {
-            return;
-        }
-
-        V_DrawPatchDirect(x, y, patch);
-        x += patch->width;
+        y += 8;
+        x = 0;
     }
 }
 
