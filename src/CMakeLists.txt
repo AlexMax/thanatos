@@ -48,6 +48,7 @@ set(GAME_SOURCE_FILES
     d_mode.cpp        d_mode.h
                     d_ticcmd.h
     deh_str.cpp       deh_str.h
+    draw_list.cpp     draw_list.h
     gusconf.cpp       gusconf.h
     i_cdmus.cpp       i_cdmus.h
     i_input.cpp       i_input.h
