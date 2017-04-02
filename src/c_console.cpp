@@ -24,6 +24,7 @@
 
 #include "m_misc.h"
 #include "w_wad.h"
+#include "i_timer.h"
 #include "i_video.h"
 #include "v_video.h"
 #include "draw_list.h"
@@ -262,9 +263,10 @@ void Input::DeleteChar()
 // Move the cursor forwards.
 void Input::CursorForward()
 {
-    if (this->cursor_position <= this->line.size())
+    if (this->cursor_position < this->line.size())
     {
         this->cursor_position += 1;
+        this->line_drawer.reset();
     }
 }
 
@@ -274,6 +276,7 @@ void Input::CursorBack()
     if (this->cursor_position != 0)
     {
         this->cursor_position -= 1;
+        this->line_drawer.reset();
     }
 }
 
@@ -287,10 +290,19 @@ const video::DrawList* Input::GetDrawer(int width)
 
         // Add a prompt to the drawer.
         std::string line = this->line;
-        line.insert(0, "> ");
+        line.insert(line.begin(), '>');
 
-        for (const char& c : line)
+        // If the cursor is at the end of the line, force a space so we
+        // have room for the cursor.
+        if (this->cursor_position == line.size() - 1)
         {
+            line.push_back(' ');
+        }
+
+        for (std::string::const_iterator it = line.begin();it != line.end();++it)
+        {
+            const char& c = *it;
+
             patch_t* patch = nullptr;
             Font::const_iterator fit = ConsoleFont.find(c);
             if (fit != ConsoleFont.end())
@@ -314,6 +326,22 @@ const video::DrawList* Input::GetDrawer(int width)
             }
 
             drawer.Add(V_DrawPatchDirect, patch, dx, dy);
+
+            // Handle cursor.  It's not part of the font.
+            if (line.begin() + 1 + this->cursor_position == it)
+            {
+                drawer.Add([](int x, int y, patch_t*) {
+                    // VGA cursors changed state from blinking to not blinking
+                    // once every 16 vertical syncs.  Assuming 60fps, this means
+                    // the blink changes once every 266.7ms.
+                    if (I_GetTimeMS() % 532 < 266)
+                    {
+                        // TODO: Size cursor based on space.
+                        V_DrawFilledBox(x, y + 6, 8, 2, 0x5a);
+                    }
+                }, nullptr, dx, dy);
+            }
+
             dx += patch->width;
 
             if (dx > max_width)
@@ -505,9 +533,9 @@ boolean Responder(event_t* ev)
             return true;
         }
 
-        if (ev->data2 >= 32 && ev->data2 <= 126)
+        if (ev->data3 >= 32 && ev->data3 <= 126)
         {
-            input.AddChar(ev->data2);
+            input.AddChar(ev->data3);
             return true;
         }
 
@@ -524,8 +552,6 @@ boolean Responder(event_t* ev)
             alt_held = false;
             return true;
         }
-
-        console::printf("^: %d %d %d %d\n", ev->data1, ev->data2, ev->data3, ev->data4);
 
         return true;
     }
