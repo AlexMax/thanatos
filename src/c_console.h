@@ -18,6 +18,8 @@
 #ifndef __C_CONSOLE__
 #define __C_CONSOLE__
 
+#include "d_event.h"
+
 namespace console
 {
 
@@ -25,6 +27,7 @@ void vprintf(const char* format, va_list args);
 void printf(const char* format, ...);
 
 void Draw();
+boolean Responder(event_t* ev);
 
 }
 

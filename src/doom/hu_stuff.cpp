@@ -38,6 +38,8 @@
 
 #include "doomstat.h"
 
+#include "c_console.h"
+
 // Data.
 #include "dstrings.h"
 #include "sounds.h"
@@ -471,6 +473,9 @@ void HU_Ticker(void)
 	if ((plr->message && !message_nottobefuckedwith)
 	    || (plr->message && message_dontfuckwithme))
 	{
+            // Print messages to console.
+            console::printf("%s\n", plr->message);
+
 	    HUlib_addMessageToSText(&w_message, 0, plr->message);
 	    plr->message = 0;
 	    message_on = true;

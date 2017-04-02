@@ -174,6 +174,11 @@ int key_menu_incscreen = KEY_EQUALS;
 int key_menu_decscreen = KEY_MINUS;
 int key_menu_screenshot = 0;
 
+// Open the console
+
+int key_console_activate = '`';
+int key_console_deactivate = KEY_ESCAPE;
+
 //
 // Joystick controls
 //
@@ -373,6 +378,9 @@ void M_BindMenuControls(void)
     M_BindIntVariable("key_menu_screenshot",&key_menu_screenshot);
     M_BindIntVariable("key_demo_quit",      &key_demo_quit);
     M_BindIntVariable("key_spy",            &key_spy);
+
+    M_BindIntVariable("key_console_activate", &key_console_activate);
+    M_BindIntVariable("key_console_deactivate", &key_console_deactivate);
 }
 
 void M_BindChatControls(unsigned int num_players)

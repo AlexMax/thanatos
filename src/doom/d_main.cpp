@@ -146,6 +146,10 @@ void D_ProcessEvents (void)
 	
     while ((ev = D_PopEvent()) != NULL)
     {
+        if (console::Responder(ev))
+        {
+            continue;
+        }
 	if (M_Responder (ev))
 	    continue;               // menu ate the event
 	G_Responder (ev);
@@ -325,6 +329,7 @@ void D_Display (void)
 	done = wipe_ScreenWipe(wipe_Melt
 			       , 0, 0, SCREENWIDTH, SCREENHEIGHT, tics);
 	I_UpdateNoBlit ();
+        console::Draw();
 	M_Drawer ();                            // menu is drawn even on top of wipes
 	I_FinishUpdate ();                      // page flip or blit buffer
     } while (!done);

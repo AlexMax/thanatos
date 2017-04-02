@@ -30,16 +30,16 @@ void DrawList::Add(DrawFunction func, patch_t* patch, int x, int y)
 }
 
 // Draw the drawlist at a specific x, y offset.
-void DrawList::Draw(int x, int y)
+void DrawList::Draw(int x, int y) const
 {
-    for (DrawEdict& edict : this->edicts)
+    for (const DrawEdict& edict : this->edicts)
     {
         edict.drawer(x + edict.x, y + edict.y, edict.patch);
     }
 }
 
 // Get the total width of the drawlist.
-int DrawList::GetWidth()
+int DrawList::GetWidth() const
 {
     return this->width;
 }
@@ -52,7 +52,7 @@ void DrawList::SetWidth(int w)
 }
 
 // Get the total height of the drawlist.
-int DrawList::GetHeight()
+int DrawList::GetHeight() const
 {
     return this->height;
 }

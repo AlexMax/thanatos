@@ -28,8 +28,15 @@
 #include "v_video.h"
 #include "draw_list.h"
 
+// event handling
+#include "doomkeys.h"
+#include "m_controls.h"
+
 namespace console
 {
+
+// True if the console is active.
+boolean consoleactive = false;
 
 // A single line of the console, plus its associated DrawList.
 //
@@ -71,7 +78,7 @@ public:
     iterator(Buffer* buffer, size_t index) : buffer(buffer), index(index) { }
 };
 
-// Get the singleton instance of the class
+// Get the singleton instance of the class.
 Buffer& Buffer::Instance()
 {
     static Buffer singleton;
@@ -171,6 +178,164 @@ BufferLine& Buffer::iterator::operator*()
     return this->buffer->line_buffer[index];
 }
 
+// Buffer to store the input line.
+class Input
+{
+private:
+    std::size_t cursor_position;
+    std::string line;
+    std::unique_ptr<video::DrawList> line_drawer;
+public:
+    static Input& Instance();
+    Input() : cursor_position(0), line(""), line_drawer(nullptr) {}
+    void AddChar(char c);
+    void BackspaceChar();
+    void DeleteChar();
+    void CursorForward();
+    void CursorBack();
+    const video::DrawList* GetDrawer(int width);
+};
+
+// Get the singleton instance of the class.
+Input& Input::Instance()
+{
+    static Input singleton;
+    return singleton;
+}
+
+// Add a character to the line at the current cursor position.
+void Input::AddChar(char c)
+{
+    if (this->cursor_position == this->line.size())
+    {
+        this->line.push_back(c);
+    }
+    else
+    {
+        auto it = this->line.begin() + this->cursor_position;
+        this->line.insert(it, c);
+    }
+
+    this->cursor_position += 1;
+    this->line_drawer.reset();
+}
+
+// Backspace a character out of the line to the left of the cursor.
+void Input::BackspaceChar()
+{
+    if (this->cursor_position == 0)
+    {
+        return;
+    }
+    else if (this->cursor_position == this->line.size())
+    {
+        this->line.pop_back();
+    }
+    else
+    {
+        this->line.erase(this->cursor_position - 1, 1);
+    }
+
+    this->cursor_position -= 1;
+    this->line_drawer.reset();
+}
+
+// Delete a character out of the line to the right of the cursor.
+void Input::DeleteChar()
+{
+    if (this->cursor_position == this->line.size())
+    {
+        return;
+    }
+    else if (this->cursor_position == this->line.size() - 1)
+    {
+        this->line.pop_back();
+    }
+    else
+    {
+        this->line.erase(this->cursor_position, 1);
+    }
+
+    this->line_drawer.reset();
+}
+
+// Move the cursor forwards.
+void Input::CursorForward()
+{
+    if (this->cursor_position <= this->line.size())
+    {
+        this->cursor_position += 1;
+    }
+}
+
+// Move the cursor backwards.
+void Input::CursorBack()
+{
+    if (this->cursor_position != 0)
+    {
+        this->cursor_position -= 1;
+    }
+}
+
+// Return a const pointer to a drawer.
+const video::DrawList* Input::GetDrawer(int width)
+{
+    if (this->line_drawer == nullptr)
+    {
+        auto drawer = video::DrawList();
+        int dx = 0, dy = 0, max_width = 0, max_line_height = 0;
+
+        // Add a prompt to the drawer.
+        std::string line = this->line;
+        line.insert(0, "> ");
+
+        for (const char& c : line)
+        {
+            patch_t* patch = nullptr;
+            Font::const_iterator fit = ConsoleFont.find(c);
+            if (fit != ConsoleFont.end())
+            {
+                auto letter = fit->second;
+                patch = const_cast<patch_t*>(reinterpret_cast<const patch_t*>(letter.GetData()));
+            }
+            else
+            {
+                // Use space as fallback.  If that doesn't work, crash.
+                auto letter = ConsoleFont.at(32);
+                patch = const_cast<patch_t*>(reinterpret_cast<const patch_t*>(letter.GetData()));
+            }
+
+            if (patch->width + dx > width)
+            {
+                // Force newline.
+                dx = 0;
+                dy += max_line_height;
+                max_line_height = 0;
+            }
+
+            drawer.Add(V_DrawPatchDirect, patch, dx, dy);
+            dx += patch->width;
+
+            if (dx > max_width)
+            {
+                max_width = dx;
+            }
+            if (patch->height >= max_line_height)
+            {
+                max_line_height = patch->height;
+            }
+        }
+
+        drawer.SetWidth(max_width);
+        drawer.SetHeight(dy + max_line_height);
+
+        // DrawList constructed, save it.
+        this->line_drawer = std::make_unique<video::DrawList>(drawer);
+    }
+
+    return this->line_drawer.get();
+}
+
 // Append the printed string to the console buffer.
 void printf(const char* format, ...)
 {
@@ -201,12 +366,22 @@ void vprintf(const char* format, va_list args)
 // Draw the console to the screen.
 void Draw()
 {
+    if (!consoleactive)
+    {
+        return;
+    }
+
     V_DrawFilledBox(0, 0, SCREENWIDTH, SCREENHEIGHT / 2, 0);
+    int cony = (SCREENHEIGHT / 2);
 
+    // Draw our input line.
+    auto& input = Input::Instance();
+    auto drawer = input.GetDrawer(SCREENWIDTH);
+    cony -= drawer->GetHeight();
+    drawer->Draw(0, cony);
+
+    // Start at the end of the backbuffer, and draw backwards.
     auto& buffer = Buffer::Instance();
-    int cony = (SCREENHEIGHT / 2) - 8;
-
-    // Start at the end, and draw backwards.
     for (auto it = buffer.end();it != buffer.begin();)
     {
         --it;
@@ -258,7 +433,7 @@ void Draw()
             drawer.SetWidth(max_width);
             drawer.SetHeight(y + max_line_height);
 
-            // DrawList constructed, assign it.
+            // DrawList constructed, save it.
             line.drawer = std::make_unique<video::DrawList>(drawer);
         }
 
@@ -271,6 +446,91 @@ void Draw()
         line.drawer->Draw(0, cony - line.drawer->GetHeight());
         cony -= line.drawer->GetHeight();
     }
+}
+
+// Respond to keypresses.
+//
+// Returns true if responder swalloed keypress.
+//
+// TODO: Should we be using I_StartTextInput?
+boolean Responder(event_t* ev)
+{
+    static boolean ctrl_held = false;
+    static boolean alt_held = false;
+
+    // Turn on the console.
+    if (ev->type == ev_keydown && ev->data2 == key_console_activate)
+    {
+        consoleactive = true;
+        return true;
+    }
+
+    // If the console isn't enabled, there is nothing to do here.
+    if (!consoleactive)
+    {
+        return false;
+    }
+
+    if (ev->type == ev_keydown)
+    {
+        // Turn off the console.
+        if (ev->data1 == key_console_deactivate)
+        {
+            consoleactive = false;
+            return true;
+        }
+
+        auto& input = Input::Instance();
+
+        // Handle hardcoded keys.
+        switch (ev->data1)
+        {
+        case KEY_RCTRL:
+            ctrl_held = true;
+            return true;
+        case KEY_RALT:
+            alt_held = true;
+            return true;
+        case KEY_LEFTARROW:
+            input.CursorBack();
+            return true;
+        case KEY_RIGHTARROW:
+            input.CursorForward();
+            return true;
+        case KEY_BACKSPACE:
+            input.BackspaceChar();
+            return true;
+        case KEY_DEL:
+            input.DeleteChar();
+            return true;
+        }
+
+        if (ev->data2 >= 32 && ev->data2 <= 126)
+        {
+            input.AddChar(ev->data2);
+            return true;
+        }
+
+        return true;
+    }
+    else if (ev->type == ev_keyup)
+    {
+        switch (ev->data1)
+        {
+        case KEY_RCTRL:
+            ctrl_held = false;
+            return true;
+        case KEY_RALT:
+            alt_held = false;
+            return true;
+        }
+
+        console::printf("^: %d %d %d %d\n", ev->data1, ev->data2, ev->data3, ev->data4);
+
+        return true;
+    }
+
+    return false;
 }
 
 }

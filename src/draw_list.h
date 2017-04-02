@@ -50,10 +50,10 @@ private:
     int height;
 public:
     void Add(DrawFunction func, patch_t* patch, int x, int y);
-    void Draw(int x, int y);
-    int GetWidth();
+    void Draw(int x, int y) const;
+    int GetWidth() const;
     void SetWidth(int w);
-    int GetHeight();
+    int GetHeight() const;
     void SetHeight(int h);
     void Clear();
 };
