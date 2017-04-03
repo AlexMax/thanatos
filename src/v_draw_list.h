@@ -16,8 +16,8 @@
 //     iterated over quickly.
 //
 
-#ifndef __DRAW_LIST__
-#define __DRAW_LIST__
+#ifndef __V_DRAW_LIST__
+#define __V_DRAW_LIST__
 
 #include <functional>
 #include <vector>
