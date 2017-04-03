@@ -48,7 +48,6 @@ set(GAME_SOURCE_FILES
     d_mode.cpp        d_mode.h
                     d_ticcmd.h
     deh_str.cpp       deh_str.h
-    draw_list.cpp     draw_list.h
     gusconf.cpp       gusconf.h
     i_cdmus.cpp       i_cdmus.h
     i_input.cpp       i_input.h
@@ -82,6 +81,7 @@ set(GAME_SOURCE_FILES
     memio.cpp         memio.h
     tables.cpp        tables.h
     v_diskicon.cpp    v_diskicon.h
+    v_draw_list.cpp   v_draw_list.h
     v_video.cpp       v_video.h
                     v_patch.h
     w_checksum.cpp    w_checksum.h

@@ -26,8 +26,8 @@
 #include "w_wad.h"
 #include "i_timer.h"
 #include "i_video.h"
+#include "v_draw_list.h"
 #include "v_video.h"
-#include "draw_list.h"
 
 // event handling
 #include "doomkeys.h"
