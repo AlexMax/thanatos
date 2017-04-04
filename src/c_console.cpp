@@ -20,8 +20,9 @@
 #include <array>
 
 #include "c_console.h"
-#include "c_font.h"
 
+#include "c_command.h"
+#include "c_font.h"
 #include "m_misc.h"
 #include "w_wad.h"
 #include "i_timer.h"
@@ -194,7 +195,9 @@ public:
     void DeleteChar();
     void CursorForward();
     void CursorBack();
+    void Clear();
     const video::DrawList* GetDrawer(int width);
+    const std::string& GetLine() const;
 };
 
 // Get the singleton instance of the class.
@@ -280,6 +283,14 @@ void Input::CursorBack()
     }
 }
 
+// Clear the input line completely.
+void Input::Clear()
+{
+    this->line.clear();
+    this->cursor_position = 0;
+    this->line_drawer.reset();
+}
+
 // Return a const pointer to a drawer.
 const video::DrawList* Input::GetDrawer(int width)
 {
@@ -362,6 +373,11 @@ const video::DrawList* Input::GetDrawer(int width)
     }
 
     return this->line_drawer.get();
+}
+
+const std::string& Input::GetLine() const
+{
+    return this->line;
 }
 
 // Append the printed string to the console buffer.
@@ -530,6 +546,11 @@ boolean Responder(event_t* ev)
             return true;
         case KEY_DEL:
             input.DeleteChar();
+            return true;
+        case KEY_ENTER:
+            console::printf(">%s\n", input.GetLine().c_str());
+            Commands::Instance().Execute(input.GetLine());
+            input.Clear();
             return true;
         }
 
