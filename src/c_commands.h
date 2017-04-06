@@ -31,7 +31,7 @@ typedef std::function<void(CommandArguments)> CommandImplementation;
 
 class Commands
 {
-    std::unordered_map<const char*, CommandImplementation> command_map;
+    std::unordered_map<std::string, CommandImplementation> command_map;
 public:
     static Commands& Instance();
     void Add(const char* name, CommandImplementation func);

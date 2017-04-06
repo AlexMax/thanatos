@@ -29,6 +29,22 @@ namespace console
 Commands& Commands::Instance()
 {
     static Commands singleton;
+
+    // FIXME: Put this in a real initialization function.
+    singleton.Add("get", [](CommandArguments args) {
+        if (args.size() < 2)
+        {
+            console::printf("get <variable>\n");
+        }
+    });
+
+    singleton.Add("set", [](CommandArguments args) {
+        if (args.size() < 3)
+        {
+            console::printf("set <variable> <value>\n");
+        }
+    });
+
     return singleton;
 }
 
@@ -149,10 +165,20 @@ void Commands::Execute(const std::string& line)
         args.push_back(arg);
     }
 
-    for (auto it = args.begin();it != args.end();++it)
+    // Find a command associated with argument 0.
+    if (args.size() < 1)
     {
-        console::printf("arg[%d] = %s\n", it - args.begin(), it->c_str());
+        return;
     }
+    auto cmd_iter = this->command_map.find(args.at(0));
+    if (cmd_iter == this->command_map.end())
+    {
+        console::printf("error: Command not found.\n");
+        return;
+    }
+
+    // Run the command.
+    cmd_iter->second(args);
 }
 
 }
