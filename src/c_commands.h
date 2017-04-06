@@ -15,8 +15,8 @@
 //     Console command.
 //
 
-#ifndef __C_COMMAND__
-#define __C_COMMAND__
+#ifndef __C_COMMANDS__
+#define __C_COMMANDS__
 
 #include <functional>
 #include <string>

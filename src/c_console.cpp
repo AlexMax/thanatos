@@ -21,7 +21,7 @@
 
 #include "c_console.h"
 
-#include "c_command.h"
+#include "c_commands.h"
 #include "c_font.h"
 #include "m_misc.h"
 #include "w_wad.h"

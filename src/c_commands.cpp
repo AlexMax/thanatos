@@ -17,7 +17,7 @@
 
 #include <unordered_map>
 
-#include "c_command.h"
+#include "c_commands.h"
 
 #include "c_console.h"
 #include "doomtype.h"
