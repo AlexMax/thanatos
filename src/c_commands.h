@@ -34,6 +34,7 @@ class Commands
     std::unordered_map<std::string, CommandImplementation> command_map;
 public:
     static Commands& Instance();
+    Commands();
     void Add(const char* name, CommandImplementation func);
     void Execute(const std::string& line);
 };

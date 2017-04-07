@@ -25,28 +25,34 @@
 namespace console
 {
 
+static void CmdGet(CommandArguments args)
+{
+    if (args.size() < 2)
+    {
+        console::printf("get <variable>\n");
+    }
+}
+
+static void CmdSet(CommandArguments args)
+{
+    if (args.size() < 3)
+    {
+        console::printf("set <variable> <value>\n");
+    }
+}
+
 // Get the global commands instance.
 Commands& Commands::Instance()
 {
     static Commands singleton;
-
-    // FIXME: Put this in a real initialization function.
-    singleton.Add("get", [](CommandArguments args) {
-        if (args.size() < 2)
-        {
-            console::printf("get <variable>\n");
-        }
-    });
-
-    singleton.Add("set", [](CommandArguments args) {
-        if (args.size() < 3)
-        {
-            console::printf("set <variable> <value>\n");
-        }
-    });
-
     return singleton;
 }
+
+// Initialize console commands.
+Commands::Commands() : command_map({
+    { "get", CmdGet },
+    { "set", CmdSet }
+}) { }
 
 // Add a new command to the console.
 void Commands::Add(const char* name, CommandImplementation func)
