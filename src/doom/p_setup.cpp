@@ -677,7 +677,7 @@ static void PadRejectArray(byte *array, unsigned int len)
 
     unsigned int rejectpad[4] =
     {
-        ((totallines * 4 + 3) & ~3) + 24,     // Size
+        (unsigned int)((totallines * 4 + 3) & ~3) + 24,     // Size
         0,                                    // Part of z_zone block header
         50,                                   // PU_LEVEL
         0x1d4a11                              // DOOM_CONST_ZONEID
