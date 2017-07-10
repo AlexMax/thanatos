@@ -54,6 +54,8 @@ if(SAMPLERATE_FOUND)
     include_directories(${SAMPLERATE_INCLUDE_DIR})
     add_definitions(${SAMPLERATE_DEFINITIONS})
 endif()
+
+include(CheckLibraryExists)
 check_library_exists(m log "" HAVE_LIBM)
 
 set(WINDOWS_RC_VERSION
