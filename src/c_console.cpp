@@ -74,7 +74,7 @@ private:
     Buffer* buffer;
     size_t index;
 public:
-    bool operator!=(iterator &b);
+    bool operator!=(const iterator& b);
     iterator& operator++();
     iterator& operator--();
     BufferLine& operator*();
@@ -158,7 +158,7 @@ Buffer::iterator Buffer::end()
     }
 }
 
-bool Buffer::iterator::operator!=(iterator &b)
+bool Buffer::iterator::operator!=(const iterator& b)
 {
     return this->index != b.index;
 }
