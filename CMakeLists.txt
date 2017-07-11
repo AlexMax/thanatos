@@ -26,6 +26,7 @@ else()
     # If this is gcc, we have some options we'd like to turn on.  Turn on 
     # optimisation and debugging symbols.
     add_compile_options(-Wall -Wredundant-decls)
+    add_compile_options(-std=c++14)
 endif()
 
 find_package(SDL2 2.0.1)
@@ -54,6 +55,8 @@ if(SAMPLERATE_FOUND)
     include_directories(${SAMPLERATE_INCLUDE_DIR})
     add_definitions(${SAMPLERATE_DEFINITIONS})
 endif()
+
+include(CheckLibraryExists)
 check_library_exists(m log "" HAVE_LIBM)
 
 set(WINDOWS_RC_VERSION

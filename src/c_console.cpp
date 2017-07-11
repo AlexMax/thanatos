@@ -18,6 +18,7 @@
 #include <memory>
 #include <string>
 #include <array>
+#include <stdlib.h> // malloc,free
 
 #include "c_console.h"
 
