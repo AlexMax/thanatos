@@ -75,6 +75,7 @@
 
 #include "d_main.h"
 #include "c_console.h"
+#include "sc_main.h"
 
 //
 // D-DoomLoop()
@@ -1205,6 +1206,9 @@ void D_DoomMain (void)
     // print banner
 
     I_PrintBanner(PACKAGE_STRING);
+
+    printf("script::Init: Init scripting.\n");
+    script::Init();
 
     DEH_printf("Z_Init: Init zone memory allocation daemon. \n");
     Z_Init ();

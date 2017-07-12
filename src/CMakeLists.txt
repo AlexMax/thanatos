@@ -30,6 +30,9 @@ set(DEDSERV_FILES
 
 add_executable("${PROGRAM_PREFIX}server"
     ${COMMON_SOURCE_FILES} ${DEDSERV_FILES})
+if(NOT MSVC)
+    target_compile_options("${PROGRAM_PREFIX}server" PRIVATE -std=c++14)
+endif()
 target_link_libraries("${PROGRAM_PREFIX}server"
     SDL2::SDL2 SDL2::net)
 
@@ -78,6 +81,7 @@ set(GAME_SOURCE_FILES
     net_sdl.cpp       net_sdl.h
     net_server.cpp    net_server.h
     net_structrw.cpp  net_structrw.h
+    sc_main.cpp       sc_main.h
     sha1.cpp          sha1.h
     memio.cpp         memio.h
     tables.cpp        tables.h
@@ -122,6 +126,9 @@ else()
     add_executable("${PROGRAM_PREFIX}doom" ${SOURCE_FILES_WITH_DEH})
 endif()
 
+if(NOT MSVC)
+    target_compile_options("${PROGRAM_PREFIX}doom" PRIVATE -std=c++14)
+endif()
 target_link_libraries("${PROGRAM_PREFIX}doom" doom ${EXTRA_LIBS})
 
 if(MSVC)

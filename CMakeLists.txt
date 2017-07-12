@@ -26,7 +26,6 @@ else()
     # If this is gcc, we have some options we'd like to turn on.  Turn on 
     # optimisation and debugging symbols.
     add_compile_options(-Wall -Wredundant-decls)
-    add_compile_options(-std=c++14)
 endif()
 
 find_package(SDL2 2.0.1)
@@ -71,7 +70,7 @@ set(PROGRAM_PREFIX "chocolate-"
 
 configure_file(config.h.in config.h)
 
-foreach(SUBDIR src)
+foreach(SUBDIR lib src)
     add_subdirectory(${SUBDIR})
 endforeach()
 
