@@ -52,7 +52,7 @@ ticcmd_t* I_BaseTiccmd (void);
 // Clean exit, displays sell blurb.
 void I_Quit (void);
 
-void I_Error (char *error, ...);
+void I_Error (const char *error, ...);
 
 void I_Tactile (int on, int off, int total);
 
@@ -70,11 +70,11 @@ void I_BindVariables(void);
 
 // Print startup banner copyright message.
 
-void I_PrintStartupBanner(char *gamedescription);
+void I_PrintStartupBanner(const char *gamedescription);
 
 // Print a centered text banner displaying the given string.
 
-void I_PrintBanner(char *text);
+void I_PrintBanner(const char *text);
 
 // Print a dividing line for startup banners.
 

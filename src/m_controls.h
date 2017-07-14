@@ -122,6 +122,9 @@ extern int key_menu_incscreen;
 extern int key_menu_decscreen;
 extern int key_menu_screenshot;
 
+extern int key_console_activate;
+extern int key_console_deactivate;
+
 extern int mousebfire;
 extern int mousebstrafe;
 extern int mousebforward;

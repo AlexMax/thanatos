@@ -7,26 +7,26 @@ include_directories(${CMAKE_BINARY_DIR})
 # Common source files used by absolutely everything:
 
 set(COMMON_SOURCE_FILES
-    i_main.c
-    i_system.c  i_system.h
-    m_argv.c    m_argv.h
-    m_misc.c    m_misc.h)
+    i_main.cpp
+    i_system.cpp  i_system.h
+    m_argv.cpp    m_argv.h
+    m_misc.cpp    m_misc.h)
 
 # Dedicated server (chocolate-server):
 
 set(DEDSERV_FILES
-    d_dedicated.c
-    d_mode.c        d_mode.h
-    i_timer.c       i_timer.h
-    net_common.c    net_common.h
-    net_dedicated.c net_dedicated.h
-    net_io.c        net_io.h
-    net_packet.c    net_packet.h
-    net_sdl.c       net_sdl.h
-    net_query.c     net_query.h
-    net_server.c    net_server.h
-    net_structrw.c  net_structrw.h
-    z_native.c      z_zone.h)
+    d_dedicated.cpp
+    d_mode.cpp        d_mode.h
+    i_timer.cpp       i_timer.h
+    net_common.cpp    net_common.h
+    net_dedicated.cpp net_dedicated.h
+    net_io.cpp        net_io.h
+    net_packet.cpp    net_packet.h
+    net_sdl.cpp       net_sdl.h
+    net_query.cpp     net_query.h
+    net_server.cpp    net_server.h
+    net_structrw.cpp  net_structrw.h
+    z_native.cpp      z_zone.h)
 
 add_executable("${PROGRAM_PREFIX}server"
     ${COMMON_SOURCE_FILES} ${DEDSERV_FILES})
@@ -36,66 +36,71 @@ target_link_libraries("${PROGRAM_PREFIX}server"
 # Source files used by the game binaries (chocolate-doom, etc.)
 
 set(GAME_SOURCE_FILES
-    aes_prng.c      aes_prng.h
-    d_event.c       d_event.h
+    aes_prng.cpp      aes_prng.h
+    array_view.cpp    array_view.h
+    c_commands.cpp     c_commands.h
+    c_console.cpp     c_console.h
+    c_font.cpp        c_font.h
+    d_event.cpp       d_event.h
                     doomkeys.h
                     doomtype.h
-    d_iwad.c        d_iwad.h
-    d_loop.c        d_loop.h
-    d_mode.c        d_mode.h
+    d_iwad.cpp        d_iwad.h
+    d_loop.cpp        d_loop.h
+    d_mode.cpp        d_mode.h
                     d_ticcmd.h
-    deh_str.c       deh_str.h
-    gusconf.c       gusconf.h
-    i_cdmus.c       i_cdmus.h
-    i_input.c       i_input.h
-    i_joystick.c    i_joystick.h
+    deh_str.cpp       deh_str.h
+    gusconf.cpp       gusconf.h
+    i_cdmus.cpp       i_cdmus.h
+    i_input.cpp       i_input.h
+    i_joystick.cpp    i_joystick.h
                     i_swap.h
-    i_sdlmusic.c
-    i_sdlsound.c
-    i_sound.c       i_sound.h
-    i_timer.c       i_timer.h
-    i_video.c       i_video.h
-    i_videohr.c     i_videohr.h
-    midifile.c      midifile.h
-    mus2mid.c       mus2mid.h
-    m_bbox.c        m_bbox.h
-    m_cheat.c       m_cheat.h
-    m_config.c      m_config.h
-    m_controls.c    m_controls.h
-    m_fixed.c       m_fixed.h
-    net_client.c    net_client.h
-    net_common.c    net_common.h
-    net_dedicated.c net_dedicated.h
+    i_sdlmusic.cpp
+    i_sdlsound.cpp
+    i_sound.cpp       i_sound.h
+    i_timer.cpp       i_timer.h
+    i_video.cpp       i_video.h
+    i_videohr.cpp     i_videohr.h
+    midifile.cpp      midifile.h
+    mus2mid.cpp       mus2mid.h
+    m_bbox.cpp        m_bbox.h
+    m_cheat.cpp       m_cheat.h
+    m_config.cpp      m_config.h
+    m_controls.cpp    m_controls.h
+    m_fixed.cpp       m_fixed.h
+    net_client.cpp    net_client.h
+    net_common.cpp    net_common.h
+    net_dedicated.cpp net_dedicated.h
     net_defs.h
-    net_io.c        net_io.h
-    net_loop.c      net_loop.h
-    net_packet.c    net_packet.h
-    net_query.c     net_query.h
-    net_sdl.c       net_sdl.h
-    net_server.c    net_server.h
-    net_structrw.c  net_structrw.h
-    sha1.c          sha1.h
-    memio.c         memio.h
-    tables.c        tables.h
-    v_diskicon.c    v_diskicon.h
-    v_video.c       v_video.h
+    net_io.cpp        net_io.h
+    net_loop.cpp      net_loop.h
+    net_packet.cpp    net_packet.h
+    net_query.cpp     net_query.h
+    net_sdl.cpp       net_sdl.h
+    net_server.cpp    net_server.h
+    net_structrw.cpp  net_structrw.h
+    sha1.cpp          sha1.h
+    memio.cpp         memio.h
+    tables.cpp        tables.h
+    v_diskicon.cpp    v_diskicon.h
+    v_draw_list.cpp   v_draw_list.h
+    v_video.cpp       v_video.h
                     v_patch.h
-    w_checksum.c    w_checksum.h
-    w_main.c        w_main.h
-    w_wad.c         w_wad.h
-    w_file.c        w_file.h
-    w_file_stdc.c
-    w_file_posix.c
-    w_file_win32.c
-    w_merge.c       w_merge.h
-    z_zone.c        z_zone.h)
+    w_checksum.cpp    w_checksum.h
+    w_main.cpp        w_main.h
+    w_wad.cpp         w_wad.h
+    w_file.cpp        w_file.h
+    w_file_stdc.cpp
+    w_file_posix.cpp
+    w_file_win32.cpp
+    w_merge.cpp       w_merge.h
+    z_zone.cpp        z_zone.h)
 
 set(DEHACKED_SOURCE_FILES
     deh_defs.h
-    deh_io.c        deh_io.h
-    deh_main.c      deh_main.h
-    deh_mapping.c   deh_mapping.h
-    deh_text.c)
+    deh_io.cpp        deh_io.h
+    deh_main.cpp      deh_main.h
+    deh_mapping.cpp   deh_mapping.h
+    deh_text.cpp)
 
 # Some games support dehacked patches, some don't:
 

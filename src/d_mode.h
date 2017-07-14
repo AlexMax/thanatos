@@ -56,6 +56,7 @@ typedef enum
 
 typedef enum
 {
+    exe_null,
     exe_doom_1_2,    // Doom 1.2: shareware and registered
     exe_doom_1_666,  // Doom 1.666: for shareware, registered and commercial
     exe_doom_1_7,    // Doom 1.7/1.7a: "
@@ -102,7 +103,7 @@ boolean D_ValidEpisodeMap(GameMission_t mission, GameMode_t mode,
                           int episode, int map);
 int D_GetNumEpisodes(GameMission_t mission, GameMode_t mode);
 boolean D_IsEpisodeMap(GameMission_t mission);
-char *D_GameMissionString(GameMission_t mission);
+const char *D_GameMissionString(GameMission_t mission);
 
 #endif /* #ifndef __D_MODE__ */
 

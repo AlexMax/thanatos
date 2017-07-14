@@ -63,7 +63,7 @@ void I_ReadScreen (pixel_t* scr);
 
 void I_BeginRead (void);
 
-void I_SetWindowTitle(char *title);
+void I_SetWindowTitle(const char *title);
 
 void I_CheckIsScreensaver(void);
 void I_SetGrabMouseCallback(grabmouse_callback_t func);
@@ -88,7 +88,7 @@ void I_StartTic (void);
 
 void I_EnableLoadingDisk(int xoffs, int yoffs);
 
-extern char *video_driver;
+extern const char *video_driver;
 extern boolean screenvisible;
 
 extern int vanilla_keyboard_mapping;
@@ -104,7 +104,7 @@ extern int integer_scaling;
 extern int vga_porch_flash;
 extern int force_software_renderer;
 
-extern char *window_position;
+extern const char *window_position;
 void I_GetWindowPosition(int *x, int *y, int w, int h);
 
 #endif
