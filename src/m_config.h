@@ -20,6 +20,8 @@
 #ifndef __M_CONFIG__
 #define __M_CONFIG__
 
+#include <string>
+
 #include "doomtype.h"
 
 void M_LoadDefaults(void);
@@ -33,6 +35,7 @@ boolean M_SetVariable(const char *name, const char *value);
 int M_GetIntVariable(char *name);
 const char *M_GetStringVariable(const char *name);
 float M_GetFloatVariable(char *name);
+bool M_NiceGetVariableAsString(const std::string& name, std::string& out);
 void M_SetConfigFilenames(const char *main_config, const char *extra_config);
 const char *M_GetSaveGameDir(const char *iwadname);
 

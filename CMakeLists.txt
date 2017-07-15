@@ -71,7 +71,7 @@ set(PROGRAM_PREFIX "chocolate-"
 
 configure_file(config.h.in config.h)
 
-foreach(SUBDIR src)
+foreach(SUBDIR lib src)
     add_subdirectory(${SUBDIR})
 endforeach()
 

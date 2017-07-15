@@ -68,4 +68,4 @@ add_library(doom STATIC
     wi_stuff.cpp      wi_stuff.h)
 target_include_directories(doom PRIVATE
     ${CMAKE_BINARY_DIR} "${CMAKE_SOURCE_DIR}/src")
-target_link_libraries(doom SDL2::SDL2)
+target_link_libraries(doom SDL2::SDL2 fmt)
