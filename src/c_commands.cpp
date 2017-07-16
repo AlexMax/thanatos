@@ -17,6 +17,8 @@
 
 #include <unordered_map>
 
+#include <stdlib.h> // exit
+
 #include "c_commands.h"
 
 #include "c_console.h"
@@ -63,6 +65,11 @@ static void CmdSet(CommandArguments args)
     }
 }
 
+static void CmdQuit(CommandArguments args)
+{
+    exit(0);
+}
+
 // Get the global commands instance.
 Commands& Commands::Instance()
 {
@@ -73,7 +80,8 @@ Commands& Commands::Instance()
 // Initialize console commands.
 Commands::Commands() : command_map({
     { "get", CmdGet },
-    { "set", CmdSet }
+    { "set", CmdSet },
+    { "quit", CmdQuit },
 }) { }
 
 // Add a new command to the console.
