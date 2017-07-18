@@ -21,6 +21,7 @@
 
 #include "c_console.h"
 #include "doomtype.h"
+#include "m_config.h"
 
 namespace console
 {
@@ -30,14 +31,35 @@ static void CmdGet(CommandArguments args)
     if (args.size() < 2)
     {
         console::printf("get <variable>\n");
+        return;
+    }
+
+    std::string var = args.at(1);
+    std::string data;
+    if (M_NiceGetVariableAsString(args.at(1), data))
+    {
+        M_NiceGetVariableAsString(var, data);
+        console::printf("%s = %s\n", var.c_str(), data.c_str());
+    }
+    else
+    {
+        console::printf("unknown variable: %s\n", var.c_str());
     }
 }
 
+// Command to get a specific configuration variable
 static void CmdSet(CommandArguments args)
 {
     if (args.size() < 3)
     {
         console::printf("set <variable> <value>\n");
+    }
+
+    const char* var = args.at(1).c_str();
+    const char* value = args.at(2).c_str();
+    if (!M_SetVariable(var, value))
+    {
+        console::printf("error: unknown variable %s\n", var);
     }
 }
 
