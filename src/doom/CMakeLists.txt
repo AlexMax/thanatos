@@ -71,4 +71,4 @@ if(NOT MSVC)
 endif()
 target_include_directories(doom PRIVATE
     ${CMAKE_BINARY_DIR} "${CMAKE_SOURCE_DIR}/src")
-target_link_libraries(doom duktape SDL2::SDL2)
+target_link_libraries(doom SDL2::SDL2 duktape fmt)

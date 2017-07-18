@@ -34,7 +34,7 @@ if(NOT MSVC)
     target_compile_options("${PROGRAM_PREFIX}server" PRIVATE -std=c++14)
 endif()
 target_link_libraries("${PROGRAM_PREFIX}server"
-    SDL2::SDL2 SDL2::net)
+    SDL2::SDL2 SDL2::net fmt)
 
 # Source files used by the game binaries (chocolate-doom, etc.)
 
@@ -111,7 +111,7 @@ set(DEHACKED_SOURCE_FILES
 set(SOURCE_FILES ${COMMON_SOURCE_FILES} ${GAME_SOURCE_FILES})
 set(SOURCE_FILES_WITH_DEH ${SOURCE_FILES} ${DEHACKED_SOURCE_FILES})
 
-set(EXTRA_LIBS SDL2::SDL2 SDL2::mixer SDL2::net)
+set(EXTRA_LIBS SDL2::SDL2 SDL2::mixer SDL2::net fmt)
 if(PNG_FOUND)
     list(APPEND EXTRA_LIBS png)
 endif()

@@ -26,6 +26,7 @@
 #include <assert.h>
 
 #include "SDL_filesystem.h"
+#include "fmt/string.h"
 
 #include "config.h"
 
@@ -2155,6 +2156,40 @@ float M_GetFloatVariable(char *name)
     }
 
     return *variable->location.f;
+}
+
+// Get a variable as string - nicely, so to not kill the program.
+
+bool M_NiceGetVariableAsString(const std::string& name, std::string& out)
+{
+    default_t* result = SearchCollection(&doom_defaults, name.c_str());
+    if (result == NULL)
+    {
+        result = SearchCollection(&extra_defaults, name.c_str());
+    }
+    if (result == NULL)
+    {
+        return false;
+    }
+
+    fmt::StringWriter data;
+    switch (result->type)
+    {
+    case DEFAULT_INT:
+    case DEFAULT_INT_HEX:
+    case DEFAULT_KEY:
+        data << *(result->location.i);
+        break;
+    case DEFAULT_STRING:
+        data << *(result->location.s);
+        break;
+    case DEFAULT_FLOAT:
+        data << *(result->location.f);
+        break;
+    }
+
+    data.move_to(out);
+    return true;
 }
 
 // Get the path to the default configuration dir to use, if NULL

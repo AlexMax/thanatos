@@ -18,6 +18,7 @@
 #include <memory>
 #include <string>
 #include <array>
+#include <deque>
 #include <stdlib.h> // malloc,free
 
 #include "c_console.h"
@@ -186,19 +187,28 @@ class Input
 {
 private:
     std::size_t cursor_position;
+    std::deque<std::string> history;
+    std::deque<std::string>::const_iterator history_position;
     std::string line;
     std::unique_ptr<video::DrawList> line_drawer;
 public:
     static Input& Instance();
-    Input() : cursor_position(0), line(""), line_drawer(nullptr) {}
+    Input() :
+        cursor_position(0), history_position(history.end()), line(""),
+        line_drawer(nullptr) {}
     void AddChar(char c);
     void BackspaceChar();
     void DeleteChar();
     void CursorForward();
     void CursorBack();
+    void CursorBegin();
+    void CursorEnd();
+    void HistoryForward();
+    void HistoryBack();
     void Clear();
     const video::DrawList* GetDrawer(int width);
     const std::string& GetLine() const;
+    void AddHistory(const std::string& line);
 };
 
 // Get the singleton instance of the class.
@@ -282,6 +292,78 @@ void Input::CursorBack()
         this->cursor_position -= 1;
         this->line_drawer.reset();
     }
+}
+
+// Move the cursor to the beginning of the line.
+void Input::CursorBegin()
+{
+    if (this->cursor_position != 0)
+    {
+        this->cursor_position = 0;
+        this->line_drawer.reset();
+    }
+}
+
+// Move the cursor to the end of the line.
+void Input::CursorEnd()
+{
+    if (this->cursor_position < this->line.size())
+    {
+        this->cursor_position = this->line.size();
+        this->line_drawer.reset();
+    }
+}
+
+// Go forwards (in time) in history.
+void Input::HistoryForward()
+{
+    if (this->history.size() == 0)
+    {
+        // No history.
+        return;
+    }
+
+    if (this->history_position == this->history.cend())
+    {
+        // Can't go forwards from now.
+        return;
+    }
+
+    this->history_position++;
+
+    // If we're at the end of the history, set to empty line, otherwise set
+    // to history entry.
+    if (this->history_position == this->history.cend())
+    {
+        this->line = "";
+    }
+    else
+    {
+        this->line = *(this->history_position);
+    }
+
+    this->line_drawer.reset();
+    return;
+}
+
+// Go backwards (in time) in history.
+void Input::HistoryBack()
+{
+    if (this->history.size() == 0)
+    {
+        // No history.
+        return;
+    }
+
+    if (this->history_position == this->history.cbegin())
+    {
+        // Can't go backwards from the beginning.
+        return;
+    }
+
+    this->history_position--;
+    this->line = *(this->history_position);
+    this->line_drawer.reset();
 }
 
 // Clear the input line completely.
@@ -379,6 +461,19 @@ const video::DrawList* Input::GetDrawer(int width)
 const std::string& Input::GetLine() const
 {
     return this->line;
+}
+
+// Add data to history
+void Input::AddHistory(const std::string& line)
+{
+    this->history.push_back(line);
+    this->history_position = this->history.end();
+
+    // Ensure we don't use up all of our memory on console history.
+    if (this->history.size() > 1000)
+    {
+        this->history.pop_front();
+    }
 }
 
 // Append the printed string to the console buffer.
@@ -542,6 +637,18 @@ boolean Responder(event_t* ev)
         case KEY_RIGHTARROW:
             input.CursorForward();
             return true;
+        case KEY_UPARROW:
+            input.HistoryBack();
+            return true;
+        case KEY_DOWNARROW:
+            input.HistoryForward();
+            return true;
+        case KEY_HOME:
+            input.CursorBegin();
+            return true;
+        case KEY_END:
+            input.CursorEnd();
+            return true;
         case KEY_BACKSPACE:
             input.BackspaceChar();
             return true;
@@ -551,6 +658,7 @@ boolean Responder(event_t* ev)
         case KEY_ENTER:
             console::printf(">%s\n", input.GetLine().c_str());
             Commands::Instance().Execute(input.GetLine());
+            input.AddHistory(input.GetLine());
             input.Clear();
             return true;
         }
