@@ -20,7 +20,7 @@
 #include <stdlib.h>
 
 #include "SDL.h"
-#include "SDL_opengl.h"
+#include "glad/glad.h"
 
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
@@ -37,6 +37,7 @@
 #include "doomtype.h"
 #include "i_input.h"
 #include "i_joystick.h"
+#include "i_opengl.h"
 #include "i_system.h"
 #include "i_timer.h"
 #include "i_video.h"
@@ -1172,7 +1173,7 @@ static void SetVideoMode(void)
 
     // In windowed mode, the window can be resized while the game is
     // running.
-    window_flags = SDL_WINDOW_RESIZABLE;
+    window_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
 
     // Set the highdpi flag - this makes a big difference on Macs with
     // retina displays, especially when using small window sizes.
@@ -1219,6 +1220,106 @@ static void SetVideoMode(void)
         I_InitWindowTitle();
         I_InitWindowIcon();
     }
+
+    // Do some OpenGL initialization stuff.
+    SDL_GLContext glcontext = SDL_GL_CreateContext(screen);
+
+    gladLoadGL();
+
+    // Vertex Shader
+    const char* vertexShaderSource =
+        "#version 330 core\n\n"
+
+        "layout (location = 0) in vec3 aPos;\n"
+        "layout (location = 1) in vec3 aColor;\n\n"
+
+        "out vec3 testColor;"
+
+        "void main()\n"
+        "{\n"
+        "    gl_Position = vec4(aPos, 1.0);\n"
+        "    testColor = aColor;\n"
+        "}";
+    theta::system::gl::Shader vertexShader(theta::system::gl::Shader::type::vertex);
+    vertexShader.Source(vertexShaderSource);
+    if (!vertexShader.Compile())
+    {
+        I_Error("Vertex Shader Compile Error:\n%s\n", vertexShader.GetLog().c_str());
+    }
+
+    // Fragment Shader
+    const char* fragmentShaderSource =
+        "#version 330 core\n\n"
+
+        "out vec4 FragColor;\n"
+        "in vec3 testColor;\n\n"
+
+        "void main()\n"
+        "{\n"
+            "FragColor = vec4(testColor, 1.0f);\n"
+        "}\n";
+    theta::system::gl::Shader fragmentShader(theta::system::gl::Shader::type::fragment);
+    fragmentShader.Source(fragmentShaderSource);
+    if (!fragmentShader.Compile())
+    {
+        I_Error("Fragment Shader Compile Error:\n%s\n", fragmentShader.GetLog().c_str());
+    }
+
+    // Shader Program
+    theta::system::gl::Program shaderProgram;
+    shaderProgram.Attach(vertexShader);
+    shaderProgram.Attach(fragmentShader);
+    if (!shaderProgram.Link())
+    {
+        I_Error("Shader Program Link Error:\n%s\n", shaderProgram.GetLog().c_str());
+    }
+
+    // VAO + VBO
+    GLfloat vertices[] = {
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+         0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+         0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f
+    };
+
+    theta::system::gl::VertexArrayObject VAO;
+    theta::system::gl::VertexBufferObject VBO;
+
+    glBindVertexArray(VAO.Get());
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO.Get());
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // location 0
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
+    glEnableVertexAttribArray(0);
+
+    // location 1
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    // uncomment this call to draw in wireframe polygons.
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glUseProgram(shaderProgram.GetProgram());
+    glBindVertexArray(VAO.Get());
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glUseProgram(shaderProgram.GetProgram());
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    SDL_GL_SwapWindow(screen);
+
+    abort();
 
     // The SDL_RENDERER_TARGETTEXTURE flag is required to render the
     // intermediate texture into the upscaled texture.

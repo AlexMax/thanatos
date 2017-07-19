@@ -53,6 +53,7 @@ set(GAME_SOURCE_FILES
     i_cdmus.cpp       i_cdmus.h
     i_input.cpp       i_input.h
     i_joystick.cpp    i_joystick.h
+    i_opengl.cpp      i_opengl.h
                     i_swap.h
     i_sdlmusic.cpp
     i_sdlsound.cpp
@@ -107,7 +108,7 @@ set(DEHACKED_SOURCE_FILES
 set(SOURCE_FILES ${COMMON_SOURCE_FILES} ${GAME_SOURCE_FILES})
 set(SOURCE_FILES_WITH_DEH ${SOURCE_FILES} ${DEHACKED_SOURCE_FILES})
 
-set(EXTRA_LIBS SDL2::SDL2 SDL2::mixer SDL2::net fmt)
+set(EXTRA_LIBS SDL2::SDL2 SDL2::mixer SDL2::net fmt glad)
 if(PNG_FOUND)
     list(APPEND EXTRA_LIBS png)
 endif()
