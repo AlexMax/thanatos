@@ -41,6 +41,11 @@ Shader::Shader(type type)
     default:
         I_Error("Unknown shader type");
     }
+
+    if (this->shader == 0)
+    {
+        I_Error("Could not create shader");
+    }
 }
 
 Shader::~Shader()
@@ -67,17 +72,25 @@ bool Shader::Compile()
 }
 
 // Get the shader ID.
-GLuint Shader::GetShader() const
+GLuint Shader::Ref() const
 {
     return this->shader;
 }
 
 // Get the last reported error, if any.
-std::string Shader::GetLog() const
+std::string Shader::Log() const
 {
     char buffer[8192];
     glGetShaderInfoLog(this->shader, sizeof(buffer), NULL, buffer);
     return std::string(buffer);
+}
+
+Program::Program() : program(glCreateProgram())
+{
+    if (this->program == 0)
+    {
+        I_Error("Could not create program");
+    }
 }
 
 Program::~Program()
@@ -88,7 +101,7 @@ Program::~Program()
 // Attach a shader to the shader program.
 void Program::Attach(const Shader& shader)
 {
-    glAttachShader(this->program, shader.GetShader());
+    glAttachShader(this->program, shader.Ref());
 }
 
 // Link the shader program.
@@ -104,47 +117,17 @@ bool Program::Link()
 }
 
 // Get the program ID.
-GLuint Program::GetProgram() const
+GLuint Program::Ref() const
 {
     return this->program;
 }
 
 // Get the last reported error, if any.
-std::string Program::GetLog() const
+std::string Program::Log() const
 {
     char buffer[8192];
     glGetProgramInfoLog(this->program, sizeof(buffer), NULL, buffer);
     return std::string(buffer);
-}
-
-VertexArrayObject::VertexArrayObject()
-{
-    glGenVertexArrays(1, &(this->vao));
-}
-
-VertexArrayObject::~VertexArrayObject()
-{
-    glDeleteBuffers(1, &(this->vao));
-}
-
-GLuint VertexArrayObject::Get() const
-{
-    return this->vao;
-}
-
-VertexBufferObject::VertexBufferObject()
-{
-    glGenBuffers(1, &(this->vbo));
-}
-
-VertexBufferObject::~VertexBufferObject()
-{
-    glDeleteBuffers(1, &(this->vbo));
-}
-
-GLuint VertexBufferObject::Get() const
-{
-    return this->vbo;
 }
 
 }

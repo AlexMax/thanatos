@@ -320,6 +320,9 @@ void I_Error (const char *error, ...)
 
     SDL_Quit();
 
+#if (_WIN32 && _DEBUG)
+    system("pause"); // pause so the console doesn't disappear...
+#endif
     exit(-1);
 }
 

@@ -46,8 +46,8 @@ public:
     ~Shader();
     void Source(const char* source);
     bool Compile();
-    GLuint GetShader() const;
-    std::string GetLog() const;
+    GLuint Ref() const;
+    std::string Log() const;
 };
 
 // An OpenGL Shader Program
@@ -56,35 +56,13 @@ class Program
 private:
     GLuint program;
 public:
-    Program() : program(glCreateProgram()) { }
+    Program();
     Program(const Program &obj) = delete;
     ~Program();
     void Attach(const Shader& shader);
     bool Program::Link();
-    GLuint GetProgram() const;
-    std::string GetLog() const;
-};
-
-class VertexArrayObject
-{
-private:
-    GLuint vao;
-public:
-    VertexArrayObject();
-    VertexArrayObject(const VertexArrayObject &obj) = delete;
-    ~VertexArrayObject();
-    GLuint Get() const;
-};
-
-class VertexBufferObject
-{
-private:
-    GLuint vbo;
-public:
-    VertexBufferObject();
-    VertexBufferObject(const VertexBufferObject &obj) = delete;
-    ~VertexBufferObject();
-    GLuint Get() const;
+    GLuint Ref() const;
+    std::string Log() const;
 };
 
 }

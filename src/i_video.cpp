@@ -809,7 +809,8 @@ void I_FinishUpdate (void)
 
     // Draw!
 
-    SDL_RenderPresent(renderer);
+    SDL_GL_SwapWindow(screen);
+    //SDL_RenderPresent(renderer);
 
     // Restore background and undo the disk indicator, if it was drawn.
     V_RestoreDiskBackground();
@@ -1159,6 +1160,13 @@ void I_GetWindowPosition(int *x, int *y, int w, int h)
     }
 }
 
+static void GLDebug(GLenum source, GLenum type, GLuint id,
+    GLenum severity, GLsizei length, const GLchar* message, const void* param)
+{
+    printf("OGL source: %u, type: %u, id:%u, severity: %u, sizei: %d\n%s\n",
+        source, type, id, severity, length, message);
+}
+
 static void SetVideoMode(void)
 {
     int w, h;
@@ -1225,6 +1233,21 @@ static void SetVideoMode(void)
     SDL_GLContext glcontext = SDL_GL_CreateContext(screen);
 
     gladLoadGL();
+#ifdef _DEBUG
+    if (GL_KHR_debug)
+    {
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback((GLDEBUGPROC)GLDebug, NULL);
+        glDebugMessageControl(
+            GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true
+        );
+    }
+    else
+    {
+        I_Error("Your OpenGL implementation does not support GL_KHR_debug");
+    }
+#endif
 
     // Vertex Shader
     const char* vertexShaderSource =
@@ -1247,28 +1270,30 @@ static void SetVideoMode(void)
     vertexShader.Source(vertexShaderSource);
     if (!vertexShader.Compile())
     {
-        I_Error("Vertex Shader Compile Error:\n%s\n", vertexShader.GetLog().c_str());
+        I_Error("Vertex Shader Compile Error:\n%s\n", vertexShader.Log().c_str());
     }
 
     // Fragment Shader
     const char* fragmentShaderSource =
         "#version 330 core\n\n"
 
-        "out vec4 FragColor;\n"
+        "out vec4 oFragColor;\n"
         "in vec3 testColor;\n"
         "in vec2 testTexCoord;\n\n"
 
-        "uniform sampler2D ourTexture;\n\n"
+        "uniform sampler2D uTexture;\n"
+        "uniform sampler2D uPalette;\n\n"
 
         "void main()\n"
         "{\n"
-            "FragColor = texture(ourTexture, testTexCoord);\n"
+            "vec4 index = texture(uTexture, testTexCoord);\n"
+            "oFragColor = texture(uPalette, vec2(index.x, 0.0));\n"
         "}\n";
     theta::system::gl::Shader fragmentShader(theta::system::gl::Shader::type::fragment);
     fragmentShader.Source(fragmentShaderSource);
     if (!fragmentShader.Compile())
     {
-        I_Error("Fragment Shader Compile Error:\n%s\n", fragmentShader.GetLog().c_str());
+        I_Error("Fragment Shader Compile Error:\n%s\n", fragmentShader.Log().c_str());
     }
 
     // Shader Program
@@ -1277,25 +1302,26 @@ static void SetVideoMode(void)
     shaderProgram.Attach(fragmentShader);
     if (!shaderProgram.Link())
     {
-        I_Error("Shader Program Link Error:\n%s\n", shaderProgram.GetLog().c_str());
+        I_Error("Shader Program Link Error:\n%s\n", shaderProgram.Log().c_str());
     }
 
     glEnable(GL_CULL_FACE);
 
     // VAO + VBO
     GLfloat vertices[] = {
-        0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-        0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+        1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+        1.0f,  1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        -1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
     };
 
-    theta::system::gl::VertexArrayObject VAO;
-    theta::system::gl::VertexBufferObject VBO;
+    GLuint VAOnum;
+    glGenVertexArrays(1, &VAOnum);
+    glBindVertexArray(VAOnum);
 
-    glBindVertexArray(VAO.Get());
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO.Get());
+    GLuint VBOnum;
+    glGenBuffers(1, &VBOnum);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOnum);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // location 0
@@ -1314,27 +1340,45 @@ static void SetVideoMode(void)
     glBindVertexArray(0);
 
     // Texture
-    GLubyte textureData[][3] = {
-        { 0xFF, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0xFF, 0x00 },
-        { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 },
-        { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 },
-        { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 },
-        { 0x00, 0x00, 0xFF }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 },
-    };
+    GLubyte screenTextureData[320 * 200] = { 0 };
+    for (int i = 0;i < sizeof(screenTextureData);i++)
+    {
+        screenTextureData[i] = rand() % 0x100;
+    }
 
+    // Pixel data
     GLuint textureNum;
     glGenTextures(1, &textureNum);
-
     glBindTexture(GL_TEXTURE_2D, textureNum);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, 320, 200, 0, GL_RED, GL_UNSIGNED_BYTE, screenTextureData);
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 5, 5, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
-    glGenerateMipmap(GL_TEXTURE_2D);
+    // Palette
+    GLubyte paletteTextureData[256][3] = { 0 };
+    for (int i = 0;i < 256;i++)
+    {
+        paletteTextureData[i][0] = 255 - i; // red
+        paletteTextureData[i][1] = 0; // green
+        paletteTextureData[i][2] = i; // hot pink....nah, just blue
+    }
+
+    // Palette data
+    GLuint paletteNum;
+    glGenTextures(1, &paletteNum);
+    glBindTexture(GL_TEXTURE_2D, paletteNum);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 256, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, paletteTextureData);
+
+    // Assign texture units
+    glUseProgram(shaderProgram.Ref());
+    glUniform1i(glGetUniformLocation(shaderProgram.Ref(), "uTexture"), 0);
+    glUniform1i(glGetUniformLocation(shaderProgram.Ref(), "uPalette"), 1);
 
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -1342,21 +1386,19 @@ static void SetVideoMode(void)
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureNum);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, paletteNum);
 
-    glUseProgram(shaderProgram.GetProgram());
-    glBindVertexArray(VAO.Get());
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glUseProgram(shaderProgram.GetProgram());
+    glUseProgram(shaderProgram.Ref());
+    glBindVertexArray(VAOnum);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     SDL_GL_SwapWindow(screen);
 
-    abort();
+    system("pause");
+    exit(-1);
 
     // The SDL_RENDERER_TARGETTEXTURE flag is required to render the
     // intermediate texture into the upscaled texture.
