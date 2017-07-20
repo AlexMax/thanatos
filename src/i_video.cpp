@@ -1231,14 +1231,17 @@ static void SetVideoMode(void)
         "#version 330 core\n\n"
 
         "layout (location = 0) in vec3 aPos;\n"
-        "layout (location = 1) in vec3 aColor;\n\n"
+        "layout (location = 1) in vec3 aColor;\n"
+        "layout (location = 2) in vec2 aTexCoord;\n\n"
 
         "out vec3 testColor;"
+        "out vec2 testTexCoord;"
 
         "void main()\n"
         "{\n"
         "    gl_Position = vec4(aPos, 1.0);\n"
         "    testColor = aColor;\n"
+        "    testTexCoord = aTexCoord;\n"
         "}";
     theta::system::gl::Shader vertexShader(theta::system::gl::Shader::type::vertex);
     vertexShader.Source(vertexShaderSource);
@@ -1252,11 +1255,14 @@ static void SetVideoMode(void)
         "#version 330 core\n\n"
 
         "out vec4 FragColor;\n"
-        "in vec3 testColor;\n\n"
+        "in vec3 testColor;\n"
+        "in vec2 testTexCoord;\n\n"
+
+        "uniform sampler2D ourTexture;\n\n"
 
         "void main()\n"
         "{\n"
-            "FragColor = vec4(testColor, 1.0f);\n"
+            "FragColor = texture(ourTexture, testTexCoord);\n"
         "}\n";
     theta::system::gl::Shader fragmentShader(theta::system::gl::Shader::type::fragment);
     fragmentShader.Source(fragmentShaderSource);
@@ -1274,12 +1280,14 @@ static void SetVideoMode(void)
         I_Error("Shader Program Link Error:\n%s\n", shaderProgram.GetLog().c_str());
     }
 
+    glEnable(GL_CULL_FACE);
+
     // VAO + VBO
     GLfloat vertices[] = {
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-         0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-         0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f
+        0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+        0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
     };
 
     theta::system::gl::VertexArrayObject VAO;
@@ -1291,21 +1299,50 @@ static void SetVideoMode(void)
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // location 0
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
     glEnableVertexAttribArray(0);
 
     // location 1
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
+
+    // Location 2
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    // Texture
+    GLubyte textureData[][3] = {
+        { 0xFF, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0xFF, 0x00 },
+        { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 },
+        { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 },
+        { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 },
+        { 0x00, 0x00, 0xFF }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00 },
+    };
+
+    GLuint textureNum;
+    glGenTextures(1, &textureNum);
+
+    glBindTexture(GL_TEXTURE_2D, textureNum);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 5, 5, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    glBindTexture(GL_TEXTURE_2D, textureNum);
 
     glUseProgram(shaderProgram.GetProgram());
     glBindVertexArray(VAO.Get());
