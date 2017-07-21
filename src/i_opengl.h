@@ -20,6 +20,7 @@
 
 #include <string>
 
+#include "SDL.h"
 #include "glad/glad.h"
 
 namespace theta
@@ -63,6 +64,26 @@ public:
     bool Program::Link();
     GLuint Ref() const;
     std::string Log() const;
+};
+
+class Renderer
+{
+private:
+    bool constructed;
+    SDL_GLContext context;
+    GLuint screenProgram;
+    GLuint screenVAO;
+    GLuint screenPixels;
+    GLuint screenPalettes;
+    void constructScreen();
+    static void debugMessage(GLenum source, GLenum type, GLuint id,
+        GLenum severity, GLsizei length, const GLchar* message, const void* param);
+public:
+    Renderer(SDL_Window* window);
+    Renderer(const Renderer&) = delete;
+    Renderer::~Renderer();
+    void Render();
+    void Renderer::Flip(SDL_Window* window);
 };
 
 }

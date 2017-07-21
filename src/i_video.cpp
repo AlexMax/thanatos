@@ -1160,13 +1160,6 @@ void I_GetWindowPosition(int *x, int *y, int w, int h)
     }
 }
 
-static void GLDebug(GLenum source, GLenum type, GLuint id,
-    GLenum severity, GLsizei length, const GLchar* message, const void* param)
-{
-    printf("OGL source: %u, type: %u, id:%u, severity: %u, sizei: %d\n%s\n",
-        source, type, id, severity, length, message);
-}
-
 static void SetVideoMode(void)
 {
     int w, h;
@@ -1230,172 +1223,18 @@ static void SetVideoMode(void)
     }
 
     // Do some OpenGL initialization stuff.
-    SDL_GLContext glcontext = SDL_GL_CreateContext(screen);
-
-    gladLoadGL();
-#ifdef _DEBUG
-    if (GL_KHR_debug)
+    SDL_GL_CreateContext(screen);
+    if (!gladLoadGL())
     {
-        glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        glDebugMessageCallback((GLDEBUGPROC)GLDebug, NULL);
-        glDebugMessageControl(
-            GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true
-        );
-    }
-    else
-    {
-        I_Error("Your OpenGL implementation does not support GL_KHR_debug");
-    }
-#endif
-
-    // Vertex Shader
-    const char* vertexShaderSource =
-        "#version 330 core\n\n"
-
-        "layout (location = 0) in vec3 aPos;\n"
-        "layout (location = 1) in vec3 aColor;\n"
-        "layout (location = 2) in vec2 aTexCoord;\n\n"
-
-        "out vec3 testColor;"
-        "out vec2 testTexCoord;"
-
-        "void main()\n"
-        "{\n"
-        "    gl_Position = vec4(aPos, 1.0);\n"
-        "    testColor = aColor;\n"
-        "    testTexCoord = aTexCoord;\n"
-        "}";
-    theta::system::gl::Shader vertexShader(theta::system::gl::Shader::type::vertex);
-    vertexShader.Source(vertexShaderSource);
-    if (!vertexShader.Compile())
-    {
-        I_Error("Vertex Shader Compile Error:\n%s\n", vertexShader.Log().c_str());
+        I_Error("gladLoadGL failed");
     }
 
-    // Fragment Shader
-    const char* fragmentShaderSource =
-        "#version 330 core\n\n"
-
-        "out vec4 oFragColor;\n"
-        "in vec3 testColor;\n"
-        "in vec2 testTexCoord;\n\n"
-
-        "uniform sampler2D uTexture;\n"
-        "uniform sampler2D uPalette;\n\n"
-
-        "void main()\n"
-        "{\n"
-            "vec4 index = texture(uTexture, testTexCoord);\n"
-            "oFragColor = texture(uPalette, vec2(index.x, 0.0));\n"
-        "}\n";
-    theta::system::gl::Shader fragmentShader(theta::system::gl::Shader::type::fragment);
-    fragmentShader.Source(fragmentShaderSource);
-    if (!fragmentShader.Compile())
-    {
-        I_Error("Fragment Shader Compile Error:\n%s\n", fragmentShader.Log().c_str());
-    }
-
-    // Shader Program
-    theta::system::gl::Program shaderProgram;
-    shaderProgram.Attach(vertexShader);
-    shaderProgram.Attach(fragmentShader);
-    if (!shaderProgram.Link())
-    {
-        I_Error("Shader Program Link Error:\n%s\n", shaderProgram.Log().c_str());
-    }
-
-    glEnable(GL_CULL_FACE);
-
-    // VAO + VBO
-    GLfloat vertices[] = {
-        1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-        1.0f,  1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        -1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-    };
-
-    GLuint VAOnum;
-    glGenVertexArrays(1, &VAOnum);
-    glBindVertexArray(VAOnum);
-
-    GLuint VBOnum;
-    glGenBuffers(1, &VBOnum);
-    glBindBuffer(GL_ARRAY_BUFFER, VBOnum);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // location 0
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
-    glEnableVertexAttribArray(0);
-
-    // location 1
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-
-    // Location 2
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(2);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    // Texture
-    GLubyte screenTextureData[320 * 200] = { 0 };
-    for (int i = 0;i < sizeof(screenTextureData);i++)
-    {
-        screenTextureData[i] = rand() % 0x100;
-    }
-
-    // Pixel data
-    GLuint textureNum;
-    glGenTextures(1, &textureNum);
-    glBindTexture(GL_TEXTURE_2D, textureNum);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, 320, 200, 0, GL_RED, GL_UNSIGNED_BYTE, screenTextureData);
-
-    // Palette
-    GLubyte paletteTextureData[256][3] = { 0 };
-    for (int i = 0;i < 256;i++)
-    {
-        paletteTextureData[i][0] = 255 - i; // red
-        paletteTextureData[i][1] = 0; // green
-        paletteTextureData[i][2] = i; // hot pink....nah, just blue
-    }
-
-    // Palette data
-    GLuint paletteNum;
-    glGenTextures(1, &paletteNum);
-    glBindTexture(GL_TEXTURE_2D, paletteNum);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 256, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, paletteTextureData);
-
-    // Assign texture units
-    glUseProgram(shaderProgram.Ref());
-    glUniform1i(glGetUniformLocation(shaderProgram.Ref(), "uTexture"), 0);
-    glUniform1i(glGetUniformLocation(shaderProgram.Ref(), "uPalette"), 1);
+    theta::system::gl::Renderer _renderer(screen);
+    _renderer.Render();
+    _renderer.Flip(screen);
 
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureNum);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, paletteNum);
-
-    glUseProgram(shaderProgram.Ref());
-    glBindVertexArray(VAOnum);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    SDL_GL_SwapWindow(screen);
 
     system("pause");
     exit(-1);
