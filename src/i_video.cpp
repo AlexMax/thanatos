@@ -17,6 +17,8 @@
 //
 
 
+#include <memory>
+
 #include <stdlib.h>
 
 #include "SDL.h"
@@ -49,6 +51,19 @@
 #include "v_video.h"
 #include "w_wad.h"
 #include "z_zone.h"
+
+namespace theta
+{
+
+namespace system
+{
+
+// The renderer abstraction layer
+static std::unique_ptr<gl::Renderer> renderer;
+
+}
+
+}
 
 // These are (1) the window (or the full screen) that our game is rendered to
 // and (2) the renderer that scales the texture (see below) into this window.
@@ -771,7 +786,7 @@ void I_FinishUpdate (void)
 
     if (palette_to_set)
     {
-        SDL_SetPaletteColors(screenbuffer->format->palette, palette, 0, 256);
+        /* SDL_SetPaletteColors(screenbuffer->format->palette, palette, 0, 256); */
         palette_to_set = false;
 
         if (vga_porch_flash)
@@ -783,9 +798,13 @@ void I_FinishUpdate (void)
         }
     }
 
+    // Blit from the screen buffer to the renderer.
+    theta::system::renderer->SetPixels(I_VideoBuffer);
+
     // Blit from the paletted 8-bit screen buffer to the intermediate
     // 32-bit RGBA buffer that we can load into the texture.
 
+    /*
     SDL_LowerBlit(screenbuffer, &blit_rect, rgbabuffer, &blit_rect);
 
     // Update the intermediate texture with the contents of the RGBA buffer.
@@ -806,11 +825,13 @@ void I_FinishUpdate (void)
 
     SDL_SetRenderTarget(renderer, NULL);
     SDL_RenderCopy(renderer, texture_upscaled, NULL, NULL);
+    */
 
     // Draw!
 
-    SDL_GL_SwapWindow(screen);
-    //SDL_RenderPresent(renderer);
+    theta::system::renderer->Render();
+    theta::system::renderer->Flip();
+    /* SDL_RenderPresent(renderer); */
 
     // Restore background and undo the disk indicator, if it was drawn.
     V_RestoreDiskBackground();
@@ -1229,15 +1250,11 @@ static void SetVideoMode(void)
         I_Error("gladLoadGL failed");
     }
 
-    theta::system::gl::Renderer _renderer(screen);
-    _renderer.Render();
-    _renderer.Flip(screen);
+    theta::system::renderer = std::make_unique<theta::system::gl::Renderer>(screen);
+    theta::system::renderer->Render();
+    theta::system::renderer->Flip();
 
-    // uncomment this call to draw in wireframe polygons.
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    system("pause");
-    exit(-1);
+    return;
 
     // The SDL_RENDERER_TARGETTEXTURE flag is required to render the
     // intermediate texture into the upscaled texture.
@@ -1414,13 +1431,14 @@ void I_InitGraphics(void)
     // Start with a clear black screen
     // (screen will be flipped after we set the palette)
 
-    SDL_FillRect(screenbuffer, NULL, 0);
+    //SDL_FillRect(screenbuffer, NULL, 0);
 
     // Set the palette
 
     doompal = static_cast<byte*>(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
     I_SetPalette(doompal);
-    SDL_SetPaletteColors(screenbuffer->format->palette, palette, 0, 256);
+    theta::system::renderer->SetPalette(doompal);
+    /* SDL_SetPaletteColors(screenbuffer->format->palette, palette, 0, 256); */
 
     // SDL2-TODO UpdateFocus();
     UpdateGrab();
@@ -1440,7 +1458,7 @@ void I_InitGraphics(void)
     // 32-bit RGBA screen buffer that gets loaded into a texture that gets
     // finally rendered into our window or full screen in I_FinishUpdate().
 
-    I_VideoBuffer = static_cast<pixel_t*>(screenbuffer->pixels);
+    I_VideoBuffer = static_cast<pixel_t*>(std::malloc(SCREENWIDTH * SCREENHEIGHT));
     V_RestoreBuffer();
 
     // Clear the screen to black.

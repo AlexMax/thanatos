@@ -20,6 +20,7 @@
 #include "i_opengl.h"
 
 #include "i_system.h"
+#include "i_video.h"
 
 namespace theta
 {
@@ -208,10 +209,10 @@ void Renderer::constructScreen()
     // The first three vertices are the x,y,z locations in screen space.
     // The last two vertices are the texture coordinates.
     GLfloat vertices[][5] = {
-        {  1.0f, -1.0f, 0.0f, 1.0f, 0.0f },
-        {  1.0f,  1.0f, 0.0f, 1.0f, 1.0f },
-        { -1.0f, -1.0f, 0.0f, 0.0f, 0.0f },
-        { -1.0f,  1.0f, 0.0f, 0.0f, 1.0f }
+        {  1.0f, -1.0f, 0.0f, 1.0f, 1.0f },
+        {  1.0f,  1.0f, 0.0f, 1.0f, 0.0f },
+        { -1.0f, -1.0f, 0.0f, 0.0f, 1.0f },
+        { -1.0f,  1.0f, 0.0f, 0.0f, 0.0f }
     };
 
     // Bind the square to a VAO containing a VBO.
@@ -328,10 +329,10 @@ void Renderer::debugMessage(GLenum source, GLenum type, GLuint id,
 }
 
 Renderer::Renderer(SDL_Window* window) :
-    constructed(false), context(nullptr),
+    constructed(false), context(nullptr), window(window),
     screenProgram(nullptr), screenVAO(0), screenPixels(0), screenPalettes(0)
 {
-    this->context = SDL_GL_CreateContext(window);
+    this->context = SDL_GL_CreateContext(this->window);
 
 #ifdef _DEBUG
     // Initialize driver debugging
@@ -370,7 +371,13 @@ Renderer::~Renderer()
     SDL_GL_DeleteContext(this->context);
 }
 
-// Actually render the screen.
+// Flip from the backbuffer to the visible buffer.
+void Renderer::Flip()
+{
+    SDL_GL_SwapWindow(this->window);
+}
+
+// Render the screen to the backbuffer.
 void Renderer::Render()
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -386,10 +393,18 @@ void Renderer::Render()
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
-// Flip from the backbuffer to the visible buffer.
-void Renderer::Flip(SDL_Window* window)
+// Set the current palette.
+void Renderer::SetPalette(const byte* palette)
 {
-    SDL_GL_SwapWindow(window);
+    glBindTexture(GL_TEXTURE_2D, this->screenPalettes);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 256, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, palette);
+}
+
+// Set the current pixel data.
+void Renderer::SetPixels(const pixel_t* pixels)
+{
+    glBindTexture(GL_TEXTURE_2D, this->screenPixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, SCREENWIDTH, SCREENHEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, pixels);
 }
 
 }

@@ -24,6 +24,8 @@
 #include "SDL.h"
 #include "glad/glad.h"
 
+#include "doomtype.h"
+
 namespace theta
 {
 
@@ -76,6 +78,7 @@ private:
     GLuint screenVAO;
     GLuint screenPixels;
     GLuint screenPalettes;
+    SDL_Window* window; // FIXME: raw pointer, possible ownership issues
     void constructScreen();
     static void debugCall(const char* name, void* funcptr, int len_args, ...);
     static void debugMessage(GLenum source, GLenum type, GLuint id,
@@ -84,8 +87,10 @@ public:
     Renderer(SDL_Window* window);
     Renderer(const Renderer&) = delete;
     Renderer::~Renderer();
+    void Flip();
     void Render();
-    void Renderer::Flip(SDL_Window* window);
+    void SetPalette(const byte* palette);
+    void SetPixels(const pixel_t* palette);
 };
 
 }
