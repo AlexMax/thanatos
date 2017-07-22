@@ -128,7 +128,7 @@ GLuint Program::Ref() const
 std::string Program::Log() const
 {
     GLint len;
-    glGetShaderiv(this->program, GL_INFO_LOG_LENGTH, &len); // including \0
+    glGetProgramiv(this->program, GL_INFO_LOG_LENGTH, &len); // including \0
 
     if (len > 0)
     {
@@ -166,7 +166,7 @@ void Renderer::constructScreen()
         "}";
     Shader vertexShader(Shader::type::vertex);
     vertexShader.Source(vertexShaderSource);
-    if (!vertexShader.Compile())
+    if (vertexShader.Compile() == false)
     {
         I_Error("Vertex Shader Compile Error:\n%s\n", vertexShader.Log().c_str());
     }
@@ -189,22 +189,19 @@ void Renderer::constructScreen()
         "}\n";
     Shader fragmentShader(Shader::type::fragment);
     fragmentShader.Source(fragmentShaderSource);
-    if (!fragmentShader.Compile())
+    if (fragmentShader.Compile() == false)
     {
         I_Error("Fragment Shader Compile Error:\n%s\n", fragmentShader.Log().c_str());
     }
 
-    // Screen Shader Program
-    // FIXME: For some reason, having this class as part of the parent context
-    //        class just plain doesn't work - at least not my first attempt.
-    Program* _screenProgram = new Program();
-    _screenProgram->Attach(vertexShader);
-    _screenProgram->Attach(fragmentShader);
-    if (!_screenProgram->Link())
+    // Screen Shader Program.
+    this->screenProgram = std::make_unique<Program>();
+    this->screenProgram->Attach(vertexShader);
+    this->screenProgram->Attach(fragmentShader);
+    if (this->screenProgram->Link() == false)
     {
-        I_Error("Shader Program Link Error:\n%s\n", _screenProgram->Log().c_str());
+        I_Error("Shader Program Link Error:\n%s\n", this->screenProgram->Log().c_str());
     }
-    this->screenProgram = _screenProgram->Ref();
 
     // A simple square to render the screen to.
     //
@@ -273,26 +270,71 @@ void Renderer::constructScreen()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 256, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, paletteTextureData);
 
     // Assign texture units 0 and 1 to hold our screen texture and palettes.
-    glUseProgram(this->screenProgram);
-    glUniform1i(glGetUniformLocation(this->screenProgram, "uTexture"), 0);
-    glUniform1i(glGetUniformLocation(this->screenProgram, "uPalette"), 1);
+    glUseProgram(this->screenProgram->Ref());
+    glUniform1i(glGetUniformLocation(this->screenProgram->Ref(), "uTexture"), 0);
+    glUniform1i(glGetUniformLocation(this->screenProgram->Ref(), "uPalette"), 1);
+}
+
+// logs every gl call to the console.
+void Renderer::debugCall(const char* name, void* function, int argc, ...) {
+    printf("Renderer::debugCall: %s(", name);
+
+    va_list args;
+    va_start(args, argc);
+    if (argc <= 0)
+    {
+        // Do nothing...
+    }
+    else if (function == glAttachShader)
+    {
+        GLuint program = va_arg(args, GLuint);
+        GLuint shader = va_arg(args, GLuint);
+        printf("%u, %u", program, shader);
+    }
+    else if (function == glLinkProgram)
+    {
+        GLuint program = va_arg(args, GLuint);
+        printf("%u", program);
+    }
+    else if (function == glGetProgramiv)
+    {
+        GLuint program = va_arg(args, GLuint);
+        GLenum pname = va_arg(args, GLenum);
+        GLint* params = va_arg(args, GLint*);
+        printf("%u, %u, %p", program, pname, params);
+    }
+    else if (function == glGetShaderiv)
+    {
+        GLuint shader = va_arg(args, GLuint);
+        GLenum pname = va_arg(args, GLenum);
+        GLint* params = va_arg(args, GLint*);
+        printf("%u, %u, %p", shader, pname, params);
+    }
+    else
+    {
+        printf("...%d unknown arguments...", argc);
+    }
+    va_end(args);
+
+    printf(")\n");
 }
 
 // A debug message callback called by the OpenGL driver.
 void Renderer::debugMessage(GLenum source, GLenum type, GLuint id,
     GLenum severity, GLsizei length, const GLchar* message, const void* param)
 {
-    printf("OGL source: %u, type: %u, id:%u, severity: %u, sizei: %d\n%s\n",
+    printf("Renderer::debugMessage source: %u, type: %u, id:%u, severity: %u, sizei: %d\n%s\n",
         source, type, id, severity, length, message);
 }
 
 Renderer::Renderer(SDL_Window* window) :
     constructed(false), context(nullptr),
-    screenProgram(0), screenVAO(0), screenPixels(0), screenPalettes(0)
+    screenProgram(nullptr), screenVAO(0), screenPixels(0), screenPalettes(0)
 {
     this->context = SDL_GL_CreateContext(window);
 
 #ifdef _DEBUG
+    // Initialize driver debugging
     if (GL_KHR_debug)
     {
         glEnable(GL_DEBUG_OUTPUT);
@@ -306,6 +348,11 @@ Renderer::Renderer(SDL_Window* window) :
     {
         I_Error("Your OpenGL implementation does not support GL_KHR_debug");
     }
+
+#ifdef GLAD_DEBUG
+    // Initialize GLAD debugging
+    glad_set_pre_callback((GLADcallback)Renderer::debugCall);
+#endif
 #endif
 
     // Basic initialization
@@ -334,7 +381,7 @@ void Renderer::Render()
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, this->screenPalettes);
 
-    glUseProgram(this->screenProgram);
+    glUseProgram(this->screenProgram->Ref());
     glBindVertexArray(this->screenVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }

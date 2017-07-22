@@ -108,7 +108,8 @@ set(DEHACKED_SOURCE_FILES
 set(SOURCE_FILES ${COMMON_SOURCE_FILES} ${GAME_SOURCE_FILES})
 set(SOURCE_FILES_WITH_DEH ${SOURCE_FILES} ${DEHACKED_SOURCE_FILES})
 
-set(EXTRA_LIBS SDL2::SDL2 SDL2::mixer SDL2::net fmt glad)
+set(EXTRA_LIBS SDL2::SDL2 SDL2::mixer SDL2::net fmt
+    debug glad-debug optimized glad)
 if(PNG_FOUND)
     list(APPEND EXTRA_LIBS png)
 endif()

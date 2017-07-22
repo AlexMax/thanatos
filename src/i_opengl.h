@@ -18,6 +18,7 @@
 #ifndef __I_OPENGL__
 #define __I_OPENGL__
 
+#include <memory>
 #include <string>
 
 #include "SDL.h"
@@ -71,11 +72,12 @@ class Renderer
 private:
     bool constructed;
     SDL_GLContext context;
-    GLuint screenProgram;
+    std::unique_ptr<Program> screenProgram;
     GLuint screenVAO;
     GLuint screenPixels;
     GLuint screenPalettes;
     void constructScreen();
+    static void debugCall(const char* name, void* funcptr, int len_args, ...);
     static void debugMessage(GLenum source, GLenum type, GLuint id,
         GLenum severity, GLsizei length, const GLchar* message, const void* param);
 public:
