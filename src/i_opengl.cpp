@@ -239,36 +239,20 @@ void Renderer::constructScreen()
     // Initialize our screen textures.
 
     // First, we need a texture that contains the raw 8-bit screen data.
-    GLubyte screenPixelData[320 * 200] = { 0 };
-    for (int i = 0;i < sizeof(screenPixelData);i++)
-    {
-        screenPixelData[i] = rand() % 0x100;
-    }
-
     glGenTextures(1, &this->screenPixels);
     glBindTexture(GL_TEXTURE_2D, this->screenPixels);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, 320, 200, 0, GL_RED, GL_UNSIGNED_BYTE, screenPixelData);
 
     // Next, we need a second texture that contains the palettes.
-    GLubyte paletteTextureData[256][3] = { 0 };
-    for (int i = 0;i < 256;i++)
-    {
-        paletteTextureData[i][0] = 255 - i; // red
-        paletteTextureData[i][1] = 0; // green
-        paletteTextureData[i][2] = i; // hot pink....nah, just blue
-    }
-
     glGenTextures(1, &this->screenPalettes);
     glBindTexture(GL_TEXTURE_2D, this->screenPalettes);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 256, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, paletteTextureData);
 
     // Assign texture units 0 and 1 to hold our screen texture and palettes.
     glUseProgram(this->screenProgram->Ref());
@@ -332,7 +316,12 @@ Renderer::Renderer(SDL_Window* window) :
     constructed(false), context(nullptr), window(window),
     screenProgram(nullptr), screenVAO(0), screenPixels(0), screenPalettes(0)
 {
+    // Do some OpenGL initialization stuff.
     this->context = SDL_GL_CreateContext(this->window);
+    if (!gladLoadGL())
+    {
+        I_Error("gladLoadGL failed");
+    }
 
 #ifdef _DEBUG
     // Initialize driver debugging

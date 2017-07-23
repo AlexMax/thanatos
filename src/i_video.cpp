@@ -1240,17 +1240,7 @@ static void SetVideoMode(void)
         I_InitWindowIcon();
     }
 
-    // Do some OpenGL initialization stuff.
-    SDL_GL_CreateContext(screen);
-    if (!gladLoadGL())
-    {
-        I_Error("gladLoadGL failed");
-    }
-
     theta::system::renderer = std::make_unique<theta::system::gl::Renderer>(screen);
-    theta::system::renderer->Render();
-    theta::system::renderer->Flip();
-
     return;
 
     // The SDL_RENDERER_TARGETTEXTURE flag is required to render the
