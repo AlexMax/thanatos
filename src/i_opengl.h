@@ -74,6 +74,7 @@ class Renderer
 private:
     bool constructed;
     SDL_GLContext context;
+    GLint maxTextureSize;
     std::unique_ptr<Program> screenProgram;
     GLuint screenVAO;
     GLuint screenPixels;
@@ -91,6 +92,7 @@ public:
     void Render();
     void SetPalette(const byte* palette);
     void SetPixels(const pixel_t* palette);
+    void SetResolution(int width, int height);
 };
 
 }

@@ -95,7 +95,7 @@ static uint32_t pixel_format;
 
 // palette
 
-static SDL_Color palette[256];
+static byte palette[256 * 3];
 static boolean palette_to_set;
 
 // display has been set up?
@@ -742,7 +742,8 @@ void I_FinishUpdate (void)
                 AdjustWindowSize();
                 SDL_SetWindowSize(screen, window_width, window_height);
             }
-            CreateUpscaledTexture(false);
+            theta::system::renderer->SetResolution(window_width, window_height);
+            /* CreateUpscaledTexture(false); */
             need_resize = false;
             palette_to_set = true;
         }
@@ -783,6 +784,7 @@ void I_FinishUpdate (void)
 
     if (palette_to_set)
     {
+        theta::system::renderer->SetPalette(palette);
         /* SDL_SetPaletteColors(screenbuffer->format->palette, palette, 0, 256); */
         palette_to_set = false;
 
@@ -790,8 +792,8 @@ void I_FinishUpdate (void)
         {
             // "flash" the pillars/letterboxes with palette changes, emulating
             // VGA "porch" behaviour (GitHub issue #832)
-            SDL_SetRenderDrawColor(renderer, palette[0].r, palette[0].g,
-                palette[0].b, SDL_ALPHA_OPAQUE);
+            /* SDL_SetRenderDrawColor(renderer, palette[0].r, palette[0].g,
+                palette[0].b, SDL_ALPHA_OPAQUE); */
         }
     }
 
@@ -849,16 +851,11 @@ void I_ReadScreen (pixel_t* scr)
 //
 void I_SetPalette (byte *doompalette)
 {
-    int i;
-
-    for (i=0; i<256; ++i)
+    for (int i = 0;i < sizeof(palette);i += 3)
     {
-        // Zero out the bottom two bits of each channel - the PC VGA
-        // controller only supports 6 bits of accuracy.
-
-        palette[i].r = gammatable[usegamma][*doompalette++] & ~3;
-        palette[i].g = gammatable[usegamma][*doompalette++] & ~3;
-        palette[i].b = gammatable[usegamma][*doompalette++] & ~3;
+        palette[i] = gammatable[usegamma][*doompalette++];
+        palette[i + 1] = gammatable[usegamma][*doompalette++];
+        palette[i + 2] = gammatable[usegamma][*doompalette++];
     }
 
     palette_to_set = true;
@@ -873,15 +870,15 @@ int I_GetPaletteIndex(int r, int g, int b)
 
     best = 0; best_diff = INT_MAX;
 
-    for (i = 0; i < 256; ++i)
+    for (i = 0;i < sizeof(palette);i += 3)
     {
-        diff = (r - palette[i].r) * (r - palette[i].r)
-             + (g - palette[i].g) * (g - palette[i].g)
-             + (b - palette[i].b) * (b - palette[i].b);
+        diff = (r - palette[i]) * (r - palette[i])
+             + (g - palette[i + 1]) * (g - palette[i + 1])
+             + (b - palette[i + 2]) * (b - palette[i + 2]);
 
         if (diff < best_diff)
         {
-            best = i;
+            best = i / 3;
             best_diff = diff;
         }
 
@@ -1243,6 +1240,7 @@ static void SetVideoMode(void)
     theta::system::renderer = std::make_unique<theta::system::gl::Renderer>(screen);
     return;
 
+    /*
     // The SDL_RENDERER_TARGETTEXTURE flag is required to render the
     // intermediate texture into the upscaled texture.
     renderer_flags = SDL_RENDERER_TARGETTEXTURE;
@@ -1343,6 +1341,7 @@ static void SetVideoMode(void)
     // Initially create the upscaled texture for rendering to screen
 
     CreateUpscaledTexture(true);
+    */
 }
 
 static const char *hw_emu_warning = 
@@ -1424,7 +1423,7 @@ void I_InitGraphics(void)
 
     doompal = static_cast<byte*>(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
     I_SetPalette(doompal);
-    theta::system::renderer->SetPalette(doompal);
+    theta::system::renderer->SetPalette(palette);
     /* SDL_SetPaletteColors(screenbuffer->format->palette, palette, 0, 256); */
 
     // SDL2-TODO UpdateFocus();

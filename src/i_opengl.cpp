@@ -313,7 +313,7 @@ void Renderer::debugMessage(GLenum source, GLenum type, GLuint id,
 }
 
 Renderer::Renderer(SDL_Window* window) :
-    constructed(false), context(nullptr), window(window),
+    constructed(false), context(nullptr), maxTextureSize(0), window(window),
     screenProgram(nullptr), screenVAO(0), screenPixels(0), screenPalettes(0)
 {
     // Do some OpenGL initialization stuff.
@@ -347,6 +347,11 @@ Renderer::Renderer(SDL_Window* window) :
 
     // Basic initialization
     glEnable(GL_CULL_FACE);
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &this->maxTextureSize);
+    if (this->maxTextureSize < 64)
+    {
+        I_Error("Maximum texture size is either garbage or less than industry standard");
+    }
 
     // Set up the screen.
     this->constructScreen();
@@ -394,6 +399,12 @@ void Renderer::SetPixels(const pixel_t* pixels)
 {
     glBindTexture(GL_TEXTURE_2D, this->screenPixels);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, SCREENWIDTH, SCREENHEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, pixels);
+}
+
+// Nudge OpenGL to change the size of the viewport to match the new resolution.
+void Renderer::SetResolution(int width, int height)
+{
+    glViewport(0, 0, width, height);
 }
 
 }
