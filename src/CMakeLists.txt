@@ -1,3 +1,9 @@
+if(MSVC)
+    # Defines __BASE_FILE__ for Visual Studio.
+    # FIXME: This technically breaks compiler namespacing rules...
+    add_definitions(-D__BASE_FILE__=\"%\(Filename\)%\(Extension\)\")
+endif()
+
 foreach(SUBDIR doom)
     add_subdirectory(${SUBDIR})
 endforeach()
@@ -8,7 +14,7 @@ include_directories(${CMAKE_BINARY_DIR})
 
 set(COMMON_SOURCE_FILES
     i_main.cpp
-    i_system.cpp  i_system.h
+    i_system.cpp  i_system.h    i_system.ipp
     m_argv.cpp    m_argv.h
     m_misc.cpp    m_misc.h)
 

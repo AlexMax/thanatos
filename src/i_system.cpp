@@ -25,6 +25,7 @@
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -252,21 +253,20 @@ void I_Quit (void)
     exit(0);
 }
 
+namespace theta
+{
 
+namespace system
+{
 
-//
-// I_Error
-//
+namespace detail
+{
 
 static boolean already_quitting = false;
 
-void I_Error (const char *error, ...)
+// Do not call this function directly.  Use I_Error.
+void Error3(const fmt::MemoryWriter& buffer)
 {
-    char msgbuf[512];
-    va_list argptr;
-    atexit_listentry_t *entry;
-    boolean exit_gui_popup;
-
     if (already_quitting)
     {
         fprintf(stderr, "Warning: recursive call to I_Error detected.\n");
@@ -278,22 +278,12 @@ void I_Error (const char *error, ...)
     }
 
     // Message first.
-    va_start(argptr, error);
-    //fprintf(stderr, "\nError: ");
-    vfprintf(stderr, error, argptr);
-    fprintf(stderr, "\n\n");
-    va_end(argptr);
+    fmt::fprintf(stderr, "%s\n\n", buffer.str());
     fflush(stderr);
-
-    // Write a copy of the message into buffer.
-    va_start(argptr, error);
-    memset(msgbuf, 0, sizeof(msgbuf));
-    M_vsnprintf(msgbuf, sizeof(msgbuf), error, argptr);
-    va_end(argptr);
 
     // Shutdown. Here might be other errors.
 
-    entry = exit_funcs;
+    atexit_listentry_t* entry = exit_funcs;
 
     while (entry != NULL)
     {
@@ -305,7 +295,7 @@ void I_Error (const char *error, ...)
         entry = entry->next;
     }
 
-    exit_gui_popup = !M_ParmExists("-nogui");
+    boolean exit_gui_popup = !M_ParmExists("-nogui");
 
     // Pop up a GUI dialog box to show the error message, if the
     // game was not run from the console (and the user will
@@ -313,7 +303,7 @@ void I_Error (const char *error, ...)
     if (exit_gui_popup && !I_ConsoleStdout())
     {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
-                                 PACKAGE_STRING, msgbuf, NULL);
+                                 PACKAGE_STRING, buffer.c_str(), NULL);
     }
 
     // abort();
@@ -321,6 +311,12 @@ void I_Error (const char *error, ...)
     SDL_Quit();
 
     exit(-1);
+}
+
+}
+
+}
+
 }
 
 //

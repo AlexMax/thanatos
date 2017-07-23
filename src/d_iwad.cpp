@@ -77,6 +77,7 @@ static void AddIWADDir(const char *dir)
 #if defined(_WIN32) && !defined(_WIN32_WCE)
 
 #define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <windows.h>
 
 typedef struct 
