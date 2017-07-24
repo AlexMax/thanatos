@@ -262,7 +262,7 @@ void D_Display (void)
     }
 
     // see if the border needs to be updated to the screen
-    if (gamestate == GS_LEVEL && !automapactive && scaledviewwidth != SCREENWIDTH)
+    if (gamestate == GS_LEVEL && !automapactive && viewwidth != SCREENWIDTH)
     {
 	if (menuactive || menuactivestate || !viewactivestate)
 	    borderdrawcount = 3;
@@ -293,7 +293,7 @@ void D_Display (void)
 	    y = 4;
 	else
 	    y = viewwindowy+4;
-	V_DrawPatchDirect(viewwindowx + (scaledviewwidth - 68) / 2, y,
+	V_DrawPatchDirect(viewwindowx + (viewwidth - 68) / 2, y,
                           static_cast<patch_t*>(W_CacheLumpName (DEH_String("M_PAUSE"), PU_CACHE)));
     }
 

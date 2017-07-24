@@ -78,9 +78,6 @@ fixed_t			viewsin;
 
 player_t*		viewplayer;
 
-// 0 = high, 1 = low
-int			detailshift;	
-
 //
 // precalculated math tables
 //
@@ -479,7 +476,7 @@ fixed_t R_ScaleFromGlobalAngle (angle_t visangle)
     // both sines are allways positive
     sinea = finesine[anglea>>ANGLETOFINESHIFT];	
     sineb = finesine[angleb>>ANGLETOFINESHIFT];
-    num = FixedMul(projection,sineb)<<detailshift;
+    num = FixedMul(projection,sineb);
     den = FixedMul(rw_distance,sinea);
 
     if (den > num>>FRACBITS)
@@ -647,7 +644,6 @@ void R_InitLightTables (void)
 //
 boolean		setsizeneeded;
 int		setblocks;
-int		setdetail;
 
 
 void
@@ -657,7 +653,6 @@ R_SetViewSize
 {
     setsizeneeded = true;
     setblocks = blocks;
-    setdetail = detail;
 }
 
 
@@ -677,40 +672,29 @@ void R_ExecuteSetViewSize (void)
 
     if (setblocks == 11)
     {
-	scaledviewwidth = SCREENWIDTH;
+	viewwidth = SCREENWIDTH;
 	viewheight = SCREENHEIGHT;
     }
     else
     {
-	scaledviewwidth = setblocks*32;
+	viewwidth = setblocks*32;
 	viewheight = (setblocks*168/10)&~7;
     }
     
-    detailshift = setdetail;
-    viewwidth = scaledviewwidth>>detailshift;
-	
     centery = viewheight/2;
     centerx = viewwidth/2;
     centerxfrac = centerx<<FRACBITS;
     centeryfrac = centery<<FRACBITS;
     projection = centerxfrac;
 
-    if (!detailshift)
-    {
-	colfunc = basecolfunc = R_DrawColumn;
-	fuzzcolfunc = R_DrawFuzzColumn;
-	transcolfunc = R_DrawTranslatedColumn;
-	spanfunc = R_DrawSpan;
-    }
-    else
-    {
-	colfunc = basecolfunc = R_DrawColumnLow;
-	fuzzcolfunc = R_DrawFuzzColumnLow;
-	transcolfunc = R_DrawTranslatedColumnLow;
-	spanfunc = R_DrawSpanLow;
-    }
+    // This used to be the place where the "Low Detail" drawers were set, if
+    // detailshift was set.  Not anymore though...
+    colfunc = basecolfunc = R_DrawColumn;
+    fuzzcolfunc = R_DrawFuzzColumn;
+    transcolfunc = R_DrawTranslatedColumn;
+    spanfunc = R_DrawSpan;
 
-    R_InitBuffer (scaledviewwidth, viewheight);
+    R_InitBuffer (viewwidth, viewheight);
 	
     R_InitTextureMapping ();
     
@@ -727,7 +711,7 @@ void R_ExecuteSetViewSize (void)
     {
 	dy = ((i-viewheight/2)<<FRACBITS)+FRACUNIT/2;
 	dy = abs(dy);
-	yslope[i] = FixedDiv ( (viewwidth<<detailshift)/2*FRACUNIT, dy);
+	yslope[i] = FixedDiv ( (viewwidth)/2*FRACUNIT, dy);
     }
 	
     for (i=0 ; i<viewwidth ; i++)
@@ -743,7 +727,7 @@ void R_ExecuteSetViewSize (void)
 	startmap = ((LIGHTLEVELS-1-i)*2)*NUMCOLORMAPS/LIGHTLEVELS;
 	for (j=0 ; j<MAXLIGHTSCALE ; j++)
 	{
-	    level = startmap - j*SCREENWIDTH/(viewwidth<<detailshift)/DISTMAP;
+	    level = startmap - j*SCREENWIDTH/(viewwidth)/DISTMAP;
 	    
 	    if (level < 0)
 		level = 0;

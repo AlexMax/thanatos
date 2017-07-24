@@ -79,12 +79,6 @@ extern lighttable_t*	fixedcolormap;
 #define NUMCOLORMAPS		32
 
 
-// Blocky/low detail mode.
-//B remove this?
-//  0 = high, 1 = low
-extern	int		detailshift;	
-
-
 //
 // Function pointers to switch refresh/drawing functions.
 // Used to select shadow mode etc.
