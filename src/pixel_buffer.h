@@ -15,12 +15,12 @@
 //     A buffer of pixels that knows its own resolution.
 //
 
+#ifndef __PIXEL_BUFFER__
+#define __PIXEL_BUFFER__
+
 #include <vector>
 
 #include "doomtype.h"
-
-#ifndef __PIXEL_BUFFER__
-#define __PIXEL_BUFFER__
 
 // A buffer of pixels that knows its own resolution.
 class PixelBuffer
