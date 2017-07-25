@@ -21,10 +21,23 @@
 
 #include "c_console.h"
 #include "doomtype.h"
+#include "i_system.h"
 #include "m_config.h"
 
 namespace console
 {
+
+static void CmdError(CommandArguments args)
+{
+    if (args.size() > 1)
+    {
+        I_Error("Console used error command: %s\n", args.at(1));
+    }
+    else
+    {
+        I_Error("Console used error command\n");
+    }
+}
 
 static void CmdGet(CommandArguments args)
 {
@@ -72,6 +85,7 @@ Commands& Commands::Instance()
 
 // Initialize console commands.
 Commands::Commands() : command_map({
+    { "error", CmdError },
     { "get", CmdGet },
     { "set", CmdSet }
 }) { }

@@ -29,6 +29,11 @@ else()
     add_compile_options(-std=c++14)
 endif()
 
+if(WIN32)
+    # Fix some Win32-specific brain damage...
+    add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX)
+endif()
+
 find_package(SDL2 2.0.1)
 find_package(SDL2_mixer 2.0.0)
 find_package(SDL2_net 2.0.0)

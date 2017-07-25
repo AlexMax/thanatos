@@ -1,6 +1,7 @@
 //
 // Copyright(C) 1993-1996 Id Software, Inc.
 // Copyright(C) 2005-2014 Simon Howard
+// Copyright(C) 2017 Alex Mayfield
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,6 +20,9 @@
 
 #ifndef __I_SYSTEM__
 #define __I_SYSTEM__
+
+#include "fmt/printf.h"
+#include "fmt/ostream.h"
 
 #include "d_ticcmd.h"
 #include "d_event.h"
@@ -52,7 +56,25 @@ ticcmd_t* I_BaseTiccmd (void);
 // Clean exit, displays sell blurb.
 void I_Quit (void);
 
-void I_Error (const char *error, ...);
+#define I_Error(error, ...) theta::system::detail::Error2(__BASE_FILE__, __LINE__, error, __VA_ARGS__)
+
+namespace theta
+{
+
+namespace system
+{
+
+namespace detail
+{
+
+template<typename... Arguments>
+void Error2(const char* file, int line, const char* error, const Arguments&... args);
+
+}
+
+}
+
+}
 
 void I_Tactile (int on, int off, int total);
 
@@ -79,6 +101,8 @@ void I_PrintBanner(const char *text);
 // Print a dividing line for startup banners.
 
 void I_PrintDivider(void);
+
+#include "i_system.ipp"
 
 #endif
 
