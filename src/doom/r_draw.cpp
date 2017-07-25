@@ -36,11 +36,6 @@
 // State.
 #include "doomstat.h"
 
-
-// ?
-#define MAXWIDTH			1120
-#define MAXHEIGHT			832
-
 // status bar height at bottom of screen
 #define SBARHEIGHT		32
 
@@ -439,7 +434,7 @@ R_InitBuffer
 
     // Preclaculate all row offsets.
     for (i=0 ; i<height ; i++) 
-	ylookup[i] = I_VideoBuffer + (i+viewwindowy)*SCREENWIDTH; 
+	ylookup[i] = I_VideoBuffer->GetRawPixels() + (i+viewwindowy)*SCREENWIDTH; 
 } 
  
  
@@ -570,7 +565,7 @@ R_VideoErase
 
     if (background_buffer != NULL)
     {
-        memcpy(I_VideoBuffer + ofs, background_buffer + ofs, count * sizeof(*I_VideoBuffer));
+        memcpy(I_VideoBuffer->GetRawPixels() + ofs, background_buffer + ofs, count * sizeof(*I_VideoBuffer));
     }
 } 
 

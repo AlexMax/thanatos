@@ -20,7 +20,6 @@
 #include "i_opengl.h"
 
 #include "i_system.h"
-#include "i_video.h"
 
 namespace theta
 {
@@ -395,10 +394,10 @@ void Renderer::SetPalette(const byte* palette)
 }
 
 // Set the current pixel data.
-void Renderer::SetPixels(const pixel_t* pixels)
+void Renderer::SetPixels(const PixelBuffer& pixels)
 {
     glBindTexture(GL_TEXTURE_2D, this->screenPixels);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, SCREENWIDTH, SCREENHEIGHT, 0, GL_RED, GL_UNSIGNED_BYTE, pixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, pixels.GetWidth(), pixels.GetHeight(), 0, GL_RED, GL_UNSIGNED_BYTE, pixels.GetRawPixels());
 }
 
 // Nudge OpenGL to change the size of the viewport to match the new resolution.

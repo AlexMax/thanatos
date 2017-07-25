@@ -170,7 +170,7 @@ static boolean nograbmouse_override = false;
 
 // The screen buffer; this is modified to draw things to the screen
 
-pixel_t *I_VideoBuffer = NULL;
+std::unique_ptr<PixelBuffer> I_VideoBuffer = nullptr;
 
 // If true, game is running as a screensaver
 
@@ -774,9 +774,9 @@ void I_FinishUpdate (void)
 	if (tics > 20) tics = 20;
 
 	for (i=0 ; i<tics*4 ; i+=4)
-	    I_VideoBuffer[ (SCREENHEIGHT-1)*SCREENWIDTH + i] = 0xff;
+	    I_VideoBuffer->GetRawPixels()[ (SCREENHEIGHT-1)*SCREENWIDTH + i] = 0xff;
 	for ( ; i<20*4 ; i+=4)
-	    I_VideoBuffer[ (SCREENHEIGHT-1)*SCREENWIDTH + i] = 0x0;
+	    I_VideoBuffer->GetRawPixels()[ (SCREENHEIGHT-1)*SCREENWIDTH + i] = 0x0;
     }
 
     // Draw disk icon before blit, if necessary.
@@ -798,7 +798,7 @@ void I_FinishUpdate (void)
     }
 
     // Blit from the screen buffer to the renderer.
-    theta::system::renderer->SetPixels(I_VideoBuffer);
+    theta::system::renderer->SetPixels(*I_VideoBuffer);
 
     // Blit from the paletted 8-bit screen buffer to the intermediate
     // 32-bit RGBA buffer that we can load into the texture.
@@ -842,7 +842,7 @@ void I_FinishUpdate (void)
 //
 void I_ReadScreen (pixel_t* scr)
 {
-    memcpy(scr, I_VideoBuffer, SCREENWIDTH*SCREENHEIGHT*sizeof(*scr));
+    memcpy(scr, I_VideoBuffer->GetRawPixels(), SCREENWIDTH*SCREENHEIGHT*sizeof(*scr));
 }
 
 
@@ -1444,12 +1444,12 @@ void I_InitGraphics(void)
     // 32-bit RGBA screen buffer that gets loaded into a texture that gets
     // finally rendered into our window or full screen in I_FinishUpdate().
 
-    I_VideoBuffer = static_cast<pixel_t*>(std::malloc(SCREENWIDTH * SCREENHEIGHT));
+    I_VideoBuffer = std::make_unique<PixelBuffer>(SCREENWIDTH, SCREENHEIGHT);
     V_RestoreBuffer();
 
     // Clear the screen to black.
 
-    memset(I_VideoBuffer, 0, SCREENWIDTH * SCREENHEIGHT);
+    memset(I_VideoBuffer->GetRawPixels(), 0, SCREENWIDTH * SCREENHEIGHT);
 
     // clear out any events waiting at the start and center the mouse
   

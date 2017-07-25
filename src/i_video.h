@@ -20,11 +20,19 @@
 #ifndef __I_VIDEO__
 #define __I_VIDEO__
 
+#include <memory>
+
 #include "doomtype.h"
+#include "pixel_buffer.h"
+
+// Maximum screen width and height.
+
+#define MAXWIDTH 4096
+#define MAXHEIGHT 4096
 
 // Screen width and height.
 
-#define SCREENWIDTH  640
+#define SCREENWIDTH 640
 #define SCREENHEIGHT 400
 
 // Virtual screen width and height
@@ -94,7 +102,7 @@ extern boolean screenvisible;
 extern int vanilla_keyboard_mapping;
 extern boolean screensaver_mode;
 extern int usegamma;
-extern pixel_t *I_VideoBuffer;
+extern std::unique_ptr<PixelBuffer> I_VideoBuffer;
 
 extern int screen_width;
 extern int screen_height;

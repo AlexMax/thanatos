@@ -429,7 +429,7 @@ void AM_initVariables(void)
     static event_t st_notify = { ev_keyup, AM_MSGENTERED, 0, 0 };
 
     automapactive = true;
-    fb = I_VideoBuffer;
+    fb = I_VideoBuffer->GetRawPixels();
 
     f_oldloc.x = INT_MAX;
     amclock = 0;

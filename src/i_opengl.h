@@ -25,6 +25,7 @@
 #include "glad/glad.h"
 
 #include "doomtype.h"
+#include "pixel_buffer.h"
 
 namespace theta
 {
@@ -91,7 +92,7 @@ public:
     void Flip();
     void Render();
     void SetPalette(const byte* palette);
-    void SetPixels(const pixel_t* palette);
+    void SetPixels(const PixelBuffer& pixels);
     void SetResolution(int width, int height);
 };
 

@@ -72,7 +72,7 @@ void V_MarkRect(int x, int y, int width, int height)
     // If we are temporarily using an alternate screen, do not 
     // affect the update box.
 
-    if (dest_screen == I_VideoBuffer)
+    if (dest_screen == I_VideoBuffer->GetRawPixels())
     {
         M_AddToBox (dirtybox, x, y); 
         M_AddToBox (dirtybox, x + width-1, y + height-1); 
@@ -536,7 +536,7 @@ void V_DrawFilledBox(int x, int y, int w, int h, int c)
     uint8_t *buf, *buf1;
     int x1, y1;
 
-    buf = I_VideoBuffer + SCREENWIDTH * y + x;
+    buf = I_VideoBuffer->GetRawPixels() + SCREENWIDTH * y + x;
 
     for (y1 = 0; y1 < h; ++y1)
     {
@@ -556,7 +556,7 @@ void V_DrawHorizLine(int x, int y, int w, int c)
     uint8_t *buf;
     int x1;
 
-    buf = I_VideoBuffer + SCREENWIDTH * y + x;
+    buf = I_VideoBuffer->GetRawPixels() + SCREENWIDTH * y + x;
 
     for (x1 = 0; x1 < w; ++x1)
     {
@@ -569,7 +569,7 @@ void V_DrawVertLine(int x, int y, int h, int c)
     uint8_t *buf;
     int y1;
 
-    buf = I_VideoBuffer + SCREENWIDTH * y + x;
+    buf = I_VideoBuffer->GetRawPixels() + SCREENWIDTH * y + x;
 
     for (y1 = 0; y1 < h; ++y1)
     {
@@ -617,7 +617,7 @@ void V_UseBuffer(pixel_t *buffer)
 
 void V_RestoreBuffer(void)
 {
-    dest_screen = I_VideoBuffer;
+    dest_screen = I_VideoBuffer->GetRawPixels();
 }
 
 //
@@ -872,7 +872,7 @@ void V_ScreenShot(const char *format)
 #endif
     {
     // save the pcx file
-    WritePCXfile(lbmname, I_VideoBuffer,
+    WritePCXfile(lbmname, I_VideoBuffer->GetRawPixels(),
                  SCREENWIDTH, SCREENHEIGHT,
         static_cast<byte*>(W_CacheLumpName (DEH_String("PLAYPAL"), PU_CACHE)));
     }
