@@ -102,7 +102,7 @@ extern boolean screenvisible;
 extern int vanilla_keyboard_mapping;
 extern boolean screensaver_mode;
 extern int usegamma;
-extern std::unique_ptr<PixelBuffer> I_VideoBuffer;
+extern std::unique_ptr<theta::PixelBuffer> I_VideoBuffer;
 
 extern int screen_width;
 extern int screen_height;

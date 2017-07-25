@@ -17,6 +17,9 @@
 
 #include "pixel_buffer.h"
 
+namespace theta
+{
+
 // Resize the pixel buffer for the presumably updated width and height.
 void PixelBuffer::resize()
 {
@@ -45,4 +48,6 @@ pixel_t* PixelBuffer::GetRawPixels()
 const pixel_t* PixelBuffer::GetRawPixels() const
 {
     return &this->pixels.front();
+}
+
 }

@@ -22,6 +22,9 @@
 
 #include "doomtype.h"
 
+namespace theta
+{
+
 // A buffer of pixels that knows its own resolution.
 class PixelBuffer
 {
@@ -38,5 +41,7 @@ public:
     pixel_t* GetRawPixels();
     const pixel_t* GetRawPixels() const;
 };
+
+}
 
 #endif
