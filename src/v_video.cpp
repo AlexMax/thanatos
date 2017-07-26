@@ -92,28 +92,30 @@ void V_CopyRect(int srcx, int srcy, pixel_t *source,
  
 #ifdef RANGECHECK 
     if (srcx < 0
-     || srcx + width > SCREENWIDTH
+     || srcx + width > I_VideoBuffer->GetWidth()
      || srcy < 0
-     || srcy + height > SCREENHEIGHT 
+     || srcy + height > I_VideoBuffer->GetHeight()
      || destx < 0
-     || destx + width > SCREENWIDTH
+     || destx + width > I_VideoBuffer->GetWidth()
      || desty < 0
-     || desty + height > SCREENHEIGHT)
+     || desty + height > I_VideoBuffer->GetHeight())
     {
-        I_Error ("Bad V_CopyRect");
+        //I_Error ("Bad V_CopyRect");
+        // FIXME: Don't silently ignore
+        return;
     }
 #endif 
 
     V_MarkRect(destx, desty, width, height); 
  
-    src = source + SCREENWIDTH * srcy + srcx; 
-    dest = dest_screen + SCREENWIDTH * desty + destx; 
+    src = source + I_VideoBuffer->GetWidth() * srcy + srcx;
+    dest = dest_screen + I_VideoBuffer->GetWidth() * desty + destx;
 
     for ( ; height>0 ; height--) 
     { 
         memcpy(dest, src, width * sizeof(*dest));
-        src += SCREENWIDTH; 
-        dest += SCREENWIDTH; 
+        src += I_VideoBuffer->GetWidth();
+        dest += I_VideoBuffer->GetWidth();
     } 
 } 
  
@@ -159,18 +161,20 @@ void V_DrawPatch(int x, int y, patch_t *patch)
 
 #ifdef RANGECHECK
     if (x < 0
-     || x + SHORT(patch->width) > SCREENWIDTH
+     || x + SHORT(patch->width) > I_VideoBuffer->GetWidth()
      || y < 0
-     || y + SHORT(patch->height) > SCREENHEIGHT)
+     || y + SHORT(patch->height) > I_VideoBuffer->GetHeight())
     {
-        I_Error("Bad V_DrawPatch");
+        // I_Error("Bad V_DrawPatch");
+        // FIXME: Don't silently ignore...
+        return;
     }
 #endif
 
     V_MarkRect(x, y, SHORT(patch->width), SHORT(patch->height));
 
     col = 0;
-    desttop = dest_screen + y * SCREENWIDTH + x;
+    desttop = dest_screen + y * I_VideoBuffer->GetWidth() + x;
 
     w = SHORT(patch->width);
 
@@ -182,13 +186,13 @@ void V_DrawPatch(int x, int y, patch_t *patch)
         while (column->topdelta != 0xff)
         {
             source = (byte *)column + 3;
-            dest = desttop + column->topdelta*SCREENWIDTH;
+            dest = desttop + column->topdelta * I_VideoBuffer->GetWidth();
             count = column->length;
 
             while (count--)
             {
                 *dest = *source++;
-                dest += SCREENWIDTH;
+                dest += I_VideoBuffer->GetWidth();
             }
             column = (column_t *)((byte *)column + column->length + 4);
         }
@@ -536,7 +540,7 @@ void V_DrawFilledBox(int x, int y, int w, int h, int c)
     uint8_t *buf, *buf1;
     int x1, y1;
 
-    buf = I_VideoBuffer->GetRawPixels() + SCREENWIDTH * y + x;
+    buf = I_VideoBuffer->GetRawPixels() + I_VideoBuffer->GetWidth() * y + x;
 
     for (y1 = 0; y1 < h; ++y1)
     {
@@ -547,7 +551,7 @@ void V_DrawFilledBox(int x, int y, int w, int h, int c)
             *buf1++ = c;
         }
 
-        buf += SCREENWIDTH;
+        buf += I_VideoBuffer->GetWidth();
     }
 }
 

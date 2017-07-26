@@ -200,7 +200,7 @@ void D_Display (void)
     }
 
     // save the current screen if about to wipe
-    if (gamestate != wipegamestate)
+    if (gamestate != wipegamestate && false) // FIXME: Figure out wipe later
     {
 	wipe = true;
 	wipe_StartScreen(0, 0, SCREENWIDTH, SCREENHEIGHT);
@@ -351,8 +351,8 @@ static void EnableLoadingDisk(void)
         }
 
         V_EnableLoadingDisk(disk_lump_name,
-                            SCREENWIDTH - LOADING_DISK_W,
-                            SCREENHEIGHT - LOADING_DISK_H);
+                            I_VideoBuffer->GetWidth() - LOADING_DISK_W,
+                            I_VideoBuffer->GetHeight() - LOADING_DISK_H);
     }
 }
 

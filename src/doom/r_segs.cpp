@@ -159,7 +159,7 @@ R_RenderMaskedSegRange
 	{
 	    if (!fixedcolormap)
 	    {
-		index = (fixed_t)(spryscale * SCREENINVSCALE) >> LIGHTSCALESHIFT;
+		index = (fixed_t)(spryscale * (VIRTUALHEIGHT / (double)I_VideoBuffer->GetHeight())) >> LIGHTSCALESHIFT;
 
 		if (index >=  MAXLIGHTSCALE )
 		    index = MAXLIGHTSCALE-1;
@@ -264,7 +264,7 @@ void R_RenderSegLoop (void)
 	    // scale level.  The original code only had the shift, but since
 	    // the wall scale is resolution-dependant, this caused undesirable
 	    // lighting effects in higher resolutions.
-	    index = (fixed_t)(rw_scale * SCREENINVSCALE) >> LIGHTSCALESHIFT;
+	    index = (fixed_t)(rw_scale * (VIRTUALHEIGHT / (double)I_VideoBuffer->GetHeight())) >> LIGHTSCALESHIFT;
 
 	    if (index >=  MAXLIGHTSCALE )
 		index = MAXLIGHTSCALE-1;

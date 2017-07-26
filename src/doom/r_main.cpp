@@ -92,7 +92,7 @@ int			viewangletox[FINEANGLES/2];
 // The xtoviewangleangle[] table maps a screen pixel
 // to the lowest viewangle that maps back to x ranges
 // from clipangle to -clipangle.
-angle_t			xtoviewangle[SCREENWIDTH+1];
+angle_t			xtoviewangle[MAXWIDTH + 1];
 
 lighttable_t*		scalelight[LIGHTLEVELS][MAXLIGHTSCALE];
 lighttable_t*		scalelightfixed[MAXLIGHTSCALE];
@@ -672,8 +672,8 @@ void R_ExecuteSetViewSize (void)
 
     if (setblocks == 11)
     {
-	viewwidth = SCREENWIDTH;
-	viewheight = SCREENHEIGHT;
+	viewwidth = I_VideoBuffer->GetWidth();
+	viewheight = I_VideoBuffer->GetHeight();
     }
     else
     {
@@ -699,8 +699,8 @@ void R_ExecuteSetViewSize (void)
     R_InitTextureMapping ();
     
     // psprite scales
-    pspritescale = FRACUNIT*viewwidth/SCREENWIDTH;
-    pspriteiscale = FRACUNIT*SCREENWIDTH/viewwidth;
+    pspritescale = FRACUNIT * viewwidth / I_VideoBuffer->GetWidth();
+    pspriteiscale = FRACUNIT * I_VideoBuffer->GetWidth() / viewwidth;
     
     // thing clipping
     for (i=0 ; i<viewwidth ; i++)
@@ -727,7 +727,7 @@ void R_ExecuteSetViewSize (void)
 	startmap = ((LIGHTLEVELS-1-i)*2)*NUMCOLORMAPS/LIGHTLEVELS;
 	for (j=0 ; j<MAXLIGHTSCALE ; j++)
 	{
-	    level = startmap - j*SCREENWIDTH/(viewwidth)/DISTMAP;
+	    level = startmap - j * I_VideoBuffer->GetWidth() / (viewwidth) / DISTMAP;
 	    
 	    if (level < 0)
 		level = 0;

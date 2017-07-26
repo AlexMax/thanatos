@@ -447,12 +447,12 @@ typedef struct
 
     uint16_t pad1;
     // The top Y-coordinate of the visplane at a specific X-coordinate.
-    uint16_t top[SCREENWIDTH];
+    uint16_t top[MAXWIDTH];
     uint16_t pad2;
 
     uint16_t pad3;
     // The bottom Y-coordinate of the visplane at a specific X-coordinate.
-    uint16_t bottom[SCREENWIDTH];
+    uint16_t bottom[MAXWIDTH];
     uint16_t pad4;
 } visplane_t;
 

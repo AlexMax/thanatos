@@ -54,7 +54,7 @@ int		viewwidth;
 int		viewheight;
 int		viewwindowx;
 int		viewwindowy; 
-pixel_t*		ylookup[MAXHEIGHT];
+pixel_t*	ylookup[MAXHEIGHT];
 int		columnofs[MAXWIDTH]; 
 
 // Color tables for different players,
@@ -107,9 +107,9 @@ void R_DrawColumn (void)
 	return; 
 				 
 #ifdef RANGECHECK 
-    if ((unsigned)dc_x >= SCREENWIDTH
+    if ((unsigned)dc_x >= I_VideoBuffer->GetWidth()
 	|| dc_yl < 0
-	|| dc_yh >= SCREENHEIGHT) 
+	|| dc_yh >= I_VideoBuffer->GetHeight())
 	I_Error ("R_DrawColumn: %i to %i at %i", dc_yl, dc_yh, dc_x); 
 #endif 
 
@@ -132,7 +132,7 @@ void R_DrawColumn (void)
 	//  using a lighting/special effects LUT.
 	*dest = dc_colormap[dc_source[(frac>>FRACBITS)&127]];
 	
-	dest += SCREENWIDTH; 
+	dest += I_VideoBuffer->GetWidth();
 	frac += fracstep;
 	
     } while (count--); 
@@ -143,7 +143,7 @@ void R_DrawColumn (void)
 // Spectre/Invisibility.
 //
 #define FUZZTABLE		50 
-#define FUZZOFF	(SCREENWIDTH)
+#define FUZZOFF	(VIRTUALWIDTH) // FIXME: Set to horizonal resolution
 
 
 int	fuzzoffset[FUZZTABLE] =
@@ -190,8 +190,8 @@ void R_DrawFuzzColumn (void)
 	return; 
 
 #ifdef RANGECHECK 
-    if ((unsigned)dc_x >= SCREENWIDTH
-	|| dc_yl < 0 || dc_yh >= SCREENHEIGHT)
+    if ((unsigned)dc_x >= I_VideoBuffer->GetWidth()
+	|| dc_yl < 0 || dc_yh >= I_VideoBuffer->GetHeight())
     {
 	I_Error ("R_DrawFuzzColumn: %i to %i at %i",
 		 dc_yl, dc_yh, dc_x);
@@ -219,7 +219,7 @@ void R_DrawFuzzColumn (void)
 	if (++fuzzpos == FUZZTABLE) 
 	    fuzzpos = 0;
 	
-	dest += SCREENWIDTH;
+	dest += I_VideoBuffer->GetWidth();
 
 	frac += fracstep; 
     } while (count--); 
@@ -249,9 +249,9 @@ void R_DrawTranslatedColumn (void)
 	return; 
 				 
 #ifdef RANGECHECK 
-    if ((unsigned)dc_x >= SCREENWIDTH
+    if ((unsigned)dc_x >= I_VideoBuffer->GetWidth()
 	|| dc_yl < 0
-	|| dc_yh >= SCREENHEIGHT)
+	|| dc_yh >= I_VideoBuffer->GetHeight())
     {
 	I_Error ( "R_DrawColumn: %i to %i at %i",
 		  dc_yl, dc_yh, dc_x);
@@ -275,7 +275,7 @@ void R_DrawTranslatedColumn (void)
 	// Thus the "green" ramp of the player 0 sprite
 	//  is mapped to gray, red, black/indigo. 
 	*dest = dc_colormap[dc_translation[dc_source[frac>>FRACBITS]]];
-	dest += SCREENWIDTH;
+	dest += I_VideoBuffer->GetWidth();
 	
 	frac += fracstep; 
     } while (count--); 
@@ -360,9 +360,9 @@ void R_DrawSpan (void)
 
 #ifdef RANGECHECK
     if (ds_x2 < ds_x1
-	|| ds_x1<0
-	|| ds_x2>=SCREENWIDTH
-	|| (unsigned)ds_y>SCREENHEIGHT)
+	|| ds_x1 < 0
+	|| ds_x2 >= I_VideoBuffer->GetWidth()
+	|| (unsigned)ds_y > I_VideoBuffer->GetHeight())
     {
 	I_Error( "R_DrawSpan: %i to %i at %i",
 		 ds_x1,ds_x2,ds_y);
@@ -420,21 +420,21 @@ R_InitBuffer
     // Handle resize,
     //  e.g. smaller view windows
     //  with border and/or status bar.
-    viewwindowx = (SCREENWIDTH-width) >> 1; 
+    viewwindowx = (I_VideoBuffer->GetWidth() - width) >> 1; 
 
     // Column offset. For windows.
     for (i=0 ; i<width ; i++) 
 	columnofs[i] = viewwindowx + i;
 
     // Samw with base row offset.
-    if (width == SCREENWIDTH) 
+    if (width == I_VideoBuffer->GetWidth())
 	viewwindowy = 0; 
     else 
-	viewwindowy = (SCREENHEIGHT-SBARHEIGHT-height) >> 1; 
+	viewwindowy = (I_VideoBuffer->GetHeight() - SBARHEIGHT - height) >> 1;
 
     // Preclaculate all row offsets.
     for (i=0 ; i<height ; i++) 
-	ylookup[i] = I_VideoBuffer->GetRawPixels() + (i+viewwindowy)*SCREENWIDTH; 
+	ylookup[i] = I_VideoBuffer->GetRawPixels() + (i + viewwindowy) * I_VideoBuffer->GetWidth();
 } 
  
  
@@ -454,6 +454,10 @@ void R_FillBackScreen (void)
     int		y; 
     patch_t*	patch;
 
+    // No.  No backscreen.
+    return;
+
+    /*
     // DOOM border patch.
     const char       *name1 = DEH_String("FLOOR7_2");
 
@@ -546,6 +550,7 @@ void R_FillBackScreen (void)
                 static_cast<patch_t*>(W_CacheLumpName(DEH_String("brdr_br"),PU_CACHE)));
 
     V_RestoreBuffer();
+    */
 } 
  
 
@@ -565,7 +570,7 @@ R_VideoErase
 
     if (background_buffer != NULL)
     {
-        memcpy(I_VideoBuffer->GetRawPixels() + ofs, background_buffer + ofs, count * sizeof(*I_VideoBuffer));
+        memcpy(I_VideoBuffer->GetRawPixels() + ofs, background_buffer + ofs, count * I_VideoBuffer->GetSize());
     }
 } 
 
@@ -582,31 +587,31 @@ void R_DrawViewBorder (void)
     int		ofs;
     int		i; 
  
-    if (viewwidth == SCREENWIDTH)
+    if (viewwidth == I_VideoBuffer->GetWidth() || true)
 	return; 
   
-    top = ((SCREENHEIGHT-SBARHEIGHT)-viewheight)/2; 
-    side = (SCREENWIDTH-viewwidth)/2;
+    top = ((I_VideoBuffer->GetHeight() - SBARHEIGHT) - viewheight) / 2;
+    side = (I_VideoBuffer->GetWidth() - viewwidth) / 2;
  
     // copy top and one line of left side 
-    R_VideoErase (0, top*SCREENWIDTH+side); 
+    R_VideoErase (0, top * I_VideoBuffer->GetWidth() + side);
  
     // copy one line of right side and bottom 
-    ofs = (viewheight+top)*SCREENWIDTH-side; 
-    R_VideoErase (ofs, top*SCREENWIDTH+side); 
+    ofs = (viewheight + top) * I_VideoBuffer->GetWidth() - side;
+    R_VideoErase(ofs, top * I_VideoBuffer->GetWidth() + side);
  
     // copy sides using wraparound 
-    ofs = top*SCREENWIDTH + SCREENWIDTH-side; 
+    ofs = top * I_VideoBuffer->GetWidth() + I_VideoBuffer->GetWidth() - side;
     side <<= 1;
     
     for (i=1 ; i<viewheight ; i++) 
     { 
 	R_VideoErase (ofs, side); 
-	ofs += SCREENWIDTH; 
+	ofs += I_VideoBuffer->GetWidth();
     } 
 
     // ? 
-    V_MarkRect (0,0,SCREENWIDTH, SCREENHEIGHT-SBARHEIGHT); 
+    V_MarkRect(0, 0, I_VideoBuffer->GetWidth(), I_VideoBuffer->GetHeight() - SBARHEIGHT);
 } 
  
  

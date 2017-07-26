@@ -47,6 +47,7 @@ int			skytexturemid;
 void R_InitSkyMap (void)
 {
   // skyflatnum = R_FlatNumForName ( SKYFLATNAME );
+    // FIXME: This is allocated before the screen is actually initialized.
     skytexturemid = SCREENHEIGHT/2*FRACUNIT;
 }
 

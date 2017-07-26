@@ -800,6 +800,11 @@ void I_FinishUpdate (void)
     // Blit from the screen buffer to the renderer.
     theta::system::renderer->SetPixels(*I_VideoBuffer);
 
+#ifdef _DEBUG
+    // Show any unrendered screen area as dark purple.
+    memset(I_VideoBuffer->GetRawPixels(), 254, I_VideoBuffer->GetSize());
+#endif
+
     // Blit from the paletted 8-bit screen buffer to the intermediate
     // 32-bit RGBA buffer that we can load into the texture.
 
@@ -842,9 +847,23 @@ void I_FinishUpdate (void)
 //
 void I_ReadScreen (pixel_t* scr)
 {
-    memcpy(scr, I_VideoBuffer->GetRawPixels(), SCREENWIDTH*SCREENHEIGHT*sizeof(*scr));
+    memcpy(scr, I_VideoBuffer->GetRawPixels(), I_VideoBuffer->GetSize() * sizeof(*scr));
 }
 
+namespace theta
+{
+
+namespace system
+{
+
+void ReadScreen(PixelBuffer& scr)
+{
+    scr = *I_VideoBuffer;
+}
+
+}
+
+}
 
 //
 // I_SetPalette
@@ -1444,12 +1463,12 @@ void I_InitGraphics(void)
     // 32-bit RGBA screen buffer that gets loaded into a texture that gets
     // finally rendered into our window or full screen in I_FinishUpdate().
 
-    I_VideoBuffer = std::make_unique<theta::PixelBuffer>(SCREENWIDTH, SCREENHEIGHT);
+    I_VideoBuffer = std::make_unique<theta::PixelBuffer>(960 - 1, 600 - 1);
     V_RestoreBuffer();
 
     // Clear the screen to black.
 
-    memset(I_VideoBuffer->GetRawPixels(), 0, SCREENWIDTH * SCREENHEIGHT);
+    memset(I_VideoBuffer->GetRawPixels(), 0, I_VideoBuffer->GetSize());
 
     // clear out any events waiting at the start and center the mouse
   

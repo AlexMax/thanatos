@@ -35,9 +35,10 @@ class PixelBuffer
 public:
     PixelBuffer(int width, int height) :
         width(width), height(height), pixels(width * height) { }
-    PixelBuffer(const PixelBuffer&) = delete;
+    //PixelBuffer(const PixelBuffer&) = delete;
     int GetWidth() const;
     int GetHeight() const;
+    int GetSize() const;
     pixel_t* GetRawPixels();
     const pixel_t* GetRawPixels() const;
 };

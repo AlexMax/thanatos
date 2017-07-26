@@ -345,11 +345,20 @@ Renderer::Renderer(SDL_Window* window) :
 #endif
 
     // Basic initialization
+
+    // Backface culling
     glEnable(GL_CULL_FACE);
+
+    // Align on byte boundaries.  Without this, our pixel data will skew
+    // when the resolution is not evenly divisible by four.
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    // Maximum texture size governs how big our resolution can be, as well
+    // how big our texture atlases can be.
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &this->maxTextureSize);
-    if (this->maxTextureSize < 64)
+    if (this->maxTextureSize < 256)
     {
-        I_Error("Maximum texture size is either garbage or less than industry standard");
+        I_Error("Maximum texture size is too small to fit the palette");
     }
 
     // Set up the screen.

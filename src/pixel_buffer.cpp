@@ -38,6 +38,11 @@ int PixelBuffer::GetHeight() const
     return this->height;
 }
 
+int PixelBuffer::GetSize() const
+{
+    return this->width * this->height;
+}
+
 // Get raw write access to the pixel buffer.
 pixel_t* PixelBuffer::GetRawPixels()
 {

@@ -67,9 +67,9 @@ static void SaveDiskData(const char *disk_lump, int xoffs, int yoffs)
     patch_t *disk;
 
     // Allocate a complete temporary screen where we'll draw the patch.
-    tmpscreen = static_cast<byte*>(Z_Malloc(SCREENWIDTH * SCREENHEIGHT * sizeof(*tmpscreen),
+    tmpscreen = static_cast<byte*>(Z_Malloc(I_VideoBuffer->GetSize() * sizeof(*tmpscreen),
                          PU_STATIC, NULL));
-    memset(tmpscreen, 0, SCREENWIDTH * SCREENHEIGHT * sizeof(*tmpscreen));
+    memset(tmpscreen, 0, I_VideoBuffer->GetSize() * sizeof(*tmpscreen));
     V_UseBuffer(tmpscreen);
 
     // Buffer where we'll save the disk data.
@@ -80,7 +80,7 @@ static void SaveDiskData(const char *disk_lump, int xoffs, int yoffs)
     disk = static_cast<patch_t*>(W_CacheLumpName(disk_lump, PU_STATIC));
     V_DrawPatch(loading_disk_xoffs, loading_disk_yoffs, disk);
     CopyRegion(disk_data, LOADING_DISK_W,
-               tmpscreen + yoffs * SCREENWIDTH + xoffs, SCREENWIDTH,
+               tmpscreen + yoffs * I_VideoBuffer->GetWidth() + xoffs, I_VideoBuffer->GetWidth(),
                LOADING_DISK_W, LOADING_DISK_H);
     W_ReleaseLumpName(disk_lump);
 
@@ -117,11 +117,11 @@ void V_DrawDiskIcon(void)
     {
         // Save the background behind the disk before we draw it.
         CopyRegion(saved_background, LOADING_DISK_W,
-                   DiskRegionPointer(), SCREENWIDTH,
+                   DiskRegionPointer(), I_VideoBuffer->GetWidth(),
                    LOADING_DISK_W, LOADING_DISK_H);
 
         // Write the disk to the screen buffer.
-        CopyRegion(DiskRegionPointer(), SCREENWIDTH,
+        CopyRegion(DiskRegionPointer(), I_VideoBuffer->GetWidth(),
                    disk_data, LOADING_DISK_W,
                    LOADING_DISK_W, LOADING_DISK_H);
         disk_drawn = true;
@@ -135,7 +135,7 @@ void V_RestoreDiskBackground(void)
     if (disk_drawn)
     {
         // Restore the background.
-        CopyRegion(DiskRegionPointer(), SCREENWIDTH,
+        CopyRegion(DiskRegionPointer(), I_VideoBuffer->GetWidth(),
                    saved_background, LOADING_DISK_W,
                    LOADING_DISK_W, LOADING_DISK_H);
 
