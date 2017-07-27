@@ -6,7 +6,7 @@ So what is this?
 ----------------
 This port is a work in progress.  However, the goal is to move Doom's gameloop into Javascript for the purposes of making it easy to tinker with and mod.  In fact, I'd like to get to a point where this port is more like a game engine that just so happens to play a reasonable facsimile of Doom out of the box.
 
-There are also a few other "nice to have" features that I'd also like to implement - most notably support for arbitrary resolutions, an uncapped framerate, and an ingame console.  If you're curious for more information, check out the [Development Roadmap](https://github.com/AlexMax/thanatos/wiki/Development-Roadmap).
+There are also a few other "nice to have" features that I'd also like to implement - most notably support for arbitrary resolutions, an uncapped framerate, and an ingame console.  If you're curious for more information, check out the [Development Manifesto](https://github.com/AlexMax/thanatos/wiki/Development-Manifesto).
 
 So what isn't this?
 -------------------
