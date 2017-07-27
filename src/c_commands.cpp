@@ -17,8 +17,6 @@
 
 #include <unordered_map>
 
-#include <stdlib.h> // exit
-
 #include "c_commands.h"
 
 #include "c_console.h"
@@ -67,7 +65,7 @@ static void CmdSet(CommandArguments args)
 
 static void CmdQuit(CommandArguments args)
 {
-    exit(0);
+    I_Quit();
 }
 
 // Get the global commands instance.
