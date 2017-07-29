@@ -797,7 +797,7 @@ void I_FinishUpdate (void)
     }
 
     // Blit from the screen buffer to the renderer.
-    //theta::system::renderer->SetWorldPixels(*I_VideoBuffer);
+    theta::system::renderer->SetWorldPixels(*I_VideoBuffer);
 
 #ifdef _DEBUG
     // Show any unrendered screen area as dark purple.

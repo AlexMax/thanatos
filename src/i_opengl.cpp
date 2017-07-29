@@ -518,6 +518,9 @@ void Renderer::Render()
     {
         I_Error("No renderSource defined.");
     }
+
+    // Render the world by default, you must force pages by hand.
+    this->renderSource = renderSources::world;
 }
 
 // Set pixel data for a full screen "page".
@@ -544,7 +547,6 @@ void Renderer::SetWorldPalette(const byte* palette)
 // Set the current pixel data for the 3D rendered world view.
 void Renderer::SetWorldPixels(const video::PalletedBuffer& pixels)
 {
-    this->renderSource = renderSources::world;
     glBindTexture(GL_TEXTURE_2D, this->worldPixels);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, pixels.GetWidth(), pixels.GetHeight(), 0, GL_RED, GL_UNSIGNED_BYTE, pixels.GetRawPixels());
 }
