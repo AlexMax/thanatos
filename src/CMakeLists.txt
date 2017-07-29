@@ -85,10 +85,10 @@ set(GAME_SOURCE_FILES
     net_sdl.cpp       net_sdl.h
     net_server.cpp    net_server.h
     net_structrw.cpp  net_structrw.h
-    pixel_buffer.cpp  pixel_buffer.h
     sha1.cpp          sha1.h
     memio.cpp         memio.h
     tables.cpp        tables.h
+    v_buffer.cpp      v_buffer.h
     v_diskicon.cpp    v_diskicon.h
     v_draw_list.cpp   v_draw_list.h
     v_video.cpp       v_video.h

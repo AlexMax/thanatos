@@ -170,7 +170,7 @@ static boolean nograbmouse_override = false;
 
 // The screen buffer; this is modified to draw things to the screen
 
-std::unique_ptr<theta::PixelBuffer> I_VideoBuffer = nullptr;
+std::unique_ptr<theta::video::PalletedBuffer> I_VideoBuffer = nullptr;
 
 // If true, game is running as a screensaver
 
@@ -856,7 +856,7 @@ namespace theta
 namespace system
 {
 
-void ReadScreen(PixelBuffer& scr)
+void ReadScreen(video::PalletedBuffer& scr)
 {
     scr = *I_VideoBuffer;
 }
@@ -1463,7 +1463,7 @@ void I_InitGraphics(void)
     // 32-bit RGBA screen buffer that gets loaded into a texture that gets
     // finally rendered into our window or full screen in I_FinishUpdate().
 
-    I_VideoBuffer = std::make_unique<theta::PixelBuffer>(960 - 1, 600 - 1);
+    I_VideoBuffer = std::make_unique<theta::video::PalletedBuffer>(960 - 1, 600 - 1);
     V_RestoreBuffer();
 
     // Clear the screen to black.

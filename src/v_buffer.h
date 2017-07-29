@@ -15,8 +15,8 @@
 //     A buffer of pixels that knows its own resolution.
 //
 
-#ifndef __PIXEL_BUFFER__
-#define __PIXEL_BUFFER__
+#ifndef __V_BUFFER__
+#define __V_BUFFER__
 
 #include <vector>
 
@@ -25,23 +25,44 @@
 namespace theta
 {
 
-// A buffer of pixels that knows its own resolution.
-class PixelBuffer
+namespace video
+{
+
+// A buffer of 8-bit pixels that knows its own resolution.
+class PalletedBuffer
 {
     int width;
     int height;
     std::vector<pixel_t> pixels;
     void resize();
 public:
-    PixelBuffer(int width, int height) :
+    PalletedBuffer(int width, int height) :
         width(width), height(height), pixels(width * height) { }
-    //PixelBuffer(const PixelBuffer&) = delete;
     int GetWidth() const;
     int GetHeight() const;
     int GetSize() const;
     pixel_t* GetRawPixels();
     const pixel_t* GetRawPixels() const;
 };
+
+// A buffer of truecolor + transparency pixels that knows its own resolution.
+class RGBABuffer
+{
+    int width;
+    int height;
+    std::vector<pixel_t> pixels;
+    void resize();
+public:
+    RGBABuffer(int width, int height) :
+        width(width), height(height), pixels(width * height * 4) { }
+    int GetWidth() const;
+    int GetHeight() const;
+    int GetSize() const;
+    pixel_t* GetRawPixels();
+    const pixel_t* GetRawPixels() const;
+};
+
+}
 
 }
 

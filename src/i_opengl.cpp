@@ -403,7 +403,7 @@ void Renderer::SetPalette(const byte* palette)
 }
 
 // Set the current pixel data.
-void Renderer::SetPixels(const PixelBuffer& pixels)
+void Renderer::SetPixels(const video::PalletedBuffer& pixels)
 {
     glBindTexture(GL_TEXTURE_2D, this->screenPixels);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, pixels.GetWidth(), pixels.GetHeight(), 0, GL_RED, GL_UNSIGNED_BYTE, pixels.GetRawPixels());
