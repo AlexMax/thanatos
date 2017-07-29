@@ -25,6 +25,7 @@
 #include "glad/glad.h"
 
 #include "doomtype.h"
+#include "i_renderer.h"
 #include "v_buffer.h"
 
 namespace theta
@@ -70,18 +71,24 @@ public:
     std::string Log() const;
 };
 
-class Renderer
+class Renderer : public RendererInterface
 {
 private:
+    enum class renderSources { none, world, page };
     bool constructed;
     SDL_GLContext context;
     GLint maxTextureSize;
-    std::unique_ptr<Program> screenProgram;
-    GLuint screenVAO;
-    GLuint screenPixels;
-    GLuint screenPalettes;
+    GLuint pagePixels;
+    std::unique_ptr<Program> pageProgram;
+    GLuint pageVAO;
+    renderSources renderSource;
     SDL_Window* window; // FIXME: raw pointer, possible ownership issues
-    void constructScreen();
+    GLuint worldPalettes;
+    GLuint worldPixels;
+    std::unique_ptr<Program> worldProgram;
+    GLuint worldVAO;
+    void constructPage();
+    void constructWorld();
     static void debugCall(const char* name, void* funcptr, int len_args, ...);
     static void debugMessage(GLenum source, GLenum type, GLuint id,
         GLenum severity, GLsizei length, const GLchar* message, const void* param);
@@ -91,9 +98,10 @@ public:
     Renderer::~Renderer();
     void Flip();
     void Render();
-    void SetPalette(const byte* palette);
-    void SetPixels(const video::PalletedBuffer& pixels);
+    void SetPagePixels(const video::RGBABuffer& pixels);
     void SetResolution(int width, int height);
+    void SetWorldPalette(const byte* palette);
+    void SetWorldPixels(const video::PalletedBuffer& pixels);
 };
 
 }

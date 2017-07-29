@@ -33,7 +33,6 @@
 #include "config.h"
 #include "d_loop.h"
 #include "deh_str.h"
-#include "doomtype.h"
 #include "i_input.h"
 #include "i_joystick.h"
 #include "i_opengl.h"
@@ -56,7 +55,7 @@ namespace system
 {
 
 // The renderer abstraction layer
-static std::unique_ptr<gl::Renderer> renderer;
+std::unique_ptr<RendererInterface> renderer;
 
 }
 
@@ -784,7 +783,7 @@ void I_FinishUpdate (void)
 
     if (palette_to_set)
     {
-        theta::system::renderer->SetPalette(palette);
+        theta::system::renderer->SetWorldPalette(palette);
         /* SDL_SetPaletteColors(screenbuffer->format->palette, palette, 0, 256); */
         palette_to_set = false;
 
@@ -798,7 +797,7 @@ void I_FinishUpdate (void)
     }
 
     // Blit from the screen buffer to the renderer.
-    theta::system::renderer->SetPixels(*I_VideoBuffer);
+    //theta::system::renderer->SetWorldPixels(*I_VideoBuffer);
 
 #ifdef _DEBUG
     // Show any unrendered screen area as dark purple.
@@ -1442,7 +1441,7 @@ void I_InitGraphics(void)
 
     doompal = static_cast<byte*>(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
     I_SetPalette(doompal);
-    theta::system::renderer->SetPalette(palette);
+    theta::system::renderer->SetWorldPalette(palette);
     /* SDL_SetPaletteColors(screenbuffer->format->palette, palette, 0, 256); */
 
     // SDL2-TODO UpdateFocus();

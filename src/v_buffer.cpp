@@ -15,6 +15,7 @@
 //     A buffer of pixels that knows its own resolution.
 //
 
+#include "i_swap.h"
 #include "v_buffer.h"
 
 namespace theta
@@ -56,6 +57,40 @@ pixel_t* PalletedBuffer::GetRawPixels()
 const pixel_t* PalletedBuffer::GetRawPixels() const
 {
     return &this->pixels.front();
+}
+
+
+// Initialize the buffer with the contents of a patch.
+RGBABuffer::RGBABuffer(const patch_t* patch, const byte* palette) :
+    width(patch->width), height(patch->height), pixels(patch->width * patch->height * 4)
+{
+    pixel_t* desttop = this->pixels.data();
+    int w = SHORT(patch->width);
+
+    for (int col = 0;col < w;col++, desttop += 4)
+    {
+        column_t* column = (column_t *)((byte *)patch + LONG(patch->columnofs[col]));
+
+        // step through the posts in a column
+        while (column->topdelta != 0xff)
+        {
+            byte* source = (byte *)column + 3;
+            pixel_t* dest = desttop + column->topdelta * this->width * 4;
+            int count = column->length;
+
+            while (count--)
+            {
+                *dest = palette[(*source) * 3];           // Red
+                *(dest + 1) = palette[(*source) * 3 + 1]; // Green
+                *(dest + 2) = palette[(*source) * 3 + 2]; // Blue
+                *(dest + 3) = 0xFF;                       // Alpha
+
+                source++;
+                dest += this->width * 4;
+            }
+            column = (column_t *)((byte *)column + column->length + 4);
+        }
+    }
 }
 
 // Resize the buffer for the presumably updated width and height.

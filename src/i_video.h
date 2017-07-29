@@ -23,6 +23,7 @@
 #include <memory>
 
 #include "doomtype.h"
+#include "i_renderer.h"
 #include "v_buffer.h"
 
 // Maximum screen width and height.
@@ -95,6 +96,18 @@ void I_StartTic (void);
 // Enable the loading disk image displayed when reading from disk.
 
 void I_EnableLoadingDisk(int xoffs, int yoffs);
+
+namespace theta
+{
+
+namespace system
+{
+
+extern std::unique_ptr<RendererInterface> renderer;
+
+}
+
+}
 
 extern const char *video_driver;
 extern boolean screenvisible;

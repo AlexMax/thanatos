@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "doomtype.h"
+#include "v_patch.h"
 
 namespace theta
 {
@@ -55,6 +56,7 @@ class RGBABuffer
 public:
     RGBABuffer(int width, int height) :
         width(width), height(height), pixels(width * height * 4) { }
+    RGBABuffer(const patch_t* patch, const byte* palette);
     int GetWidth() const;
     int GetHeight() const;
     int GetSize() const;

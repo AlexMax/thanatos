@@ -142,8 +142,112 @@ std::string Program::Log() const
     }
 }
 
-// Constructs the primary screen, the main target of the 3D renderer.
-void Renderer::constructScreen()
+// Constructs the page, the target of any full-screen 2D renderings like
+// the title screen or the help screen.
+void Renderer::constructPage()
+{
+    if (this->constructed)
+    {
+        I_Error("Something called Renderer::constructScreen twice");
+    }
+
+    // Vertex Shader
+    const char* vertexShaderSource =
+        "#version 330 core\n\n"
+
+        "layout (location = 0) in vec3 aPos;\n"
+        "layout (location = 1) in vec2 aTexCoord;\n\n"
+
+        "out vec2 testTexCoord;\n\n"
+
+        "void main()\n"
+        "{\n"
+        "    gl_Position = vec4(aPos, 1.0);\n"
+        "    testTexCoord = aTexCoord;\n"
+        "}";
+    Shader vertexShader(Shader::type::vertex);
+    vertexShader.Source(vertexShaderSource);
+    if (vertexShader.Compile() == false)
+    {
+        I_Error("Vertex Shader Compile Error:\n%s\n", vertexShader.Log().c_str());
+    }
+
+    // Fragment Shader
+    const char* fragmentShaderSource =
+        "#version 330 core\n\n"
+
+        "out vec4 oFragColor;\n"
+        "in vec2 testTexCoord;\n\n"
+
+        "uniform sampler2D uTexture;\n\n"
+
+        "void main()\n"
+        "{\n"
+        "    oFragColor = texture(uTexture, testTexCoord);\n"
+        "}\n";
+    Shader fragmentShader(Shader::type::fragment);
+    fragmentShader.Source(fragmentShaderSource);
+    if (fragmentShader.Compile() == false)
+    {
+        I_Error("Fragment Shader Compile Error:\n%s\n", fragmentShader.Log().c_str());
+    }
+
+    // Page Shader Program.
+    this->pageProgram = std::make_unique<Program>();
+    this->pageProgram->Attach(vertexShader);
+    this->pageProgram->Attach(fragmentShader);
+    if (this->pageProgram->Link() == false)
+    {
+        I_Error("Shader Program Link Error:\n%s\n", this->pageProgram->Log().c_str());
+    }
+
+    // A simple square to render the screen to.
+    //
+    // The first three vertices are the x,y,z locations in screen space.
+    // The last two vertices are the texture coordinates.
+    GLfloat vertices[][5] = {
+        { 1.0f, -1.0f, 0.0f, 1.0f, 1.0f },
+        { 1.0f,  1.0f, 0.0f, 1.0f, 0.0f },
+        { -1.0f, -1.0f, 0.0f, 0.0f, 1.0f },
+        { -1.0f,  1.0f, 0.0f, 0.0f, 0.0f }
+    };
+
+    // Bind the square to a VAO containing a VBO.
+    glGenVertexArrays(1, &this->pageVAO);
+    glBindVertexArray(this->pageVAO);
+
+    GLuint VBOnum;
+    glGenBuffers(1, &VBOnum);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOnum);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // location 0
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+    glEnableVertexAttribArray(0);
+
+    // Location 1
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    // Unbind our VBO and VAO so we don't accidentally modify them.
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    // All we need is a texture that contains the RGBA page data.
+    glGenTextures(1, &this->pagePixels);
+    glBindTexture(GL_TEXTURE_2D, this->pagePixels);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    // Assign texture unit 0 to hold our page.
+    glUseProgram(this->pageProgram->Ref());
+    glUniform1i(glGetUniformLocation(this->pageProgram->Ref(), "uTexture"), 0);
+}
+
+// Constructs the "world", the main target of the 3D renderer.
+void Renderer::constructWorld()
 {
     if (this->constructed)
     {
@@ -194,13 +298,13 @@ void Renderer::constructScreen()
         I_Error("Fragment Shader Compile Error:\n%s\n", fragmentShader.Log().c_str());
     }
 
-    // Screen Shader Program.
-    this->screenProgram = std::make_unique<Program>();
-    this->screenProgram->Attach(vertexShader);
-    this->screenProgram->Attach(fragmentShader);
-    if (this->screenProgram->Link() == false)
+    // World Shader Program.
+    this->worldProgram = std::make_unique<Program>();
+    this->worldProgram->Attach(vertexShader);
+    this->worldProgram->Attach(fragmentShader);
+    if (this->worldProgram->Link() == false)
     {
-        I_Error("Shader Program Link Error:\n%s\n", this->screenProgram->Log().c_str());
+        I_Error("Shader Program Link Error:\n%s\n", this->worldProgram->Log().c_str());
     }
 
     // A simple square to render the screen to.
@@ -215,8 +319,8 @@ void Renderer::constructScreen()
     };
 
     // Bind the square to a VAO containing a VBO.
-    glGenVertexArrays(1, &this->screenVAO);
-    glBindVertexArray(this->screenVAO);
+    glGenVertexArrays(1, &this->worldVAO);
+    glBindVertexArray(this->worldVAO);
 
     GLuint VBOnum;
     glGenBuffers(1, &VBOnum);
@@ -238,25 +342,25 @@ void Renderer::constructScreen()
     // Initialize our screen textures.
 
     // First, we need a texture that contains the raw 8-bit screen data.
-    glGenTextures(1, &this->screenPixels);
-    glBindTexture(GL_TEXTURE_2D, this->screenPixels);
+    glGenTextures(1, &this->worldPixels);
+    glBindTexture(GL_TEXTURE_2D, this->worldPixels);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     // Next, we need a second texture that contains the palettes.
-    glGenTextures(1, &this->screenPalettes);
-    glBindTexture(GL_TEXTURE_2D, this->screenPalettes);
+    glGenTextures(1, &this->worldPalettes);
+    glBindTexture(GL_TEXTURE_2D, this->worldPalettes);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     // Assign texture units 0 and 1 to hold our screen texture and palettes.
-    glUseProgram(this->screenProgram->Ref());
-    glUniform1i(glGetUniformLocation(this->screenProgram->Ref(), "uTexture"), 0);
-    glUniform1i(glGetUniformLocation(this->screenProgram->Ref(), "uPalette"), 1);
+    glUseProgram(this->worldProgram->Ref());
+    glUniform1i(glGetUniformLocation(this->worldProgram->Ref(), "uTexture"), 0);
+    glUniform1i(glGetUniformLocation(this->worldProgram->Ref(), "uPalette"), 1);
 }
 
 // logs every gl call to the console.
@@ -312,8 +416,10 @@ void Renderer::debugMessage(GLenum source, GLenum type, GLuint id,
 }
 
 Renderer::Renderer(SDL_Window* window) :
-    constructed(false), context(nullptr), maxTextureSize(0), window(window),
-    screenProgram(nullptr), screenVAO(0), screenPixels(0), screenPalettes(0)
+    constructed(false), context(nullptr), maxTextureSize(0),
+    renderSource(renderSources::none), window(window),
+    pagePixels(0), pageProgram(nullptr), pageVAO(0),
+    worldPixels(0), worldPalettes(0), worldProgram(nullptr), worldVAO(0)
 {
     // Do some OpenGL initialization stuff.
     this->context = SDL_GL_CreateContext(this->window);
@@ -361,8 +467,11 @@ Renderer::Renderer(SDL_Window* window) :
         I_Error("Maximum texture size is too small to fit the palette");
     }
 
-    // Set up the screen.
-    this->constructScreen();
+    // Set up the world view.
+    this->constructWorld();
+
+    // Set up the page view.
+    this->constructPage();
 
     // Prevent nefarious people from calling constructor-only methods.
     this->constructed = true;
@@ -385,34 +494,59 @@ void Renderer::Render()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->screenPixels);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, this->screenPalettes);
+    if (this->renderSource == renderSources::world)
+    {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, this->worldPixels);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, this->worldPalettes);
 
-    glUseProgram(this->screenProgram->Ref());
-    glBindVertexArray(this->screenVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glUseProgram(this->worldProgram->Ref());
+        glBindVertexArray(this->worldVAO);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
+    else if (this->renderSource == renderSources::page)
+    {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, this->pagePixels);
+
+        glUseProgram(this->pageProgram->Ref());
+        glBindVertexArray(this->pageVAO);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
+    else
+    {
+        I_Error("No renderSource defined.");
+    }
 }
 
-// Set the current palette.
-void Renderer::SetPalette(const byte* palette)
+// Set pixel data for a full screen "page".
+void Renderer::SetPagePixels(const video::RGBABuffer& pixels)
 {
-    glBindTexture(GL_TEXTURE_2D, this->screenPalettes);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 256, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, palette);
-}
-
-// Set the current pixel data.
-void Renderer::SetPixels(const video::PalletedBuffer& pixels)
-{
-    glBindTexture(GL_TEXTURE_2D, this->screenPixels);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, pixels.GetWidth(), pixels.GetHeight(), 0, GL_RED, GL_UNSIGNED_BYTE, pixels.GetRawPixels());
+    this->renderSource = renderSources::page;
+    glBindTexture(GL_TEXTURE_2D, this->pagePixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, pixels.GetWidth(), pixels.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.GetRawPixels());
 }
 
 // Nudge OpenGL to change the size of the viewport to match the new resolution.
 void Renderer::SetResolution(int width, int height)
 {
     glViewport(0, 0, width, height);
+}
+
+// Set the current palette for the 3D rendered world view.
+void Renderer::SetWorldPalette(const byte* palette)
+{
+    glBindTexture(GL_TEXTURE_2D, this->worldPalettes);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 256, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, palette);
+}
+
+// Set the current pixel data for the 3D rendered world view.
+void Renderer::SetWorldPixels(const video::PalletedBuffer& pixels)
+{
+    this->renderSource = renderSources::world;
+    glBindTexture(GL_TEXTURE_2D, this->worldPixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, pixels.GetWidth(), pixels.GetHeight(), 0, GL_RED, GL_UNSIGNED_BYTE, pixels.GetRawPixels());
 }
 
 }

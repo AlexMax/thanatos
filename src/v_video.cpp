@@ -484,6 +484,24 @@ void V_DrawShadowedPatch(int x, int y, patch_t *patch)
     }
 }
 
+namespace theta
+{
+
+namespace video
+{
+
+// Draw a page using the appropriate renderer method.
+void DrawPage(const patch_t* patch)
+{
+    auto doompal = static_cast<byte*>(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
+    RGBABuffer page(patch, doompal);
+    system::renderer->SetPagePixels(page);
+}
+
+}
+
+}
+
 //
 // Load tint table from TINTTAB lump.
 //

@@ -62,6 +62,18 @@ void V_DrawShadowedPatch(int x, int y, patch_t *patch);
 void V_DrawXlaPatch(int x, int y, patch_t * patch);     // villsa [STRIFE]
 void V_DrawPatchDirect(int x, int y, patch_t *patch);
 
+namespace theta
+{
+
+namespace video
+{
+
+void DrawPage(const patch_t* patch);
+
+}
+
+}
+
 // Draw a linear block of pixels into the view buffer.
 
 void V_DrawBlock(int x, int y, int width, int height, pixel_t *src);
