@@ -858,8 +858,7 @@ void M_MusicVol(int choice)
 //
 void M_DrawMainMenu(void)
 {
-    V_DrawPatchDirect(94, 2,
-        static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_DOOM"), PU_CACHE)));
+    theta::video::DrawPatch(94, 2, DEH_String("M_DOOM"));
 }
 
 
@@ -1975,16 +1974,15 @@ void M_Drawer (void)
 
 	if (name[0])
 	{
-	    V_DrawPatchDirect (x, y, static_cast<patch_t*>(W_CacheLumpName(name, PU_CACHE)));
+            theta::video::DrawPatch(x, y, name);
 	}
 	y += LINEHEIGHT;
     }
 
     
     // DRAW SKULL
-    V_DrawPatchDirect(x + SKULLXOFF, currentMenu->y - 5 + itemOn*LINEHEIGHT,
-		      static_cast<patch_t*>(W_CacheLumpName(DEH_String(skullName[whichSkull]),
-				      PU_CACHE)));
+    theta::video::DrawPatch(x + SKULLXOFF, currentMenu->y - 5 + itemOn * LINEHEIGHT,
+        DEH_String(skullName[whichSkull]));
 }
 
 

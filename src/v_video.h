@@ -68,6 +68,7 @@ namespace theta
 namespace video
 {
 
+void DrawPatch(int x, int y, const char* lump);
 void DrawPage(const patch_t* patch);
 
 }

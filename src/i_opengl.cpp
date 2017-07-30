@@ -142,6 +142,118 @@ std::string Program::Log() const
     }
 }
 
+// Constructs the graphics renderer, which handles batched 2D graphics
+// rendering.
+void Renderer::constructGraphics()
+{
+    if (this->constructed)
+    {
+        I_Error("Something called Renderer::constructScreen twice");
+    }
+
+    // Vertex Shader
+    const char* vertexShaderSource =
+        "#version 330 core\n\n"
+
+        "layout (location = 0) in vec3 aPos;\n"
+        "layout (location = 1) in vec2 aTexCoord;\n\n"
+
+        "out vec2 testTexCoord;\n\n"
+
+        "void main()\n"
+        "{\n"
+        "    gl_Position = vec4(aPos, 1.0);\n"
+        "    testTexCoord = aTexCoord;\n"
+        "}";
+    Shader vertexShader(Shader::type::vertex);
+    vertexShader.Source(vertexShaderSource);
+    if (vertexShader.Compile() == false)
+    {
+        I_Error("Vertex Shader Compile Error:\n%s\n", vertexShader.Log().c_str());
+    }
+
+    // Fragment Shader
+    const char* fragmentShaderSource =
+        "#version 330 core\n\n"
+
+        "out vec4 oFragColor;\n"
+        "in vec2 testTexCoord;\n\n"
+
+        "uniform sampler2D uTexture;\n\n"
+
+        "void main()\n"
+        "{\n"
+        "    oFragColor = texture(uTexture, testTexCoord);\n"
+        "}\n";
+    Shader fragmentShader(Shader::type::fragment);
+    fragmentShader.Source(fragmentShaderSource);
+    if (fragmentShader.Compile() == false)
+    {
+        I_Error("Fragment Shader Compile Error:\n%s\n", fragmentShader.Log().c_str());
+    }
+
+    // Page Shader Program.
+    this->graphicsProgram = std::make_unique<Program>();
+    this->graphicsProgram->Attach(vertexShader);
+    this->graphicsProgram->Attach(fragmentShader);
+    if (this->graphicsProgram->Link() == false)
+    {
+        I_Error("Shader Program Link Error:\n%s\n", this->graphicsProgram->Log().c_str());
+    }
+
+    // A simple square to render the screen to.
+    //
+    // The first three vertices are the x,y,z locations in screen space.
+    // The last two vertices are the texture coordinates.
+    GLfloat vertices[][5] = {
+        { 1.0f, -1.0f, 0.0f, 1.0f, 1.0f },
+        { 1.0f,  1.0f, 0.0f, 1.0f, 0.0f },
+        { -1.0f, -1.0f, 0.0f, 0.0f, 1.0f },
+        { -1.0f,  1.0f, 0.0f, 0.0f, 0.0f }
+    };
+
+    // Bind the square to a VAO containing a VBO.
+    glGenVertexArrays(1, &this->graphicsVAO);
+    glBindVertexArray(this->graphicsVAO);
+
+    GLuint VBOnum;
+    glGenBuffers(1, &VBOnum);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOnum);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // location 0
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+    glEnableVertexAttribArray(0);
+
+    // Location 1
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    // Unbind our VBO and VAO so we don't accidentally modify them.
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    // All we need is a texture that contains the RGBA graphics data.
+    glGenTextures(1, &this->graphicsPixels);
+    glBindTexture(GL_TEXTURE_2D, this->graphicsPixels);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    // Create an empty texture, since we're just using this as an atlas.
+    GLuint atlas_size = 512;
+    std::vector<GLuint> blank(atlas_size * atlas_size * 4);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, atlas_size, atlas_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, blank.data());
+
+    // Assign texture unit 0 to hold our page.
+    glUseProgram(this->graphicsProgram->Ref());
+    glUniform1i(glGetUniformLocation(this->graphicsProgram->Ref(), "uTexture"), 0);
+
+    // Set up the graphics atlas of the same size.
+    this->graphicsAtlas = std::make_unique<video::Atlas>(atlas_size, atlas_size);
+}
+
 // Constructs the page, the target of any full-screen 2D renderings like
 // the title screen or the help screen.
 void Renderer::constructPage()
@@ -418,6 +530,7 @@ void Renderer::debugMessage(GLenum source, GLenum type, GLuint id,
 Renderer::Renderer(SDL_Window* window) :
     constructed(false), context(nullptr), maxTextureSize(0),
     renderSource(renderSources::none), window(window),
+    graphicsAtlas(nullptr), graphicsPixels(0), graphicsProgram(nullptr), graphicsVAO(0),
     pagePixels(0), pageProgram(nullptr), pageVAO(0),
     worldPixels(0), worldPalettes(0), worldProgram(nullptr), worldVAO(0)
 {
@@ -455,6 +568,10 @@ Renderer::Renderer(SDL_Window* window) :
     // Backface culling
     glEnable(GL_CULL_FACE);
 
+    // Enable transparency
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     // Align on byte boundaries.  Without this, our pixel data will skew
     // when the resolution is not evenly divisible by four.
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -466,6 +583,9 @@ Renderer::Renderer(SDL_Window* window) :
     {
         I_Error("Maximum texture size is too small to fit the palette");
     }
+
+    // Set up the graphics overlay view.
+    this->constructGraphics();
 
     // Set up the world view.
     this->constructWorld();
@@ -496,6 +616,7 @@ void Renderer::Render()
 
     if (this->renderSource == renderSources::world)
     {
+        // Render the 3D world.
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, this->worldPixels);
         glActiveTexture(GL_TEXTURE1);
@@ -507,6 +628,7 @@ void Renderer::Render()
     }
     else if (this->renderSource == renderSources::page)
     {
+        // Render a 2D page.
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, this->pagePixels);
 
@@ -519,8 +641,44 @@ void Renderer::Render()
         I_Error("No renderSource defined.");
     }
 
+    // Draw 2D graphics on top of that.
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, this->graphicsPixels);
+
+    glUseProgram(this->graphicsProgram->Ref());
+    glBindVertexArray(this->graphicsVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
     // Render the world by default, you must force pages by hand.
     this->renderSource = renderSources::world;
+}
+
+// Add graphic to the texture atlas.
+void Renderer::AddGraphic(const char* name, const video::RGBABuffer& pixels, int xoff, int yoff)
+{
+    this->graphicsAtlas->Add(name, pixels.GetWidth(), pixels.GetHeight(), xoff, yoff);
+
+    video::AtlasEntry atlas(0, 0, 0, 0, 0, 0);
+    if (this->graphicsAtlas->Find(name, atlas) == false)
+    {
+        return;
+    }
+
+    // Use the atlas entry to draw our graphic.
+    glBindTexture(GL_TEXTURE_2D, this->graphicsPixels);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, atlas.x, atlas.y, atlas.w, atlas.h, GL_RGBA, GL_UNSIGNED_BYTE, pixels.GetRawPixels());
+}
+
+// Check to see if a graphic exists in the texture atlas.
+bool Renderer::CheckGraphic(const char* name)
+{
+    return this->graphicsAtlas->Check(name);
+}
+
+// Draw a graphic that should exist in the texture atlas.
+void Renderer::DrawGraphic(const char* name, int x, int y)
+{
+
 }
 
 // Set pixel data for a full screen "page".

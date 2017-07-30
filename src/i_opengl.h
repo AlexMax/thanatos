@@ -26,6 +26,7 @@
 
 #include "doomtype.h"
 #include "i_renderer.h"
+#include "v_atlas.h"
 #include "v_buffer.h"
 
 namespace theta
@@ -78,17 +79,26 @@ private:
     bool constructed;
     SDL_GLContext context;
     GLint maxTextureSize;
+    renderSources renderSource;
+    SDL_Window* window; // FIXME: raw pointer, possible ownership issues
+
+    void constructGraphics();
+    GLuint graphicsPixels;
+    std::unique_ptr<Program> graphicsProgram;
+    GLuint graphicsVAO;
+    std::unique_ptr<video::Atlas> graphicsAtlas;
+
+    void constructPage();
     GLuint pagePixels;
     std::unique_ptr<Program> pageProgram;
     GLuint pageVAO;
-    renderSources renderSource;
-    SDL_Window* window; // FIXME: raw pointer, possible ownership issues
+
+    void constructWorld();
     GLuint worldPalettes;
     GLuint worldPixels;
     std::unique_ptr<Program> worldProgram;
     GLuint worldVAO;
-    void constructPage();
-    void constructWorld();
+
     static void debugCall(const char* name, void* funcptr, int len_args, ...);
     static void debugMessage(GLenum source, GLenum type, GLuint id,
         GLenum severity, GLsizei length, const GLchar* message, const void* param);
@@ -98,6 +108,9 @@ public:
     Renderer::~Renderer();
     void Flip();
     void Render();
+    void AddGraphic(const char* name, const video::RGBABuffer& pixels, int xoff, int yoff);
+    bool CheckGraphic(const char* name);
+    void DrawGraphic(const char* name, int x, int y);
     void SetPagePixels(const video::RGBABuffer& pixels);
     void SetResolution(int width, int height);
     void SetWorldPalette(const byte* palette);

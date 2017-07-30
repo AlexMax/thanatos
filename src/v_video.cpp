@@ -490,7 +490,21 @@ namespace theta
 namespace video
 {
 
+// Draw a patch by a specific name.
+void DrawPatch(int x, int y, const char* lump)
+{
+    if (system::renderer->CheckGraphic(lump) == false)
+    {
+        auto patch = static_cast<patch_t*>(W_CacheLumpName(lump, PU_CACHE));
+        auto doompal = static_cast<byte*>(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
+        RGBABuffer graphic(patch, doompal);
+        system::renderer->AddGraphic(lump, graphic, patch->leftoffset, patch->topoffset);
+    }
+    system::renderer->DrawGraphic(lump, x, y);
+}
+
 // Draw a page using the appropriate renderer method.
+//FIXME: Do this by name and not by patch data.
 void DrawPage(const patch_t* patch)
 {
     auto doompal = static_cast<byte*>(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));

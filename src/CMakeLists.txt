@@ -89,6 +89,7 @@ set(GAME_SOURCE_FILES
     sha1.cpp          sha1.h
     memio.cpp         memio.h
     tables.cpp        tables.h
+    v_atlas.cpp       v_atlas.h
     v_buffer.cpp      v_buffer.h
     v_diskicon.cpp    v_diskicon.h
     v_draw_list.cpp   v_draw_list.h
