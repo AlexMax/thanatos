@@ -80,13 +80,19 @@ private:
     SDL_GLContext context;
     GLint maxTextureSize;
     renderSources renderSource;
+    int viewportHeight;
+    int viewportWidth;
     SDL_Window* window; // FIXME: raw pointer, possible ownership issues
 
     void constructGraphics();
+    std::unique_ptr<video::Atlas> graphicsAtlas;
+    GLuint graphicsIBO;
+    std::vector<GLuint> graphicsIndices;
     GLuint graphicsPixels;
     std::unique_ptr<Program> graphicsProgram;
     GLuint graphicsVAO;
-    std::unique_ptr<video::Atlas> graphicsAtlas;
+    GLuint graphicsVBO;
+    std::vector<GLfloat> graphicsVertices;
 
     void constructPage();
     GLuint pagePixels;
@@ -110,7 +116,9 @@ public:
     void Render();
     void AddGraphic(const char* name, const video::RGBABuffer& pixels, int xoff, int yoff);
     bool CheckGraphic(const char* name);
-    void DrawGraphic(const char* name, int x, int y);
+    void DrawGraphic(const char* name, int x, int y, double scalex, double scaley);
+    int GetWidth() const;
+    int GetHeight() const;
     void SetPagePixels(const video::RGBABuffer& pixels);
     void SetResolution(int width, int height);
     void SetWorldPalette(const byte* palette);

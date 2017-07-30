@@ -104,6 +104,18 @@ bool Atlas::Find(const char* lump, AtlasEntry& out)
     return true;
 }
 
+// Get height of atlas.
+int Atlas::GetHeight() const
+{
+    return this->width;
+}
+
+// Get width of atlas.
+int Atlas::GetWidth() const
+{
+    return this->height;
+}
+
 }
 
 }

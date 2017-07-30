@@ -65,6 +65,8 @@ public:
     void Add(const std::string& lump, int w, int h, int xoff, int yoff);
     bool Check(const char* lump);
     bool Find(const char* lump, AtlasEntry& out);
+    int GetHeight() const;
+    int GetWidth() const;
 };
 
 }

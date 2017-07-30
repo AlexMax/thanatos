@@ -35,7 +35,9 @@ public:
     virtual void Render() = 0;
     virtual void AddGraphic(const char* name, const video::RGBABuffer& pixels, int xoff, int yoff) = 0;
     virtual bool CheckGraphic(const char* name) = 0;
-    virtual void DrawGraphic(const char* name, int x, int y) = 0;
+    virtual void DrawGraphic(const char* name, int x, int y, double scalex, double scaley) = 0;
+    virtual int GetHeight() const = 0;
+    virtual int GetWidth() const = 0;
     virtual void SetPagePixels(const video::RGBABuffer& pixels) = 0;
     virtual void SetResolution(int width, int height) = 0;
     virtual void SetWorldPalette(const byte* palette) = 0;

@@ -201,25 +201,15 @@ void Renderer::constructGraphics()
         I_Error("Shader Program Link Error:\n%s\n", this->graphicsProgram->Log().c_str());
     }
 
-    // A simple square to render the screen to.
-    //
-    // The first three vertices are the x,y,z locations in screen space.
-    // The last two vertices are the texture coordinates.
-    GLfloat vertices[][5] = {
-        { 1.0f, -1.0f, 0.0f, 1.0f, 1.0f },
-        { 1.0f,  1.0f, 0.0f, 1.0f, 0.0f },
-        { -1.0f, -1.0f, 0.0f, 0.0f, 1.0f },
-        { -1.0f,  1.0f, 0.0f, 0.0f, 0.0f }
-    };
-
-    // Bind the square to a VAO containing a VBO.
+    // Bind the square to a VAO containing a VBO and our IBO.
     glGenVertexArrays(1, &this->graphicsVAO);
     glBindVertexArray(this->graphicsVAO);
 
-    GLuint VBOnum;
-    glGenBuffers(1, &VBOnum);
-    glBindBuffer(GL_ARRAY_BUFFER, VBOnum);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glGenBuffers(1, &this->graphicsVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, this->graphicsVBO);
+
+    glGenBuffers(1, &this->graphicsIBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->graphicsIBO);
 
     // location 0
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
@@ -229,9 +219,10 @@ void Renderer::constructGraphics()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
 
-    // Unbind our VBO and VAO so we don't accidentally modify them.
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // Unbind our VBO, IBO and VAO so we don't accidentally modify them.
     glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     // All we need is a texture that contains the RGBA graphics data.
     glGenTextures(1, &this->graphicsPixels);
@@ -242,7 +233,7 @@ void Renderer::constructGraphics()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     // Create an empty texture, since we're just using this as an atlas.
-    GLuint atlas_size = 512;
+    GLuint atlas_size = 2048;
     std::vector<GLuint> blank(atlas_size * atlas_size * 4);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, atlas_size, atlas_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, blank.data());
 
@@ -529,13 +520,24 @@ void Renderer::debugMessage(GLenum source, GLenum type, GLuint id,
 
 Renderer::Renderer(SDL_Window* window) :
     constructed(false), context(nullptr), maxTextureSize(0),
-    renderSource(renderSources::none), window(window),
-    graphicsAtlas(nullptr), graphicsPixels(0), graphicsProgram(nullptr), graphicsVAO(0),
+    renderSource(renderSources::none), viewportHeight(0), viewportWidth(0),
+    window(window),
+    graphicsAtlas(nullptr), graphicsIBO(0), graphicsIndices(0), graphicsPixels(0),
+    graphicsProgram(nullptr), graphicsVAO(0), graphicsVBO(0), graphicsVertices(0),
     pagePixels(0), pageProgram(nullptr), pageVAO(0),
     worldPixels(0), worldPalettes(0), worldProgram(nullptr), worldVAO(0)
 {
-    // Do some OpenGL initialization stuff.
+    // Do some OpenGL initialization stuff.  We want a core profile.
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
     this->context = SDL_GL_CreateContext(this->window);
+    if (this->context == NULL)
+    {
+        I_Error("Context creation failed: %s\n", SDL_GetError());
+    }
+
     if (!gladLoadGL())
     {
         I_Error("gladLoadGL failed");
@@ -563,7 +565,9 @@ Renderer::Renderer(SDL_Window* window) :
 #endif
 #endif
 
-    // Basic initialization
+    // Ensure our viewport width and height are correct.
+    SDL_GetWindowSize(window, &this->viewportWidth, &this->viewportHeight);
+    glViewport(0, 0, this->viewportWidth, this->viewportHeight);
 
     // Backface culling
     glEnable(GL_CULL_FACE);
@@ -577,11 +581,12 @@ Renderer::Renderer(SDL_Window* window) :
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     // Maximum texture size governs how big our resolution can be, as well
-    // how big our texture atlases can be.
+    // how big our texture atlases can be.  2048 is a reasonable minimum,
+    // since without that we can't render a 1080p screen.
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &this->maxTextureSize);
-    if (this->maxTextureSize < 256)
+    if (this->maxTextureSize < 2048)
     {
-        I_Error("Maximum texture size is too small to fit the palette");
+        I_Error("Maximum texture size is too small (needs 2048, found %d).", this->maxTextureSize);
     }
 
     // Set up the graphics overlay view.
@@ -642,12 +647,28 @@ void Renderer::Render()
     }
 
     // Draw 2D graphics on top of that.
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->graphicsPixels);
+    if (this->graphicsVertices.size() > 0)
+    {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, this->graphicsPixels);
 
-    glUseProgram(this->graphicsProgram->Ref());
-    glBindVertexArray(this->graphicsVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glUseProgram(this->graphicsProgram->Ref());
+        glBindVertexArray(this->graphicsVAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, this->graphicsVBO);
+        glBufferData(GL_ARRAY_BUFFER,
+            this->graphicsVertices.size() * sizeof(decltype(this->graphicsVertices)::value_type),
+            this->graphicsVertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+            this->graphicsIndices.size() * sizeof(decltype(this->graphicsIndices)::value_type),
+            this->graphicsIndices.data(), GL_STATIC_DRAW);
+
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(this->graphicsIndices.size()),
+            GL_UNSIGNED_INT, 0);
+
+        this->graphicsVertices.clear();
+        this->graphicsIndices.clear();
+    }
 
     // Render the world by default, you must force pages by hand.
     this->renderSource = renderSources::world;
@@ -664,7 +685,7 @@ void Renderer::AddGraphic(const char* name, const video::RGBABuffer& pixels, int
         return;
     }
 
-    // Use the atlas entry to draw our graphic.
+    // Use the atlas entry to draw our graphic into the atlas texture.
     glBindTexture(GL_TEXTURE_2D, this->graphicsPixels);
     glTexSubImage2D(GL_TEXTURE_2D, 0, atlas.x, atlas.y, atlas.w, atlas.h, GL_RGBA, GL_UNSIGNED_BYTE, pixels.GetRawPixels());
 }
@@ -676,10 +697,79 @@ bool Renderer::CheckGraphic(const char* name)
 }
 
 // Draw a graphic that should exist in the texture atlas.
-void Renderer::DrawGraphic(const char* name, int x, int y)
+void Renderer::DrawGraphic(const char* name, int x, int y, double scalex, double scaley)
 {
+    video::AtlasEntry atlas(0, 0, 0, 0, 0, 0);
+    if (this->graphicsAtlas->Find(name, atlas) == false)
+    {
+        return;
+    }
 
+    // Doom uses X, Y coordinates that begin in the upper left, but OpenGL
+    // has a floating point graph that goes from -1, -1 to 1, 1 starting
+    // at the lower left.  Convert between the coordinate systems.
+    GLfloat x1 = static_cast<GLfloat>((2 * scalex * (atlas.xoff + x)) / static_cast<double>(this->viewportWidth) - 1);
+    GLfloat y1 = static_cast<GLfloat>(1 - ((2 * scaley * (atlas.yoff + y)) / static_cast<double>(this->viewportHeight)));
+    GLfloat u1 = atlas.x / (GLfloat)this->graphicsAtlas->GetWidth();
+    GLfloat v1 = atlas.y / (GLfloat)this->graphicsAtlas->GetHeight();
+
+    GLfloat x2 = static_cast<GLfloat>((2 * scalex * (atlas.xoff + atlas.w + x)) / static_cast<double>(this->viewportWidth) - 1);
+    GLfloat y2 = static_cast<GLfloat>(1 - ((2 * scaley * (atlas.yoff + atlas.h + y)) / static_cast<double>(this->viewportHeight)));
+    GLfloat u2 = (atlas.x + atlas.w) / (GLfloat)this->graphicsAtlas->GetWidth();
+    GLfloat v2 = (atlas.y + atlas.h) / (GLfloat)this->graphicsAtlas->GetHeight();
+
+    GLfloat z = 0.0f;
+
+    // Top left
+    this->graphicsVertices.emplace_back(x1);
+    this->graphicsVertices.emplace_back(y1);
+    this->graphicsVertices.emplace_back(z);
+    this->graphicsVertices.emplace_back(u1);
+    this->graphicsVertices.emplace_back(v1);
+
+    // Top right
+    this->graphicsVertices.emplace_back(x2);
+    this->graphicsVertices.emplace_back(y1);
+    this->graphicsVertices.emplace_back(z);
+    this->graphicsVertices.emplace_back(u2);
+    this->graphicsVertices.emplace_back(v1);
+
+    // Bottom left
+    this->graphicsVertices.emplace_back(x1);
+    this->graphicsVertices.emplace_back(y2);
+    this->graphicsVertices.emplace_back(z);
+    this->graphicsVertices.emplace_back(u1);
+    this->graphicsVertices.emplace_back(v2);
+
+    // Bottom right
+    this->graphicsVertices.emplace_back(x2);
+    this->graphicsVertices.emplace_back(y2);
+    this->graphicsVertices.emplace_back(z);
+    this->graphicsVertices.emplace_back(u2);
+    this->graphicsVertices.emplace_back(v2);
+
+    // Indices.
+    GLuint offset = static_cast<GLuint>((this->graphicsVertices.size() / 20 - 1) * 4);
+    this->graphicsIndices.emplace_back(offset + 3);
+    this->graphicsIndices.emplace_back(offset + 1);
+    this->graphicsIndices.emplace_back(offset + 2);
+    this->graphicsIndices.emplace_back(offset + 0);
+    this->graphicsIndices.emplace_back(offset + 2);
+    this->graphicsIndices.emplace_back(offset + 1);
 }
+
+// Get the height of the viewport.
+int Renderer::GetHeight() const
+{
+    return this->viewportHeight;
+}
+
+// Get the width of the viewport.
+int Renderer::GetWidth() const
+{
+    return this->viewportWidth;
+}
+
 
 // Set pixel data for a full screen "page".
 void Renderer::SetPagePixels(const video::RGBABuffer& pixels)
@@ -693,6 +783,8 @@ void Renderer::SetPagePixels(const video::RGBABuffer& pixels)
 void Renderer::SetResolution(int width, int height)
 {
     glViewport(0, 0, width, height);
+    this->viewportWidth = width;
+    this->viewportHeight = height;
 }
 
 // Set the current palette for the 3D rendered world view.

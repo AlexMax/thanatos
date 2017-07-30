@@ -858,7 +858,7 @@ void M_MusicVol(int choice)
 //
 void M_DrawMainMenu(void)
 {
-    theta::video::DrawPatch(94, 2, DEH_String("M_DOOM"));
+    theta::video::DrawScaledPatch(94, 2, DEH_String("M_DOOM"));
 }
 
 
@@ -1974,14 +1974,14 @@ void M_Drawer (void)
 
 	if (name[0])
 	{
-            theta::video::DrawPatch(x, y, name);
+            theta::video::DrawScaledPatch(x, y, name);
 	}
 	y += LINEHEIGHT;
     }
 
     
     // DRAW SKULL
-    theta::video::DrawPatch(x + SKULLXOFF, currentMenu->y - 5 + itemOn * LINEHEIGHT,
+    theta::video::DrawScaledPatch(x + SKULLXOFF, currentMenu->y - 5 + itemOn * LINEHEIGHT,
         DEH_String(skullName[whichSkull]));
 }
 
