@@ -133,7 +133,7 @@ void D_ConnectNetGame(void);
 void D_CheckNetGame(void);
 
 // Debugging
-int max_display_time;
+double max_display_time;
 
 //
 // D_ProcessEvents
@@ -188,14 +188,14 @@ void D_Display (void)
     boolean			done;
     boolean			wipe;
     boolean			redrawsbar;
-    int                         start_display_time;
+    uint64_t                    start_display_time;
 
     if (nodrawers)
 	return;                    // for comparative timing / profiling
 		
     if (display_fps_counter)
     {
-        start_display_time = I_GetTimeMS();
+        start_display_time = I_GetPerformanceTime();
     }
 
     redrawsbar = false;
@@ -321,7 +321,7 @@ void D_Display (void)
         {
             // Calculate maximum frame time.
             static std::vector<uint64_t> display_times;
-            display_times.push_back(I_GetTimeMS() - start_display_time);
+            display_times.push_back(I_GetPerformanceTime() - start_display_time);
 
             static int lastmili;
             int i = I_GetTimeMS();
@@ -329,7 +329,8 @@ void D_Display (void)
 
             if (mili >= 1000)
             {
-                max_display_time = *(std::max_element(display_times.cbegin(), display_times.cend()));
+                auto maximum = *(std::max_element(display_times.cbegin(), display_times.cend()));
+                max_display_time = (maximum * 1000) / (double)I_GetPerformanceFrequency();
                 display_times.clear();
                 lastmili = i;
             }

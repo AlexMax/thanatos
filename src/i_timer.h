@@ -20,6 +20,8 @@
 #ifndef __I_TIMER__
 #define __I_TIMER__
 
+#include "doomtype.h"
+
 #define TICRATE 35
 
 // Called by D_DoomLoop,
@@ -28,6 +30,12 @@ int I_GetTime (void);
 
 // returns current time in ms
 int I_GetTimeMS (void);
+
+// return performance counter
+uint64_t I_GetPerformanceTime();
+
+// return performance frequency
+uint64_t I_GetPerformanceFrequency();
 
 // Pause for a specified number of ms
 void I_Sleep(int ms);

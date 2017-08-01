@@ -63,6 +63,8 @@
 #define HU_INPUTWIDTH	64
 #define HU_INPUTHEIGHT	1
 
+#define HU_FPSX         HU_MSGX
+#define HU_FPSY         (HU_MSGY + HU_MSGHEIGHT * (SHORT(hu_font[0]->height) + 1))
 
 
 const char *chat_macros[10] =
@@ -392,7 +394,7 @@ void HU_Start(void)
 		       HU_FONTSTART);
     
     HUlib_initTextLine(&w_fps,
-        (SCREENWIDTH / 3) * 2, HU_MSGY,
+        HU_FPSX, HU_FPSY,
         hu_font,
         HU_FONTSTART);
 
@@ -453,7 +455,7 @@ void HU_Drawer(void)
 
     if (display_fps_counter)
     {
-        M_snprintf(str, sizeof(str), "%dFPS %dms max", fps_counter, max_display_time);
+        M_snprintf(str, sizeof(str), "%dFPS %.2fms max", fps_counter, max_display_time);
         HUlib_clearTextLine(&w_fps);
         s = str;
         while (*s)

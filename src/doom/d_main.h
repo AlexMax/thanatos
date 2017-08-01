@@ -45,7 +45,7 @@ void D_StartTitle (void);
 
 extern  gameaction_t    gameaction;
 
-extern int max_display_time;
+extern double max_display_time;
 
 #endif
 
