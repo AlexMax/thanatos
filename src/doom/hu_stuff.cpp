@@ -39,6 +39,7 @@
 #include "doomstat.h"
 
 #include "c_console.h"
+#include "d_main.h" // frametime counter
 
 // Data.
 #include "dstrings.h"
@@ -391,7 +392,7 @@ void HU_Start(void)
 		       HU_FONTSTART);
     
     HUlib_initTextLine(&w_fps,
-        (SCREENWIDTH / 4) * 3, HU_MSGY,
+        (SCREENWIDTH / 3) * 2, HU_MSGY,
         hu_font,
         HU_FONTSTART);
 
@@ -452,7 +453,7 @@ void HU_Drawer(void)
 
     if (display_fps_counter)
     {
-        M_snprintf(str, sizeof(str), "%-4d FPS", fps_counter);
+        M_snprintf(str, sizeof(str), "%dFPS %dms max", fps_counter, max_display_time);
         HUlib_clearTextLine(&w_fps);
         s = str;
         while (*s)

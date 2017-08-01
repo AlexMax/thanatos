@@ -19,6 +19,7 @@
 //	and call the startup functions.
 //
 
+#include <algorithm>
 
 #include <ctype.h>
 #include <stdio.h>
@@ -131,6 +132,8 @@ int             show_diskicon = 1;
 void D_ConnectNetGame(void);
 void D_CheckNetGame(void);
 
+// Debugging
+int max_display_time;
 
 //
 // D_ProcessEvents
@@ -185,10 +188,16 @@ void D_Display (void)
     boolean			done;
     boolean			wipe;
     boolean			redrawsbar;
+    int                         start_display_time;
 
     if (nodrawers)
 	return;                    // for comparative timing / profiling
 		
+    if (display_fps_counter)
+    {
+        start_display_time = I_GetTimeMS();
+    }
+
     redrawsbar = false;
     
     // change the view size if needed
@@ -308,6 +317,23 @@ void D_Display (void)
     if (!wipe)
     {
 	I_FinishUpdate ();              // page flip or blit buffer
+        if (display_fps_counter)
+        {
+            // Calculate maximum frame time.
+            static std::vector<uint64_t> display_times;
+            display_times.push_back(I_GetTimeMS() - start_display_time);
+
+            static int lastmili;
+            int i = I_GetTimeMS();
+            int mili = i - lastmili;
+
+            if (mili >= 1000)
+            {
+                max_display_time = *(std::max_element(display_times.cbegin(), display_times.cend()));
+                display_times.clear();
+                lastmili = i;
+            }
+        }
 	return;
     }
     
