@@ -19,7 +19,6 @@
 #include "SDL.h"
 
 #include "i_timer.h"
-#include "doomtype.h"
 
 //
 // I_GetTime
@@ -56,6 +55,18 @@ int I_GetTimeMS(void)
         basetime = ticks;
 
     return ticks - basetime;
+}
+
+// Get a high-accuracy performance timer.
+uint64_t I_GetPerformanceTime()
+{
+    return SDL_GetPerformanceCounter();
+}
+
+// Get the resolution (per second) of the high-accuracy performance timer.
+uint64_t I_GetPerformanceFrequency()
+{
+    return SDL_GetPerformanceFrequency();
 }
 
 // Sleep for a specified number of ms
