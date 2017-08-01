@@ -26,9 +26,9 @@ namespace video
 {
 
 // Insert a graphic of width w and height h into the atlas.
-void Atlas::Add(const std::string& lump, int w, int h, int xoff, int yoff)
+void Atlas::Add(const std::string& name, int w, int h, int xoff, int yoff)
 {
-    auto entry = this->atlas.find(lump);
+    auto entry = this->atlas.find(name);
     if (entry != this->atlas.end())
     {
         // Atlas entry already exists, silently don't do anything.
@@ -50,7 +50,7 @@ void Atlas::Add(const std::string& lump, int w, int h, int xoff, int yoff)
             if (w <= this->width - it->w)
             {
                 // There is!  Put the altas entry there, then adjust the shelf.
-                auto res = this->atlas.emplace(lump, AtlasEntry(it->w, y, w, h, xoff, yoff));
+                auto res = this->atlas.emplace(name, AtlasEntry(it->w, y, w, h, xoff, yoff));
                 if (res.second == false)
                 {
                     I_Error("Couldn't emplace into to the atlas");
@@ -68,7 +68,7 @@ void Atlas::Add(const std::string& lump, int w, int h, int xoff, int yoff)
     {
         // We do!  Create the new shelf and put the atlas entry there.
         this->shelves.emplace_back(AtlasShelf(w, h));
-        auto ares = this->atlas.emplace(lump, AtlasEntry(0, y, w, h, xoff, yoff));
+        auto ares = this->atlas.emplace(name, AtlasEntry(0, y, w, h, xoff, yoff));
         if (ares.second == false)
         {
             I_Error("Couldn't emplace into to the atlas");
@@ -82,9 +82,9 @@ void Atlas::Add(const std::string& lump, int w, int h, int xoff, int yoff)
 
 // Check to see if an atlas entry - any atlas entry - exists for the given
 // lump.
-bool Atlas::Check(const char* lump)
+bool Atlas::Check(const std::string& name)
 {
-    auto res = this->atlas.find(lump);
+    auto res = this->atlas.find(name);
     if (res == this->atlas.end())
     {
         return false;
@@ -93,9 +93,9 @@ bool Atlas::Check(const char* lump)
 }
 
 // Find the atlas entry that belongs to the given lump.
-bool Atlas::Find(const char* lump, AtlasEntry& out)
+bool Atlas::Find(const std::string& name, AtlasEntry& out)
 {
-    auto res = this->atlas.find(lump);
+    auto res = this->atlas.find(name);
     if (res == this->atlas.end())
     {
         return false;

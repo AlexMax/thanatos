@@ -22,6 +22,8 @@
 #ifndef __V_VIDEO__
 #define __V_VIDEO__
 
+#include <string>
+
 #include "doomtype.h"
 
 // Needed because we are refering to patches.
@@ -68,7 +70,7 @@ namespace theta
 namespace video
 {
 
-void DrawScaledPatch(int x, int y, const char* lump);
+void DrawScaledPatch(int x, int y, const std::string& lump);
 void DrawPage(const patch_t* patch);
 
 }

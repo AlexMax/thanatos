@@ -62,9 +62,9 @@ class Atlas
 public:
     Atlas(int width, int height) : width(width), height(height) { }
     Atlas(const Atlas&) = delete;
-    void Add(const std::string& lump, int w, int h, int xoff, int yoff);
-    bool Check(const char* lump);
-    bool Find(const char* lump, AtlasEntry& out);
+    void Add(const std::string& name, int w, int h, int xoff, int yoff);
+    bool Check(const std::string& name);
+    bool Find(const std::string& name, AtlasEntry& out);
     int GetHeight() const;
     int GetWidth() const;
 };

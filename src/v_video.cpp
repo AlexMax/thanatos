@@ -491,11 +491,11 @@ namespace video
 {
 
 // Draw a patch scaled to a virtual 320x200 screen.
-void DrawScaledPatch(int x, int y, const char* lump)
+void DrawScaledPatch(int x, int y, const std::string& lump)
 {
     if (system::renderer->CheckGraphic(lump) == false)
     {
-        auto patch = static_cast<patch_t*>(W_CacheLumpName(lump, PU_CACHE));
+        auto patch = static_cast<patch_t*>(W_CacheLumpName(lump.c_str(), PU_CACHE));
         auto doompal = static_cast<byte*>(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
         RGBABuffer graphic(patch, doompal);
         system::renderer->AddGraphic(lump, graphic, -patch->leftoffset, -patch->topoffset);

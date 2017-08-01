@@ -114,9 +114,9 @@ public:
     Renderer::~Renderer();
     void Flip();
     void Render();
-    void AddGraphic(const char* name, const video::RGBABuffer& pixels, int xoff, int yoff);
-    bool CheckGraphic(const char* name);
-    void DrawGraphic(const char* name, int x, int y, double scalex, double scaley);
+    void AddGraphic(const std::string& name, const video::RGBABuffer& pixels, int xoff, int yoff);
+    bool CheckGraphic(const std::string& name);
+    void DrawGraphic(const std::string& name, int x, int y, double scalex, double scaley);
     int GetWidth() const;
     int GetHeight() const;
     void SetPagePixels(const video::RGBABuffer& pixels);

@@ -533,8 +533,7 @@ void M_DrawLoad(void)
 {
     int             i;
 	
-    V_DrawPatchDirect(72, 28, 
-        static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_LOADG"), PU_CACHE)));
+    theta::video::DrawScaledPatch(72, 28, DEH_String("M_LOADG"));
 
     for (i = 0;i < load_end; i++)
     {
@@ -552,18 +551,15 @@ void M_DrawSaveLoadBorder(int x,int y)
 {
     int             i;
 	
-    V_DrawPatchDirect(x - 8, y + 7,
-        static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_LSLEFT"), PU_CACHE)));
+    theta::video::DrawScaledPatch(x - 8, y + 7, DEH_String("M_LSLEFT"));
 	
     for (i = 0;i < 24;i++)
     {
-	V_DrawPatchDirect(x, y + 7,
-            static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_LSCNTR"), PU_CACHE)));
+        theta::video::DrawScaledPatch(x, y + 7, DEH_String("M_LSCNTR"));
 	x += 8;
     }
 
-    V_DrawPatchDirect(x, y + 7, 
-        static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_LSRGHT"), PU_CACHE)));
+    theta::video::DrawScaledPatch(x, y + 7, DEH_String("M_LSRGHT"));
 }
 
 
@@ -604,7 +600,7 @@ void M_DrawSave(void)
 {
     int             i;
 	
-    V_DrawPatchDirect(72, 28, static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_SAVEG"), PU_CACHE)));
+    theta::video::DrawScaledPatch(72, 28, DEH_String("M_SAVEG"));
     for (i = 0;i < load_end; i++)
     {
 	M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
@@ -802,7 +798,7 @@ void M_DrawReadThisCommercial(void)
 //
 void M_DrawSound(void)
 {
-    V_DrawPatchDirect (60, 38, static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_SVOL"), PU_CACHE)));
+    theta::video::DrawScaledPatch(60, 38, DEH_String("M_SVOL"));
 
     M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(sfx_vol+1),
 		 16,sfxVolume);
@@ -869,8 +865,8 @@ void M_DrawMainMenu(void)
 //
 void M_DrawNewGame(void)
 {
-    V_DrawPatchDirect(96, 14, static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_NEWG"), PU_CACHE)));
-    V_DrawPatchDirect(54, 38, static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_SKILL"), PU_CACHE)));
+    theta::video::DrawScaledPatch(96, 14, DEH_String("M_NEWG"));
+    theta::video::DrawScaledPatch(54, 38, DEH_String("M_SKILL"));
 }
 
 void M_NewGame(int choice)
@@ -897,7 +893,7 @@ int     epi;
 
 void M_DrawEpisode(void)
 {
-    V_DrawPatchDirect(54, 38, static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_EPISOD"), PU_CACHE)));
+    theta::video::DrawScaledPatch(54, 38, DEH_String("M_EPISOD"));
 }
 
 void M_VerifyNightmare(int key)
@@ -945,16 +941,13 @@ static const char *msgNames[2] = {"M_MSGOFF","M_MSGON"};
 
 void M_DrawOptions(void)
 {
-    V_DrawPatchDirect(108, 15, static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_OPTTTL"),
-                                               PU_CACHE)));
+    theta::video::DrawScaledPatch(108, 15, DEH_String("M_OPTTTL"));
 	
-    V_DrawPatchDirect(OptionsDef.x + 175, OptionsDef.y + LINEHEIGHT * detail,
-		      static_cast<patch_t*>(W_CacheLumpName(DEH_String(detailNames[detailLevel]),
-			              PU_CACHE)));
+    theta::video::DrawScaledPatch(OptionsDef.x + 175, OptionsDef.y + LINEHEIGHT * detail,
+        DEH_String(detailNames[detailLevel]));
 
-    V_DrawPatchDirect(OptionsDef.x + 120, OptionsDef.y + LINEHEIGHT * messages,
-        static_cast<patch_t*>(W_CacheLumpName(DEH_String(msgNames[showMessages]),
-                                      PU_CACHE)));
+    theta::video::DrawScaledPatch(OptionsDef.x + 120, OptionsDef.y + LINEHEIGHT * messages,
+        DEH_String(msgNames[showMessages]));
 
     M_DrawThermo(OptionsDef.x, OptionsDef.y + LINEHEIGHT * (mousesens + 1),
 		 10, mouseSensitivity);
@@ -1198,17 +1191,16 @@ M_DrawThermo
     int		i;
 
     xx = x;
-    V_DrawPatchDirect(xx, y, static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_THERML"), PU_CACHE)));
+    theta::video::DrawScaledPatch(xx, y, DEH_String("M_THERML"));
     xx += 8;
     for (i=0;i<thermWidth;i++)
     {
-	V_DrawPatchDirect(xx, y, static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_THERMM"), PU_CACHE)));
+        theta::video::DrawScaledPatch(xx, y, DEH_String("M_THERMM"));
 	xx += 8;
     }
-    V_DrawPatchDirect(xx, y, static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_THERMR"), PU_CACHE)));
+    theta::video::DrawScaledPatch(xx, y, DEH_String("M_THERMR"));
 
-    V_DrawPatchDirect((x + 8) + thermDot * 8, y,
-        static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_THERMO"), PU_CACHE)));
+    theta::video::DrawScaledPatch((x + 8) + thermDot * 8, y, DEH_String("M_THERMO"));
 }
 
 
@@ -1218,8 +1210,8 @@ M_DrawEmptyCell
 ( menu_t*	menu,
   int		item )
 {
-    V_DrawPatchDirect(menu->x - 10, menu->y + item * LINEHEIGHT - 1, 
-        static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_CELL1"), PU_CACHE)));
+    theta::video::DrawScaledPatch(menu->x - 10, menu->y + item * LINEHEIGHT - 1,
+        DEH_String("M_CELL1"));
 }
 
 void
@@ -1227,8 +1219,8 @@ M_DrawSelCell
 ( menu_t*	menu,
   int		item )
 {
-    V_DrawPatchDirect(menu->x - 10, menu->y + item * LINEHEIGHT - 1,
-        static_cast<patch_t*>(W_CacheLumpName(DEH_String("M_CELL2"), PU_CACHE)));
+    theta::video::DrawScaledPatch(menu->x - 10, menu->y + item * LINEHEIGHT - 1,
+        DEH_String("M_CELL2"));
 }
 
 

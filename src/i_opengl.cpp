@@ -543,7 +543,7 @@ Renderer::Renderer(SDL_Window* window) :
         I_Error("gladLoadGL failed");
     }
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && defined(BREAK_GLASS)
     // Initialize driver debugging
     if (GL_KHR_debug)
     {
@@ -675,7 +675,7 @@ void Renderer::Render()
 }
 
 // Add graphic to the texture atlas.
-void Renderer::AddGraphic(const char* name, const video::RGBABuffer& pixels, int xoff, int yoff)
+void Renderer::AddGraphic(const std::string& name, const video::RGBABuffer& pixels, int xoff, int yoff)
 {
     this->graphicsAtlas->Add(name, pixels.GetWidth(), pixels.GetHeight(), xoff, yoff);
 
@@ -691,13 +691,13 @@ void Renderer::AddGraphic(const char* name, const video::RGBABuffer& pixels, int
 }
 
 // Check to see if a graphic exists in the texture atlas.
-bool Renderer::CheckGraphic(const char* name)
+bool Renderer::CheckGraphic(const std::string& name)
 {
     return this->graphicsAtlas->Check(name);
 }
 
 // Draw a graphic that should exist in the texture atlas.
-void Renderer::DrawGraphic(const char* name, int x, int y, double scalex, double scaley)
+void Renderer::DrawGraphic(const std::string& name, int x, int y, double scalex, double scaley)
 {
     video::AtlasEntry atlas(0, 0, 0, 0, 0, 0);
     if (this->graphicsAtlas->Find(name, atlas) == false)
