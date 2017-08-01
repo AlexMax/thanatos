@@ -90,6 +90,7 @@ char			chat_char; // remove later.
 static player_t*	plr;
 patch_t*		hu_font[HU_FONTSIZE];
 static hu_textline_t	w_title;
+static hu_textline_t    w_fps;
 boolean			chat_on;
 static hu_itext_t	w_chat;
 static boolean		always_off = false;
@@ -389,6 +390,11 @@ void HU_Start(void)
 		       hu_font,
 		       HU_FONTSTART);
     
+    HUlib_initTextLine(&w_fps,
+        (SCREENWIDTH / 4) * 3, HU_MSGY,
+        hu_font,
+        HU_FONTSTART);
+
     switch ( logical_gamemission )
     {
       case doom:
@@ -442,6 +448,17 @@ void HU_Drawer(void)
     if (automapactive)
 	HUlib_drawTextLine(&w_title, false);
 
+    static char str[32], *s;
+
+    if (display_fps_counter)
+    {
+        M_snprintf(str, sizeof(str), "%-4d FPS", fps_counter);
+        HUlib_clearTextLine(&w_fps);
+        s = str;
+        while (*s)
+            HUlib_addCharToTextLine(&w_fps, *(s++));
+        HUlib_drawTextLine(&w_fps, false);
+    }
 }
 
 void HU_Erase(void)
@@ -450,6 +467,7 @@ void HU_Erase(void)
     HUlib_eraseSText(&w_message);
     HUlib_eraseIText(&w_chat);
     HUlib_eraseTextLine(&w_title);
+    HUlib_eraseTextLine(&w_fps);
 
 }
 
