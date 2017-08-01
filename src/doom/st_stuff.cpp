@@ -407,6 +407,7 @@ cheatseq_t cheat_choppers = CHEAT("idchoppers", 0);
 cheatseq_t cheat_clev = CHEAT("idclev", 2);
 cheatseq_t cheat_mypos = CHEAT("idmypos", 0);
 
+cheatseq_t cheat_showfps = CHEAT("showfps", 0);
 
 //
 // STATUS BAR CODE
@@ -559,6 +560,10 @@ ST_Responder (event_t* ev)
 	  plyr->message = DEH_String(STSTR_NCON);
 	else
 	  plyr->message = DEH_String(STSTR_NCOFF);
+      }
+      else if (cht_CheckCheat(&cheat_showfps, ev->data2))
+      {
+          display_fps_counter ^= 1;
       }
       // 'behold?' power-up cheats
       for (i=0;i<6;i++)

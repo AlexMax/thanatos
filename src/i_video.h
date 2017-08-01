@@ -131,4 +131,7 @@ void I_GetWindowPosition(int *x, int *y, int w, int h);
 // Joystic/gamepad hysteresis
 extern unsigned int joywait;
 
+extern int fps_counter;
+extern boolean display_fps_counter;
+
 #endif

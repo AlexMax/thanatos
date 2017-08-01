@@ -212,6 +212,10 @@ int usegamma = 0;
 // Joystick/gamepad hysteresis
 unsigned int joywait = 0;
 
+// Framerate counter.
+int fps_counter = 0;
+boolean display_fps_counter = false;
+
 static boolean MouseShouldBeGrabbed()
 {
     // never grab the mouse when in screensaver mode
@@ -776,6 +780,27 @@ void I_FinishUpdate (void)
 	    I_VideoBuffer->GetRawPixels()[ (SCREENHEIGHT-1)*SCREENWIDTH + i] = 0xff;
 	for ( ; i<20*4 ; i+=4)
 	    I_VideoBuffer->GetRawPixels()[ (SCREENHEIGHT-1)*SCREENWIDTH + i] = 0x0;
+    }
+
+    // [AM] Real FPS counter
+    if (display_fps_counter)
+    {
+        static int lastmili;
+        static int fpscount;
+        int mili;
+
+        fpscount++;
+
+        i = SDL_GetTicks();
+        mili = i - lastmili;
+
+        // Update FPS counter every second
+        if (mili >= 1000)
+        {
+            fps_counter = (fpscount * 1000) / mili;
+            fpscount = 0;
+            lastmili = i;
+        }
     }
 
     // Draw disk icon before blit, if necessary.
