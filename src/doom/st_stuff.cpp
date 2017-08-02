@@ -80,11 +80,11 @@
 #define ST_TOGGLECHAT		KEY_ENTER
 
 // Location of status bar
-#define ST_X				0 * SCREENSCALE
-#define ST_X2				104 * SCREENSCALE
+#define ST_X				0
+#define ST_X2				104
 
-#define ST_FX  			143 * SCREENSCALE
-#define ST_FY  			169 * SCREENSCALE
+#define ST_FX  			143
+#define ST_FY  			169
 
 // Should be set to patch width
 //  for tall numbers later on
@@ -416,21 +416,16 @@ void ST_Stop(void);
 
 void ST_refreshBackground(void)
 {
-
     if (st_statusbaron)
     {
-        V_UseBuffer(st_backing_screen);
-
-	V_DrawPatch(ST_X, 0, sbar);
-
-	if (netgame)
-	    V_DrawPatch(ST_FX, 0, faceback);
-
-        V_RestoreBuffer();
-
-	V_CopyRect(ST_X, 0, st_backing_screen, ST_WIDTH, ST_HEIGHT, ST_X, ST_Y);
+        theta::video::DrawScaledPatch(ST_X, ST_Y, DEH_String("STBAR"));
+        if (netgame)
+        {
+            char namebuf[9];
+            DEH_snprintf(namebuf, 9, "STFB%d", consoleplayer);
+            theta::video::DrawScaledPatch(ST_FX, ST_Y, namebuf);
+        }
     }
-
 }
 
 
@@ -1085,10 +1080,8 @@ void ST_Drawer (boolean fullscreen, boolean refresh)
     ST_doPaletteStuff();
 
     // If just after ST_Start(), refresh all
-    if (st_firsttime) ST_doRefresh();
-    // Otherwise, update as little as possible
-    else ST_diffDraw();
-
+    // FIXME: Remove all instances of "st_firsttime"
+    ST_doRefresh();
 }
 
 typedef void (*load_callback_t)(const char *lumpname, patch_t **variable); 

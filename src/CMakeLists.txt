@@ -93,6 +93,7 @@ set(GAME_SOURCE_FILES
     v_buffer.cpp      v_buffer.h
     v_diskicon.cpp    v_diskicon.h
     v_draw_list.cpp   v_draw_list.h
+    v_graphics.cpp    v_graphics.h
     v_video.cpp       v_video.h
                     v_patch.h
     w_checksum.cpp    w_checksum.h

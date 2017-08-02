@@ -21,6 +21,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "v_graphics.h"
+
 namespace theta
 {
 
@@ -34,10 +36,7 @@ struct AtlasEntry
     int y;
     int w;
     int h;
-    int xoff; // patch_t offset
-    int yoff; // patch_t offset
-    AtlasEntry(int x, int y, int w, int h, int xoff, int yoff) :
-        x(x), y(y), w(w), h(h), xoff(xoff), yoff(yoff) { }
+    AtlasEntry(int x, int y, int w, int h) : x(x), y(y), w(w), h(h) { }
 };
 
 // A shelf of the atlas.
@@ -57,14 +56,14 @@ class Atlas
 {
     int width;
     int height;
-    std::unordered_map<std::string, AtlasEntry> atlas;
+    std::unordered_map<const Graphic*, AtlasEntry> atlas;
     std::vector<AtlasShelf> shelves;
 public:
     Atlas(int width, int height) : width(width), height(height) { }
     Atlas(const Atlas&) = delete;
-    void Add(const std::string& name, int w, int h, int xoff, int yoff);
-    bool Check(const std::string& name);
-    bool Find(const std::string& name, AtlasEntry& out);
+    void Add(const Graphic* handle, int w, int h);
+    bool Check(const Graphic* handle);
+    bool Find(const Graphic* handle, AtlasEntry& out);
     int GetHeight() const;
     int GetWidth() const;
 };

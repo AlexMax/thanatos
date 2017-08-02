@@ -28,6 +28,7 @@
 #include "i_renderer.h"
 #include "v_atlas.h"
 #include "v_buffer.h"
+#include "v_graphics.h"
 
 namespace theta
 {
@@ -114,9 +115,9 @@ public:
     Renderer::~Renderer();
     void Flip();
     void Render();
-    void AddGraphic(const std::string& name, const video::RGBABuffer& pixels, int xoff, int yoff);
-    bool CheckGraphic(const std::string& name);
-    void DrawGraphic(const std::string& name, int x, int y, double scalex, double scaley);
+    void AddGraphic(const video::Graphic* handle, const video::RGBABuffer& pixels);
+    bool CheckGraphic(const video::Graphic* handle);
+    void DrawGraphic(const video::Graphic* handle, int x, int y, double scalex, double scaley);
     int GetWidth() const;
     int GetHeight() const;
     void SetPagePixels(const video::RGBABuffer& pixels);

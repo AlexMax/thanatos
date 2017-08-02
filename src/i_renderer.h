@@ -20,6 +20,7 @@
 
 #include "doomtype.h"
 #include "v_buffer.h"
+#include "v_graphics.h"
 
 namespace theta
 {
@@ -33,9 +34,9 @@ class RendererInterface
 public:
     virtual void Flip() = 0;
     virtual void Render() = 0;
-    virtual void AddGraphic(const std::string& name, const video::RGBABuffer& pixels, int xoff, int yoff) = 0;
-    virtual bool CheckGraphic(const std::string& name) = 0;
-    virtual void DrawGraphic(const std::string& name, int x, int y, double scalex, double scaley) = 0;
+    virtual void AddGraphic(const video::Graphic* handle, const video::RGBABuffer& pixels) = 0;
+    virtual bool CheckGraphic(const video::Graphic* handle) = 0;
+    virtual void DrawGraphic(const video::Graphic* handle, int x, int y, double scalex, double scaley) = 0;
     virtual int GetHeight() const = 0;
     virtual int GetWidth() const = 0;
     virtual void SetPagePixels(const video::RGBABuffer& pixels) = 0;
