@@ -115,9 +115,9 @@ public:
     Renderer::~Renderer();
     void Flip();
     void Render();
-    void AddGraphic(const video::Graphic* handle, const video::RGBABuffer& pixels);
-    bool CheckGraphic(const video::Graphic* handle);
-    void DrawGraphic(const video::Graphic* handle, int x, int y, double scalex, double scaley);
+    void AddGraphic(const video::Graphic& handle, const video::RGBABuffer& pixels);
+    bool CheckGraphic(const video::Graphic& handle);
+    void DrawGraphic(const video::Graphic& handle, int x, int y, double scalex, double scaley);
     int GetWidth() const;
     int GetHeight() const;
     void SetPagePixels(const video::RGBABuffer& pixels);

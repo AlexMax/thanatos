@@ -26,10 +26,9 @@ namespace video
 {
 
 // Insert a graphic of width w and height h into the atlas.
-void Atlas::Add(const Graphic* handle, int w, int h)
+void Atlas::Add(const Graphic& handle, int w, int h)
 {
-    printf("%p handle\n");
-    auto entry = this->atlas.find(handle);
+    auto entry = this->atlas.find(&handle);
     if (entry != this->atlas.end())
     {
         // Atlas entry already exists, silently don't do anything.
@@ -51,7 +50,7 @@ void Atlas::Add(const Graphic* handle, int w, int h)
             if (w <= this->width - it->w)
             {
                 // There is!  Put the altas entry there, then adjust the shelf.
-                auto res = this->atlas.emplace(handle, AtlasEntry(it->w, y, w, h));
+                auto res = this->atlas.emplace(&handle, AtlasEntry(it->w, y, w, h));
                 if (res.second == false)
                 {
                     I_Error("Couldn't emplace into to the atlas");
@@ -69,7 +68,7 @@ void Atlas::Add(const Graphic* handle, int w, int h)
     {
         // We do!  Create the new shelf and put the atlas entry there.
         this->shelves.emplace_back(AtlasShelf(w, h));
-        auto ares = this->atlas.emplace(handle, AtlasEntry(0, y, w, h));
+        auto ares = this->atlas.emplace(&handle, AtlasEntry(0, y, w, h));
         if (ares.second == false)
         {
             I_Error("Couldn't emplace into to the atlas");
@@ -83,9 +82,9 @@ void Atlas::Add(const Graphic* handle, int w, int h)
 
 // Check to see if an atlas entry - any atlas entry - exists for the given
 // lump.
-bool Atlas::Check(const Graphic* handle)
+bool Atlas::Check(const Graphic& handle)
 {
-    auto res = this->atlas.find(handle);
+    auto res = this->atlas.find(&handle);
     if (res == this->atlas.end())
     {
         return false;
@@ -94,9 +93,9 @@ bool Atlas::Check(const Graphic* handle)
 }
 
 // Find the atlas entry that belongs to the given lump.
-bool Atlas::Find(const Graphic* handle, AtlasEntry& out)
+bool Atlas::Find(const Graphic& handle, AtlasEntry& out)
 {
-    auto res = this->atlas.find(handle);
+    auto res = this->atlas.find(&handle);
     if (res == this->atlas.end())
     {
         return false;

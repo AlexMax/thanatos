@@ -675,7 +675,7 @@ void Renderer::Render()
 }
 
 // Add graphic to the texture atlas.
-void Renderer::AddGraphic(const video::Graphic* handle, const video::RGBABuffer& pixels)
+void Renderer::AddGraphic(const video::Graphic& handle, const video::RGBABuffer& pixels)
 {
     this->graphicsAtlas->Add(handle, pixels.GetWidth(), pixels.GetHeight());
 
@@ -691,13 +691,13 @@ void Renderer::AddGraphic(const video::Graphic* handle, const video::RGBABuffer&
 }
 
 // Check to see if a graphic exists in the texture atlas.
-bool Renderer::CheckGraphic(const video::Graphic* handle)
+bool Renderer::CheckGraphic(const video::Graphic& handle)
 {
     return this->graphicsAtlas->Check(handle);
 }
 
 // Draw a graphic that should exist in the texture atlas.
-void Renderer::DrawGraphic(const video::Graphic* handle, int x, int y, double scalex, double scaley)
+void Renderer::DrawGraphic(const video::Graphic& handle, int x, int y, double scalex, double scaley)
 {
     video::AtlasEntry atlas(0, 0, 0, 0);
     if (this->graphicsAtlas->Find(handle, atlas) == false)
@@ -708,13 +708,13 @@ void Renderer::DrawGraphic(const video::Graphic* handle, int x, int y, double sc
     // Doom uses X, Y coordinates that begin in the upper left, but OpenGL
     // has a floating point graph that goes from -1, -1 to 1, 1 starting
     // at the lower left.  Convert between the coordinate systems.
-    GLfloat x1 = static_cast<GLfloat>((2 * scalex * (handle->xoff + x)) / static_cast<double>(this->viewportWidth) - 1);
-    GLfloat y1 = static_cast<GLfloat>(1 - ((2 * scaley * (handle->yoff + y)) / static_cast<double>(this->viewportHeight)));
+    GLfloat x1 = static_cast<GLfloat>((2 * scalex * (handle.xoff + x)) / static_cast<double>(this->viewportWidth) - 1);
+    GLfloat y1 = static_cast<GLfloat>(1 - ((2 * scaley * (handle.yoff + y)) / static_cast<double>(this->viewportHeight)));
     GLfloat u1 = atlas.x / (GLfloat)this->graphicsAtlas->GetWidth();
     GLfloat v1 = atlas.y / (GLfloat)this->graphicsAtlas->GetHeight();
 
-    GLfloat x2 = static_cast<GLfloat>((2 * scalex * (handle->xoff + atlas.w + x)) / static_cast<double>(this->viewportWidth) - 1);
-    GLfloat y2 = static_cast<GLfloat>(1 - ((2 * scaley * (handle->yoff + atlas.h + y)) / static_cast<double>(this->viewportHeight)));
+    GLfloat x2 = static_cast<GLfloat>((2 * scalex * (handle.xoff + atlas.w + x)) / static_cast<double>(this->viewportWidth) - 1);
+    GLfloat y2 = static_cast<GLfloat>(1 - ((2 * scaley * (handle.yoff + atlas.h + y)) / static_cast<double>(this->viewportHeight)));
     GLfloat u2 = (atlas.x + atlas.w) / (GLfloat)this->graphicsAtlas->GetWidth();
     GLfloat v2 = (atlas.y + atlas.h) / (GLfloat)this->graphicsAtlas->GetHeight();
 

@@ -38,11 +38,11 @@ GraphicsManager& GraphicsManager::Instance()
 //
 // Returns a unqiue handle to the graphic that you can use to reference
 // the graphic therafter.  Don't lose it, there's no duplicate detection.
-const Graphic* GraphicsManager::AddPatch(patch_t* patch)
+const Graphic& GraphicsManager::AddPatch(patch_t* patch)
 {
     // Create the handle.
     this->handles.emplace_back(std::make_unique<Graphic>(patch->width, patch->height, -patch->leftoffset, -patch->topoffset));
-    const Graphic* handle = (this->handles.cend() - 1)->get();
+    const Graphic& handle = *((this->handles.cend() - 1)->get());
 
     // Put the graphic associated with the handle into the texture atlas.
     auto doompal = static_cast<byte*>(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
@@ -58,20 +58,21 @@ const Graphic* GraphicsManager::AddPatch(patch_t* patch)
 // Returns a unique handle to the graphic that you can use to reference
 // the graphic therafter.  This method has dupe detection based on the
 // graphic name, so you can lose the patch all you like.
-const Graphic* GraphicsManager::LoadPatch(const std::string& name)
+const Graphic& GraphicsManager::LoadPatch(const std::string& name)
 {
     auto found = this->names.find(name);
     if (found == this->names.end())
     {
         // Not found.  Load the patch and return a handle to it.
         auto patch = static_cast<patch_t*>(W_CacheLumpName(name.c_str(), PU_CACHE));
-        auto handle = this->AddPatch(patch);
-        this->names.emplace(name, handle);
+        const Graphic& handle = this->AddPatch(patch);
+        this->names.emplace(name, &handle);
+        return handle;
     }
     else
     {
         // Found.  Return the handle.
-        return found->second;
+        return *(found->second);
     }
 }
 

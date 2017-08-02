@@ -49,8 +49,8 @@ class GraphicsManager
     std::unordered_map<std::string, const Graphic*> names;
 public:
     static GraphicsManager& Instance();
-    const Graphic* AddPatch(patch_t* patch);
-    const Graphic* LoadPatch(const std::string& name);
+    const Graphic& AddPatch(patch_t* patch);
+    const Graphic& LoadPatch(const std::string& name);
 };
 
 }
