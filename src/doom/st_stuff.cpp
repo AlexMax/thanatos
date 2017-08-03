@@ -20,6 +20,9 @@
 
 
 
+#include <array>
+#include <memory>
+
 #include <stdio.h>
 
 #include "i_system.h"
@@ -112,8 +115,8 @@
 #define ST_GODFACE			(ST_NUMPAINFACES*ST_FACESTRIDE)
 #define ST_DEADFACE			(ST_GODFACE+1)
 
-#define ST_FACESX			143 * SCREENSCALE
-#define ST_FACESY			168 * SCREENSCALE
+#define ST_FACESX			143
+#define ST_FACESY			168
 
 #define ST_EVILGRINCOUNT		(2*TICRATE)
 #define ST_STRAIGHTFACECOUNT	(TICRATE/2)
@@ -143,12 +146,12 @@
 #define ST_HEALTHY			171 * SCREENSCALE
 
 // Weapon pos.
-#define ST_ARMSX			111 * SCREENSCALE
-#define ST_ARMSY			172 * SCREENSCALE
+#define ST_ARMSX			111
+#define ST_ARMSY			172
 #define ST_ARMSBGX			104
 #define ST_ARMSBGY			168
-#define ST_ARMSXSPACE		12 * SCREENSCALE
-#define ST_ARMSYSPACE		10 * SCREENSCALE
+#define ST_ARMSXSPACE		12
+#define ST_ARMSYSPACE		10
 
 // Frags pos.
 #define ST_FRAGSX			138 * SCREENSCALE
@@ -163,14 +166,14 @@
 // Key icon positions.
 #define ST_KEY0WIDTH		8 * SCREENSCALE
 #define ST_KEY0HEIGHT		5 * SCREENSCALE
-#define ST_KEY0X			239 * SCREENSCALE
-#define ST_KEY0Y			171 * SCREENSCALE
+#define ST_KEY0X			239
+#define ST_KEY0Y			171
 #define ST_KEY1WIDTH		ST_KEY0WIDTH
-#define ST_KEY1X			239 * SCREENSCALE
-#define ST_KEY1Y			181 * SCREENSCALE
+#define ST_KEY1X			239
+#define ST_KEY1Y			181
 #define ST_KEY2WIDTH		ST_KEY0WIDTH
-#define ST_KEY2X			239 * SCREENSCALE
-#define ST_KEY2Y			191 * SCREENSCALE
+#define ST_KEY2X			239
+#define ST_KEY2Y			191
 
 // Ammunition counter.
 #define ST_AMMO0WIDTH		3 * SCREENSCALE
@@ -318,10 +321,10 @@ static patch_t*		tallpercent;
 static patch_t*		shortnum[10];
 
 // 3 key-cards, 3 skulls
-static patch_t*		keys[NUMCARDS]; 
+static const theta::video::Graphic* keys[NUMCARDS];
 
 // face status patches
-static patch_t*		faces[ST_NUMFACES];
+static const theta::video::Graphic* faces[ST_NUMFACES];
 
 // face background
 static patch_t*		faceback;
@@ -330,7 +333,7 @@ static patch_t*		faceback;
 static const theta::video::Graphic* armsbg;
 
 // weapon ownership patches
-static patch_t*		arms[6][2]; 
+static const theta::video::Graphic* arms[6][2];
 
 // ready-weapon widget
 static st_number_t	w_ready;
@@ -346,13 +349,13 @@ static std::unique_ptr<theta::status::Binicon> w_armsbg;
 
 
 // weapon ownership widgets
-static st_multicon_t	w_arms[6];
+static std::array<std::unique_ptr<theta::status::Multiicon>, 6> w_arms;
 
 // face status widget
-static st_multicon_t	w_faces; 
+static std::unique_ptr<theta::status::Multiicon> w_faces;
 
 // keycard widgets
-static st_multicon_t	w_keyboxes[3];
+static std::array<std::unique_ptr<theta::status::Multiicon>, 3> w_keyboxes;
 
 // armor widget
 static st_percent_t	w_armor;
@@ -1040,13 +1043,17 @@ void ST_drawWidgets(boolean refresh)
 
     w_armsbg->Update(refresh);
 
-    for (i=0;i<6;i++)
-	STlib_updateMultIcon(&w_arms[i], refresh);
+    for (auto&& arm : w_arms)
+    {
+        arm->Update(refresh);
+    }
 
-    STlib_updateMultIcon(&w_faces, refresh);
+    w_faces->Update(refresh);
 
-    for (i=0;i<3;i++)
-	STlib_updateMultIcon(&w_keyboxes[i], refresh);
+    for (auto&& keybox : w_keyboxes)
+    {
+        keybox->Update(refresh);
+    }
 
     STlib_updateNum(&w_frags, refresh);
 
@@ -1118,7 +1125,7 @@ static void ST_loadUnloadGraphics(load_callback_t callback)
     for (i=0;i<NUMCARDS;i++)
     {
 	DEH_snprintf(namebuf, 9, "STKEYS%d", i);
-        callback(namebuf, &keys[i]);
+        keys[i] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
     }
 
     // arms background
@@ -1130,10 +1137,11 @@ static void ST_loadUnloadGraphics(load_callback_t callback)
 	DEH_snprintf(namebuf, 9, "STGNUM%d", i+2);
 
 	// gray #
-        callback(namebuf, &arms[i][0]);
+        arms[i][0] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
 
 	// yellow #
-	arms[i][1] = shortnum[i+2]; 
+        arms[i][1] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
+	//arms[i][1] = shortnum[i + 2]; 
     }
 
     // face backgrounds for different color players
@@ -1150,29 +1158,29 @@ static void ST_loadUnloadGraphics(load_callback_t callback)
 	for (j=0; j<ST_NUMSTRAIGHTFACES; j++)
 	{
 	    DEH_snprintf(namebuf, 9, "STFST%d%d", i, j);
-            callback(namebuf, &faces[facenum]);
+            faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
             ++facenum;
 	}
 	DEH_snprintf(namebuf, 9, "STFTR%d0", i);	// turn right
-        callback(namebuf, &faces[facenum]);
+        faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
         ++facenum;
 	DEH_snprintf(namebuf, 9, "STFTL%d0", i);	// turn left
-        callback(namebuf, &faces[facenum]);
+        faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
         ++facenum;
 	DEH_snprintf(namebuf, 9, "STFOUCH%d", i);	// ouch!
-        callback(namebuf, &faces[facenum]);
+        faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
         ++facenum;
 	DEH_snprintf(namebuf, 9, "STFEVL%d", i);	// evil grin ;)
-        callback(namebuf, &faces[facenum]);
+        faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
         ++facenum;
 	DEH_snprintf(namebuf, 9, "STFKILL%d", i);	// pissed off
-        callback(namebuf, &faces[facenum]);
+        faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
         ++facenum;
     }
 
-    callback(DEH_String("STFGOD0"), &faces[facenum]);
+    faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("STFGOD0"));
     ++facenum;
-    callback(DEH_String("STFDEAD0"), &faces[facenum]);
+    faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("STFDEAD0"));
     ++facenum;
 }
 
@@ -1272,14 +1280,12 @@ void ST_createWidgets(void)
         *armsbg, &st_notdeathmatch, &st_statusbaron);
 
     // weapons owned
-    for(i=0;i<6;i++)
+    for(i = 0;i < 6;i++)
     {
-        STlib_initMultIcon(&w_arms[i],
-                           ST_ARMSX+(i%3)*ST_ARMSXSPACE,
-                           ST_ARMSY+(i/3)*ST_ARMSYSPACE,
-                           arms[i],
-                           &plyr->weaponowned[i+1],
-                           &st_armson);
+        w_arms[i] = std::make_unique<theta::status::Multiicon>(
+            ST_ARMSX + (i % 3) * ST_ARMSXSPACE, ST_ARMSY + (i / 3) * ST_ARMSYSPACE,
+            arms[i], &plyr->weaponowned[i + 1], &st_armson
+        );
     }
 
     // frags sum
@@ -1292,12 +1298,8 @@ void ST_createWidgets(void)
 		  ST_FRAGSWIDTH);
 
     // faces
-    STlib_initMultIcon(&w_faces,
-		       ST_FACESX,
-		       ST_FACESY,
-		       faces,
-		       &st_faceindex,
-		       &st_statusbaron);
+    w_faces = std::make_unique<theta::status::Multiicon>(
+        ST_FACESX, ST_FACESY, faces, &st_faceindex, &st_statusbaron);
 
     // armor percentage - should be colored later
     STlib_initPercent(&w_armor,
@@ -1308,26 +1310,14 @@ void ST_createWidgets(void)
 		      &st_statusbaron, tallpercent);
 
     // keyboxes 0-2
-    STlib_initMultIcon(&w_keyboxes[0],
-		       ST_KEY0X,
-		       ST_KEY0Y,
-		       keys,
-		       &keyboxes[0],
-		       &st_statusbaron);
-    
-    STlib_initMultIcon(&w_keyboxes[1],
-		       ST_KEY1X,
-		       ST_KEY1Y,
-		       keys,
-		       &keyboxes[1],
-		       &st_statusbaron);
+    w_keyboxes[0] = std::make_unique<theta::status::Multiicon>(
+        ST_KEY0X, ST_KEY0Y, keys, &keyboxes[0], &st_statusbaron);
 
-    STlib_initMultIcon(&w_keyboxes[2],
-		       ST_KEY2X,
-		       ST_KEY2Y,
-		       keys,
-		       &keyboxes[2],
-		       &st_statusbaron);
+    w_keyboxes[1] = std::make_unique<theta::status::Multiicon>(
+        ST_KEY1X, ST_KEY1Y, keys, &keyboxes[1], &st_statusbaron);
+
+    w_keyboxes[2] = std::make_unique<theta::status::Multiicon>(
+        ST_KEY2X, ST_KEY2Y, keys, &keyboxes[2], &st_statusbaron);
 
     // ammo count (all four kinds)
     STlib_initNum(&w_ammo[0],

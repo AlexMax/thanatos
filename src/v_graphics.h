@@ -53,6 +53,7 @@ public:
     static GraphicsManager& Instance();
     const Graphic& AddPatch(patch_t* patch);
     const Graphic& LoadPatch(const std::string& name);
+    const std::string DebugNameOf(const Graphic& handle);
 };
 
 }

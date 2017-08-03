@@ -71,10 +71,14 @@ typedef struct
     
 } st_percent_t;
 
+namespace theta
+{
 
+namespace status
+{
 
 // Multiple Icon widget
-typedef struct
+class Multiicon
 {
      // center-justified location of icons
     int			x;
@@ -91,19 +95,15 @@ typedef struct
     boolean*		on;
 
     // list of icons
-    patch_t**		p;
+    const video::Graphic** p;
     
     // user data
     int			data;
-    
-} st_multicon_t;
-
-
-namespace theta
-{
-
-namespace status
-{
+public:
+    Multiicon(int x, int y, const video::Graphic** il, int* inum, boolean* on) :
+        x(x), y(y), oldinum(-1), inum(inum), on(on), p(il) { }
+    void Update(boolean refresh);
+};
 
 // Binary Icon widget
 
@@ -182,22 +182,5 @@ void
 STlib_updatePercent
 ( st_percent_t*		per,
   int			refresh );
-
-
-// Multiple Icon widget routines
-void
-STlib_initMultIcon
-( st_multicon_t*	mi,
-  int			x,
-  int			y,
-  patch_t**		il,
-  int*			inum,
-  boolean*		on );
-
-
-void
-STlib_updateMultIcon
-( st_multicon_t*	mi,
-  boolean		refresh );
 
 #endif

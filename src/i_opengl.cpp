@@ -704,7 +704,6 @@ void Renderer::DrawGraphic(const video::Graphic& handle, int x, int y, double sc
     {
         this->AddGraphic(handle, handle.data);
         this->graphicsAtlas->Find(handle, atlas);
-        return;
     }
 
     // Doom uses X, Y coordinates that begin in the upper left, but OpenGL

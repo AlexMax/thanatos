@@ -180,63 +180,29 @@ STlib_updatePercent
     STlib_updateNum(&per->n, refresh);
 }
 
-
-
-void
-STlib_initMultIcon
-( st_multicon_t*	i,
-  int			x,
-  int			y,
-  patch_t**		il,
-  int*			inum,
-  boolean*		on )
-{
-    i->x	= x;
-    i->y	= y;
-    i->oldinum 	= -1;
-    i->inum	= inum;
-    i->on	= on;
-    i->p	= il;
-}
-
-
-
-void
-STlib_updateMultIcon
-( st_multicon_t*	mi,
-  boolean		refresh )
-{
-    int			w;
-    int			h;
-    int			x;
-    int			y;
-
-    if (*mi->on
-	&& (mi->oldinum != *mi->inum || refresh)
-	&& (*mi->inum!=-1))
-    {
-	if (mi->oldinum != -1)
-	{
-	    x = mi->x - SHORT(mi->p[mi->oldinum]->leftoffset);
-	    y = mi->y - SHORT(mi->p[mi->oldinum]->topoffset);
-	    w = SHORT(mi->p[mi->oldinum]->width);
-	    h = SHORT(mi->p[mi->oldinum]->height);
-
-	    if (y - ST_Y < 0)
-		I_Error("updateMultIcon: y - ST_Y < 0");
-
-	    V_CopyRect(x, y-ST_Y, st_backing_screen, w, h, x, y);
-	}
-	V_DrawPatch(mi->x, mi->y, mi->p[*mi->inum]);
-	mi->oldinum = *mi->inum;
-    }
-}
-
 namespace theta
 {
 
 namespace status
 {
+
+void Multiicon::Update(boolean refresh)
+{
+    if (*this->inum == -1)
+    {
+        return;
+    }
+
+    int x = this->x + this->p[*this->inum]->xoff;
+    int y = this->y + this->p[*this->inum]->yoff;
+    int w = this->p[*this->inum]->width;
+    int h = this->p[*this->inum]->height;
+
+    if (y - ST_Y < 0)
+        I_Error("updateMultIcon: y - ST_Y < 0");
+
+    video::DrawScaledGraphic(this->x, this->y, *this->p[*this->inum]);
+}
 
 void Binicon::Update(boolean refresh)
 {

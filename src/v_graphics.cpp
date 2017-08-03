@@ -78,6 +78,25 @@ const Graphic& GraphicsManager::LoadPatch(const std::string& name)
     }
 }
 
+// Get the name of a handle.
+//
+// This involves a complete scan of the internal hashtable.  You don't
+// actually need to know the name of the graphic unless you're debugging
+// it.  And if you actually do...well, I guess I'll need to implement this
+// feature properly at that point...
+const std::string GraphicsManager::DebugNameOf(const Graphic& handle)
+{
+    for (const auto& name : this->names)
+    {
+        if (name.second == &handle)
+        {
+            return name.first;
+        }
+    }
+
+    return "(unknown)";
+}
+
 }
 
 }
