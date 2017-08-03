@@ -26,6 +26,7 @@
 
 #include "doomtype.h"
 
+#include "v_graphics.h"
 // Needed because we are refering to patches.
 #include "v_patch.h"
 
@@ -70,7 +71,8 @@ namespace theta
 namespace video
 {
 
-void DrawScaledPatch(int x, int y, const std::string& lump);
+void DrawScaledGraphic(int x, int y, const Graphic& graphic);
+void DrawScaledLump(int x, int y, const std::string& lump);
 void DrawPage(const patch_t* patch);
 
 }

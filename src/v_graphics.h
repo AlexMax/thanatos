@@ -23,6 +23,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "v_buffer.h"
 #include "v_patch.h"
 
 namespace theta
@@ -33,12 +34,13 @@ namespace video
 
 struct Graphic
 {
+    RGBABuffer data;
     int width;
     int height;
     int xoff;
     int yoff;
-    Graphic(int width, int height, int xoff, int yoff) :
-        width(width), height(height), xoff(xoff), yoff(yoff) { }
+    Graphic(RGBABuffer data, int width, int height, int xoff, int yoff) :
+        data(data), width(width), height(height), xoff(xoff), yoff(yoff) { }
     Graphic(const Graphic&) = delete;
 };
 

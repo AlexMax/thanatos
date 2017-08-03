@@ -490,8 +490,17 @@ namespace theta
 namespace video
 {
 
-// Draw a patch scaled to a virtual 320x200 screen.
-void DrawScaledPatch(int x, int y, const std::string& lump)
+// Draw a graphic scaled to a virtual 320x200 screen.
+void DrawScaledGraphic(int x, int y, const Graphic& graphic)
+{
+    double scalex = system::renderer->GetWidth() / (double)VIRTUALWIDTH;
+    double scaley = system::renderer->GetHeight() / (double)VIRTUALHEIGHT;
+
+    system::renderer->DrawGraphic(graphic, x, y, scalex, scaley);
+}
+
+// Draw a lump scaled to a virtual 320x200 screen.
+void DrawScaledLump(int x, int y, const std::string& lump)
 {
     double scalex = system::renderer->GetWidth() / (double)VIRTUALWIDTH;
     double scaley = system::renderer->GetHeight() / (double)VIRTUALHEIGHT;

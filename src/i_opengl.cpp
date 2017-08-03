@@ -702,6 +702,8 @@ void Renderer::DrawGraphic(const video::Graphic& handle, int x, int y, double sc
     video::AtlasEntry atlas(0, 0, 0, 0);
     if (this->graphicsAtlas->Find(handle, atlas) == false)
     {
+        this->AddGraphic(handle, handle.data);
+        this->graphicsAtlas->Find(handle, atlas);
         return;
     }
 

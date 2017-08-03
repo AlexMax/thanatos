@@ -232,55 +232,25 @@ STlib_updateMultIcon
     }
 }
 
-
-
-void
-STlib_initBinIcon
-( st_binicon_t*		b,
-  int			x,
-  int			y,
-  patch_t*		i,
-  boolean*		val,
-  boolean*		on )
+namespace theta
 {
-    b->x	= x;
-    b->y	= y;
-    b->oldval	= false;
-    b->val	= val;
-    b->on	= on;
-    b->p	= i;
+
+namespace status
+{
+
+void Binicon::Update(boolean refresh)
+{
+    int x = this->x + this->p.xoff;
+    int y = this->y + this->p.yoff;
+    int w = this->p.width;
+    int h = this->p.height;
+
+    if (y - ST_Y < 0)
+        I_Error("updateBinIcon: y - ST_Y < 0");
+
+    video::DrawScaledGraphic(this->x, this->y, this->p);
 }
-
-
-
-void
-STlib_updateBinIcon
-( st_binicon_t*		bi,
-  boolean		refresh )
-{
-    int			x;
-    int			y;
-    int			w;
-    int			h;
-
-    if (*bi->on
-     && (bi->oldval != *bi->val || refresh))
-    {
-	x = bi->x - SHORT(bi->p->leftoffset);
-	y = bi->y - SHORT(bi->p->topoffset);
-	w = SHORT(bi->p->width);
-	h = SHORT(bi->p->height);
-
-	if (y - ST_Y < 0)
-	    I_Error("updateBinIcon: y - ST_Y < 0");
-
-	if (*bi->val)
-	    V_DrawPatch(bi->x, bi->y, bi->p);
-	else
-	    V_CopyRect(x, y-ST_Y, st_backing_screen, w, h, x, y);
-
-	bi->oldval = *bi->val;
-    }
 
 }
 
+}

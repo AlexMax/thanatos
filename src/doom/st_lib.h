@@ -99,11 +99,15 @@ typedef struct
 } st_multicon_t;
 
 
+namespace theta
+{
 
+namespace status
+{
 
 // Binary Icon widget
 
-typedef struct
+class Binicon
 {
     // center-justified location of icon
     int			x;
@@ -120,11 +124,17 @@ typedef struct
     boolean*		on;  
 
 
-    patch_t*		p;	// icon
+    const video::Graphic&   p;  // icon
     int			data;   // user data
-    
-} st_binicon_t;
+public:
+    Binicon(int x, int y, const video::Graphic& i, boolean* val, boolean* on) :
+        x(x), y(y), oldval(false), val(val), on(on), p(i) { }
+    void Update(boolean refresh);
+};
 
+}
+
+}
 
 
 //
@@ -188,22 +198,6 @@ STlib_initMultIcon
 void
 STlib_updateMultIcon
 ( st_multicon_t*	mi,
-  boolean		refresh );
-
-// Binary Icon widget routines
-
-void
-STlib_initBinIcon
-( st_binicon_t*		b,
-  int			x,
-  int			y,
-  patch_t*		i,
-  boolean*		val,
-  boolean*		on );
-
-void
-STlib_updateBinIcon
-( st_binicon_t*		bi,
   boolean		refresh );
 
 #endif

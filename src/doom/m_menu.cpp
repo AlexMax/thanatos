@@ -533,7 +533,7 @@ void M_DrawLoad(void)
 {
     int             i;
 	
-    theta::video::DrawScaledPatch(72, 28, DEH_String("M_LOADG"));
+    theta::video::DrawScaledLump(72, 28, DEH_String("M_LOADG"));
 
     for (i = 0;i < load_end; i++)
     {
@@ -551,15 +551,15 @@ void M_DrawSaveLoadBorder(int x,int y)
 {
     int             i;
 	
-    theta::video::DrawScaledPatch(x - 8, y + 7, DEH_String("M_LSLEFT"));
+    theta::video::DrawScaledLump(x - 8, y + 7, DEH_String("M_LSLEFT"));
 	
     for (i = 0;i < 24;i++)
     {
-        theta::video::DrawScaledPatch(x, y + 7, DEH_String("M_LSCNTR"));
+        theta::video::DrawScaledLump(x, y + 7, DEH_String("M_LSCNTR"));
 	x += 8;
     }
 
-    theta::video::DrawScaledPatch(x, y + 7, DEH_String("M_LSRGHT"));
+    theta::video::DrawScaledLump(x, y + 7, DEH_String("M_LSRGHT"));
 }
 
 
@@ -600,7 +600,7 @@ void M_DrawSave(void)
 {
     int             i;
 	
-    theta::video::DrawScaledPatch(72, 28, DEH_String("M_SAVEG"));
+    theta::video::DrawScaledLump(72, 28, DEH_String("M_SAVEG"));
     for (i = 0;i < load_end; i++)
     {
 	M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
@@ -798,7 +798,7 @@ void M_DrawReadThisCommercial(void)
 //
 void M_DrawSound(void)
 {
-    theta::video::DrawScaledPatch(60, 38, DEH_String("M_SVOL"));
+    theta::video::DrawScaledLump(60, 38, DEH_String("M_SVOL"));
 
     M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(sfx_vol+1),
 		 16,sfxVolume);
@@ -854,7 +854,7 @@ void M_MusicVol(int choice)
 //
 void M_DrawMainMenu(void)
 {
-    theta::video::DrawScaledPatch(94, 2, DEH_String("M_DOOM"));
+    theta::video::DrawScaledLump(94, 2, DEH_String("M_DOOM"));
 }
 
 
@@ -865,8 +865,8 @@ void M_DrawMainMenu(void)
 //
 void M_DrawNewGame(void)
 {
-    theta::video::DrawScaledPatch(96, 14, DEH_String("M_NEWG"));
-    theta::video::DrawScaledPatch(54, 38, DEH_String("M_SKILL"));
+    theta::video::DrawScaledLump(96, 14, DEH_String("M_NEWG"));
+    theta::video::DrawScaledLump(54, 38, DEH_String("M_SKILL"));
 }
 
 void M_NewGame(int choice)
@@ -893,7 +893,7 @@ int     epi;
 
 void M_DrawEpisode(void)
 {
-    theta::video::DrawScaledPatch(54, 38, DEH_String("M_EPISOD"));
+    theta::video::DrawScaledLump(54, 38, DEH_String("M_EPISOD"));
 }
 
 void M_VerifyNightmare(int key)
@@ -941,12 +941,12 @@ static const char *msgNames[2] = {"M_MSGOFF","M_MSGON"};
 
 void M_DrawOptions(void)
 {
-    theta::video::DrawScaledPatch(108, 15, DEH_String("M_OPTTTL"));
+    theta::video::DrawScaledLump(108, 15, DEH_String("M_OPTTTL"));
 	
-    theta::video::DrawScaledPatch(OptionsDef.x + 175, OptionsDef.y + LINEHEIGHT * detail,
+    theta::video::DrawScaledLump(OptionsDef.x + 175, OptionsDef.y + LINEHEIGHT * detail,
         DEH_String(detailNames[detailLevel]));
 
-    theta::video::DrawScaledPatch(OptionsDef.x + 120, OptionsDef.y + LINEHEIGHT * messages,
+    theta::video::DrawScaledLump(OptionsDef.x + 120, OptionsDef.y + LINEHEIGHT * messages,
         DEH_String(msgNames[showMessages]));
 
     M_DrawThermo(OptionsDef.x, OptionsDef.y + LINEHEIGHT * (mousesens + 1),
@@ -1191,16 +1191,16 @@ M_DrawThermo
     int		i;
 
     xx = x;
-    theta::video::DrawScaledPatch(xx, y, DEH_String("M_THERML"));
+    theta::video::DrawScaledLump(xx, y, DEH_String("M_THERML"));
     xx += 8;
     for (i=0;i<thermWidth;i++)
     {
-        theta::video::DrawScaledPatch(xx, y, DEH_String("M_THERMM"));
+        theta::video::DrawScaledLump(xx, y, DEH_String("M_THERMM"));
 	xx += 8;
     }
-    theta::video::DrawScaledPatch(xx, y, DEH_String("M_THERMR"));
+    theta::video::DrawScaledLump(xx, y, DEH_String("M_THERMR"));
 
-    theta::video::DrawScaledPatch((x + 8) + thermDot * 8, y, DEH_String("M_THERMO"));
+    theta::video::DrawScaledLump((x + 8) + thermDot * 8, y, DEH_String("M_THERMO"));
 }
 
 
@@ -1210,7 +1210,7 @@ M_DrawEmptyCell
 ( menu_t*	menu,
   int		item )
 {
-    theta::video::DrawScaledPatch(menu->x - 10, menu->y + item * LINEHEIGHT - 1,
+    theta::video::DrawScaledLump(menu->x - 10, menu->y + item * LINEHEIGHT - 1,
         DEH_String("M_CELL1"));
 }
 
@@ -1219,7 +1219,7 @@ M_DrawSelCell
 ( menu_t*	menu,
   int		item )
 {
-    theta::video::DrawScaledPatch(menu->x - 10, menu->y + item * LINEHEIGHT - 1,
+    theta::video::DrawScaledLump(menu->x - 10, menu->y + item * LINEHEIGHT - 1,
         DEH_String("M_CELL2"));
 }
 
@@ -1966,14 +1966,14 @@ void M_Drawer (void)
 
 	if (name[0])
 	{
-            theta::video::DrawScaledPatch(x, y, name);
+            theta::video::DrawScaledLump(x, y, name);
 	}
 	y += LINEHEIGHT;
     }
 
     
     // DRAW SKULL
-    theta::video::DrawScaledPatch(x + SKULLXOFF, currentMenu->y - 5 + itemOn * LINEHEIGHT,
+    theta::video::DrawScaledLump(x + SKULLXOFF, currentMenu->y - 5 + itemOn * LINEHEIGHT,
         DEH_String(skullName[whichSkull]));
 }
 

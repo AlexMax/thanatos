@@ -27,6 +27,7 @@
 #include "z_zone.h"
 #include "m_misc.h"
 #include "m_random.h"
+#include "v_graphics.h"
 #include "w_wad.h"
 
 #include "deh_main.h"
@@ -144,8 +145,8 @@
 // Weapon pos.
 #define ST_ARMSX			111 * SCREENSCALE
 #define ST_ARMSY			172 * SCREENSCALE
-#define ST_ARMSBGX			104 * SCREENSCALE
-#define ST_ARMSBGY			168 * SCREENSCALE
+#define ST_ARMSBGX			104
+#define ST_ARMSBGY			168
 #define ST_ARMSXSPACE		12 * SCREENSCALE
 #define ST_ARMSYSPACE		10 * SCREENSCALE
 
@@ -326,7 +327,7 @@ static patch_t*		faces[ST_NUMFACES];
 static patch_t*		faceback;
 
  // main bar right
-static patch_t*		armsbg;
+static const theta::video::Graphic* armsbg;
 
 // weapon ownership patches
 static patch_t*		arms[6][2]; 
@@ -341,7 +342,7 @@ static st_number_t	w_frags;
 static st_percent_t	w_health;
 
 // arms background
-static st_binicon_t	w_armsbg; 
+static std::unique_ptr<theta::status::Binicon> w_armsbg; 
 
 
 // weapon ownership widgets
@@ -418,12 +419,12 @@ void ST_refreshBackground(void)
 {
     if (st_statusbaron)
     {
-        theta::video::DrawScaledPatch(ST_X, ST_Y, DEH_String("STBAR"));
+        theta::video::DrawScaledLump(ST_X, ST_Y, DEH_String("STBAR"));
         if (netgame)
         {
             char namebuf[9];
             DEH_snprintf(namebuf, 9, "STFB%d", consoleplayer);
-            theta::video::DrawScaledPatch(ST_FX, ST_Y, namebuf);
+            theta::video::DrawScaledLump(ST_FX, ST_Y, namebuf);
         }
     }
 }
@@ -1037,7 +1038,7 @@ void ST_drawWidgets(boolean refresh)
     STlib_updatePercent(&w_health, refresh);
     STlib_updatePercent(&w_armor, refresh);
 
-    STlib_updateBinIcon(&w_armsbg, refresh);
+    w_armsbg->Update(refresh);
 
     for (i=0;i<6;i++)
 	STlib_updateMultIcon(&w_arms[i], refresh);
@@ -1121,7 +1122,7 @@ static void ST_loadUnloadGraphics(load_callback_t callback)
     }
 
     // arms background
-    callback(DEH_String("STARMS"), &armsbg);
+    armsbg = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("STARMS"));
 
     // arms ownership widgets
     for (i=0; i<6; i++)
@@ -1267,12 +1268,8 @@ void ST_createWidgets(void)
 		      tallpercent);
 
     // arms background
-    STlib_initBinIcon(&w_armsbg,
-		      ST_ARMSBGX,
-		      ST_ARMSBGY,
-		      armsbg,
-		      &st_notdeathmatch,
-		      &st_statusbaron);
+    w_armsbg = std::make_unique<theta::status::Binicon>(ST_ARMSBGX, ST_ARMSBGY,
+        *armsbg, &st_notdeathmatch, &st_statusbaron);
 
     // weapons owned
     for(i=0;i<6;i++)
