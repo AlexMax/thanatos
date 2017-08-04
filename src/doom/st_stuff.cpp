@@ -136,14 +136,14 @@
 //       or into the frame buffer?
 
 // AMMO number pos.
-#define ST_AMMOWIDTH		3 * SCREENSCALE
-#define ST_AMMOX			44 * SCREENSCALE
-#define ST_AMMOY			171 * SCREENSCALE
+#define ST_AMMOWIDTH		3
+#define ST_AMMOX			44
+#define ST_AMMOY			171
 
 // HEALTH number pos.
-#define ST_HEALTHWIDTH		3 * SCREENSCALE
-#define ST_HEALTHX			90 * SCREENSCALE
-#define ST_HEALTHY			171 * SCREENSCALE
+#define ST_HEALTHWIDTH		3
+#define ST_HEALTHX			90
+#define ST_HEALTHY			171
 
 // Weapon pos.
 #define ST_ARMSX			111
@@ -154,18 +154,18 @@
 #define ST_ARMSYSPACE		10
 
 // Frags pos.
-#define ST_FRAGSX			138 * SCREENSCALE
-#define ST_FRAGSY			171 * SCREENSCALE
-#define ST_FRAGSWIDTH		2 * SCREENSCALE
+#define ST_FRAGSX			138
+#define ST_FRAGSY			171
+#define ST_FRAGSWIDTH		2
 
 // ARMOR number pos.
-#define ST_ARMORWIDTH		3 * SCREENSCALE
-#define ST_ARMORX			221 * SCREENSCALE
-#define ST_ARMORY			171 * SCREENSCALE
+#define ST_ARMORWIDTH		3
+#define ST_ARMORX			221
+#define ST_ARMORY			171
 
 // Key icon positions.
-#define ST_KEY0WIDTH		8 * SCREENSCALE
-#define ST_KEY0HEIGHT		5 * SCREENSCALE
+#define ST_KEY0WIDTH		8
+#define ST_KEY0HEIGHT		5
 #define ST_KEY0X			239
 #define ST_KEY0Y			171
 #define ST_KEY1WIDTH		ST_KEY0WIDTH
@@ -176,35 +176,35 @@
 #define ST_KEY2Y			191
 
 // Ammunition counter.
-#define ST_AMMO0WIDTH		3 * SCREENSCALE
-#define ST_AMMO0HEIGHT		6 * SCREENSCALE
-#define ST_AMMO0X			288 * SCREENSCALE
-#define ST_AMMO0Y			173 * SCREENSCALE
+#define ST_AMMO0WIDTH		3
+#define ST_AMMO0HEIGHT		6
+#define ST_AMMO0X			288
+#define ST_AMMO0Y			173
 #define ST_AMMO1WIDTH		ST_AMMO0WIDTH
-#define ST_AMMO1X			288 * SCREENSCALE
-#define ST_AMMO1Y			179 * SCREENSCALE
+#define ST_AMMO1X			288
+#define ST_AMMO1Y			179
 #define ST_AMMO2WIDTH		ST_AMMO0WIDTH
-#define ST_AMMO2X			288 * SCREENSCALE
-#define ST_AMMO2Y			191 * SCREENSCALE
+#define ST_AMMO2X			288
+#define ST_AMMO2Y			191
 #define ST_AMMO3WIDTH		ST_AMMO0WIDTH
-#define ST_AMMO3X			288 * SCREENSCALE
-#define ST_AMMO3Y			185 * SCREENSCALE
+#define ST_AMMO3X			288
+#define ST_AMMO3Y			185
 
 // Indicate maximum ammunition.
 // Only needed because backpack exists.
-#define ST_MAXAMMO0WIDTH		3 * SCREENSCALE
-#define ST_MAXAMMO0HEIGHT		5 * SCREENSCALE
-#define ST_MAXAMMO0X		314 * SCREENSCALE
-#define ST_MAXAMMO0Y		173 * SCREENSCALE
+#define ST_MAXAMMO0WIDTH		3
+#define ST_MAXAMMO0HEIGHT		5
+#define ST_MAXAMMO0X		314
+#define ST_MAXAMMO0Y		173
 #define ST_MAXAMMO1WIDTH		ST_MAXAMMO0WIDTH
-#define ST_MAXAMMO1X		314 * SCREENSCALE
-#define ST_MAXAMMO1Y		179 * SCREENSCALE
+#define ST_MAXAMMO1X		314
+#define ST_MAXAMMO1Y		179
 #define ST_MAXAMMO2WIDTH		ST_MAXAMMO0WIDTH
-#define ST_MAXAMMO2X		314 * SCREENSCALE
-#define ST_MAXAMMO2Y		191 * SCREENSCALE
+#define ST_MAXAMMO2X		314
+#define ST_MAXAMMO2Y		191
 #define ST_MAXAMMO3WIDTH		ST_MAXAMMO0WIDTH
-#define ST_MAXAMMO3X		314 * SCREENSCALE
-#define ST_MAXAMMO3Y		185 * SCREENSCALE
+#define ST_MAXAMMO3X		314
+#define ST_MAXAMMO3Y		185
 
 // pistol
 #define ST_WEAPON0X			110 * SCREENSCALE
@@ -312,13 +312,13 @@ static boolean		st_fragson;
 static patch_t*		sbar;
 
 // 0-9, tall numbers
-static patch_t*		tallnum[10];
+static const theta::video::Graphic* tallnum[10];
 
 // tall % sign
-static patch_t*		tallpercent;
+static const theta::video::Graphic* tallpercent;
 
 // 0-9, short, yellow (,different!) numbers
-static patch_t*		shortnum[10];
+static const theta::video::Graphic* shortnum[10];
 
 // 3 key-cards, 3 skulls
 static const theta::video::Graphic* keys[NUMCARDS];
@@ -336,13 +336,13 @@ static const theta::video::Graphic* armsbg;
 static const theta::video::Graphic* arms[6][2];
 
 // ready-weapon widget
-static st_number_t	w_ready;
+static std::unique_ptr<theta::status::Number> w_ready;
 
  // in deathmatch only, summary of frags stats
-static st_number_t	w_frags;
+static std::unique_ptr<theta::status::Number> w_frags;
 
 // health widget
-static st_percent_t	w_health;
+static std::unique_ptr<theta::status::Percent> w_health;
 
 // arms background
 static std::unique_ptr<theta::status::Binicon> w_armsbg; 
@@ -358,13 +358,13 @@ static std::unique_ptr<theta::status::Multiicon> w_faces;
 static std::array<std::unique_ptr<theta::status::Multiicon>, 3> w_keyboxes;
 
 // armor widget
-static st_percent_t	w_armor;
+static std::unique_ptr<theta::status::Percent> w_armor;
 
 // ammo widgets
-static st_number_t	w_ammo[4];
+static std::array<std::unique_ptr<theta::status::Number>, 4> w_ammo;
 
 // max ammo widgets
-static st_number_t	w_maxammo[4]; 
+static std::array<std::unique_ptr<theta::status::Number>, 4> w_maxammo;
 
 
 
@@ -888,9 +888,9 @@ void ST_updateWidgets(void)
     //  if (w_ready.data != plyr->readyweapon)
     //  {
     if (weaponinfo[plyr->readyweapon].ammo == am_noammo)
-	w_ready.num = &largeammo;
+	w_ready->SetNum(&largeammo);
     else
-	w_ready.num = &plyr->ammo[weaponinfo[plyr->readyweapon].ammo];
+	w_ready->SetNum(&plyr->ammo[weaponinfo[plyr->readyweapon].ammo]);
     //{
     // static int tic=0;
     // static int dir=-1;
@@ -900,7 +900,7 @@ void ST_updateWidgets(void)
     //   dir = 1;
     // tic++;
     // }
-    w_ready.data = plyr->readyweapon;
+    w_ready->SetData(plyr->readyweapon);
 
     // if (*w_ready.on)
     //  STlib_updateNum(&w_ready, true);
@@ -1022,24 +1022,22 @@ void ST_doPaletteStuff(void)
 
 void ST_drawWidgets(boolean refresh)
 {
-    int		i;
-
     // used by w_arms[] widgets
     st_armson = st_statusbaron && !deathmatch;
 
     // used by w_frags widget
     st_fragson = deathmatch && st_statusbaron; 
 
-    STlib_updateNum(&w_ready, refresh);
+    w_ready->Update(refresh);
 
-    for (i=0;i<4;i++)
+    for (int i = 0;i < 4;i++)
     {
-	STlib_updateNum(&w_ammo[i], refresh);
-	STlib_updateNum(&w_maxammo[i], refresh);
+        w_ammo[i]->Update(refresh);
+        w_maxammo[i]->Update(refresh);
     }
 
-    STlib_updatePercent(&w_health, refresh);
-    STlib_updatePercent(&w_armor, refresh);
+    w_health->Update(refresh);
+    w_armor->Update(refresh);
 
     w_armsbg->Update(refresh);
 
@@ -1055,8 +1053,7 @@ void ST_drawWidgets(boolean refresh)
         keybox->Update(refresh);
     }
 
-    STlib_updateNum(&w_frags, refresh);
-
+    w_frags->Update(refresh);
 }
 
 void ST_doRefresh(void)
@@ -1110,16 +1107,16 @@ static void ST_loadUnloadGraphics(load_callback_t callback)
     for (i=0;i<10;i++)
     {
 	DEH_snprintf(namebuf, 9, "STTNUM%d", i);
-        callback(namebuf, &tallnum[i]);
+        tallnum[i] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
 
 	DEH_snprintf(namebuf, 9, "STYSNUM%d", i);
-        callback(namebuf, &shortnum[i]);
+        shortnum[i] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
     }
 
     // Load percent key.
     //Note: why not load STMINUS here, too?
 
-    callback(DEH_String("STTPRCNT"), &tallpercent);
+    tallpercent = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("STTPRCNT"));
 
     // key cards
     for (i=0;i<NUMCARDS;i++)
@@ -1140,8 +1137,7 @@ static void ST_loadUnloadGraphics(load_callback_t callback)
         arms[i][0] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
 
 	// yellow #
-        arms[i][1] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
-	//arms[i][1] = shortnum[i + 2]; 
+        arms[i][1] = shortnum[i + 2];
     }
 
     // face backgrounds for different color players
@@ -1255,25 +1251,16 @@ void ST_createWidgets(void)
     int i;
 
     // ready weapon ammo
-    STlib_initNum(&w_ready,
-		  ST_AMMOX,
-		  ST_AMMOY,
-		  tallnum,
-		  &plyr->ammo[weaponinfo[plyr->readyweapon].ammo],
-		  &st_statusbaron,
-		  ST_AMMOWIDTH );
+    w_ready = std::make_unique<theta::status::Number>(ST_AMMOX, ST_AMMOY,
+        tallnum, &plyr->ammo[weaponinfo[plyr->readyweapon].ammo],
+        &st_statusbaron, ST_AMMOWIDTH);
 
     // the last weapon type
-    w_ready.data = plyr->readyweapon; 
+    w_ready->SetData(plyr->readyweapon);
 
     // health percentage
-    STlib_initPercent(&w_health,
-		      ST_HEALTHX,
-		      ST_HEALTHY,
-		      tallnum,
-		      &plyr->health,
-		      &st_statusbaron,
-		      tallpercent);
+    w_health = std::make_unique<theta::status::Percent>(ST_HEALTHX, ST_HEALTHY,
+        tallnum, &plyr->health, &st_statusbaron, tallpercent);
 
     // arms background
     w_armsbg = std::make_unique<theta::status::Binicon>(ST_ARMSBGX, ST_ARMSBGY,
@@ -1289,25 +1276,16 @@ void ST_createWidgets(void)
     }
 
     // frags sum
-    STlib_initNum(&w_frags,
-		  ST_FRAGSX,
-		  ST_FRAGSY,
-		  tallnum,
-		  &st_fragscount,
-		  &st_fragson,
-		  ST_FRAGSWIDTH);
+    w_frags = std::make_unique<theta::status::Number>(ST_FRAGSX, ST_FRAGSY,
+        tallnum, &st_fragscount, &st_fragson, ST_FRAGSWIDTH);
 
     // faces
     w_faces = std::make_unique<theta::status::Multiicon>(
         ST_FACESX, ST_FACESY, faces, &st_faceindex, &st_statusbaron);
 
     // armor percentage - should be colored later
-    STlib_initPercent(&w_armor,
-		      ST_ARMORX,
-		      ST_ARMORY,
-		      tallnum,
-		      &plyr->armorpoints,
-		      &st_statusbaron, tallpercent);
+    w_armor = std::make_unique<theta::status::Percent>(ST_ARMORX,
+        ST_ARMORY, tallnum, &plyr->armorpoints, &st_statusbaron, tallpercent);
 
     // keyboxes 0-2
     w_keyboxes[0] = std::make_unique<theta::status::Multiicon>(
@@ -1320,71 +1298,30 @@ void ST_createWidgets(void)
         ST_KEY2X, ST_KEY2Y, keys, &keyboxes[2], &st_statusbaron);
 
     // ammo count (all four kinds)
-    STlib_initNum(&w_ammo[0],
-		  ST_AMMO0X,
-		  ST_AMMO0Y,
-		  shortnum,
-		  &plyr->ammo[0],
-		  &st_statusbaron,
-		  ST_AMMO0WIDTH);
+    w_ammo[0] = std::make_unique<theta::status::Number>(ST_AMMO0X, ST_AMMO0Y,
+        shortnum, &plyr->ammo[0], &st_statusbaron, ST_AMMO0WIDTH);
 
-    STlib_initNum(&w_ammo[1],
-		  ST_AMMO1X,
-		  ST_AMMO1Y,
-		  shortnum,
-		  &plyr->ammo[1],
-		  &st_statusbaron,
-		  ST_AMMO1WIDTH);
+    w_ammo[1] = std::make_unique<theta::status::Number>(ST_AMMO1X, ST_AMMO1Y,
+        shortnum, &plyr->ammo[1], &st_statusbaron, ST_AMMO1WIDTH);
 
-    STlib_initNum(&w_ammo[2],
-		  ST_AMMO2X,
-		  ST_AMMO2Y,
-		  shortnum,
-		  &plyr->ammo[2],
-		  &st_statusbaron,
-		  ST_AMMO2WIDTH);
-    
-    STlib_initNum(&w_ammo[3],
-		  ST_AMMO3X,
-		  ST_AMMO3Y,
-		  shortnum,
-		  &plyr->ammo[3],
-		  &st_statusbaron,
-		  ST_AMMO3WIDTH);
+    w_ammo[2] = std::make_unique<theta::status::Number>(ST_AMMO2X, ST_AMMO2Y,
+        shortnum, &plyr->ammo[2], &st_statusbaron, ST_AMMO2WIDTH);
+
+    w_ammo[3] = std::make_unique<theta::status::Number>(ST_AMMO3X, ST_AMMO3Y,
+        shortnum, &plyr->ammo[3], &st_statusbaron, ST_AMMO3WIDTH);
 
     // max ammo count (all four kinds)
-    STlib_initNum(&w_maxammo[0],
-		  ST_MAXAMMO0X,
-		  ST_MAXAMMO0Y,
-		  shortnum,
-		  &plyr->maxammo[0],
-		  &st_statusbaron,
-		  ST_MAXAMMO0WIDTH);
+    w_maxammo[0] = std::make_unique<theta::status::Number>(ST_MAXAMMO0X, ST_MAXAMMO0Y,
+        shortnum, &plyr->maxammo[0], &st_statusbaron, ST_MAXAMMO0WIDTH);
 
-    STlib_initNum(&w_maxammo[1],
-		  ST_MAXAMMO1X,
-		  ST_MAXAMMO1Y,
-		  shortnum,
-		  &plyr->maxammo[1],
-		  &st_statusbaron,
-		  ST_MAXAMMO1WIDTH);
+    w_maxammo[1] = std::make_unique<theta::status::Number>(ST_MAXAMMO1X, ST_MAXAMMO1Y,
+        shortnum, &plyr->maxammo[1], &st_statusbaron, ST_MAXAMMO1WIDTH);
 
-    STlib_initNum(&w_maxammo[2],
-		  ST_MAXAMMO2X,
-		  ST_MAXAMMO2Y,
-		  shortnum,
-		  &plyr->maxammo[2],
-		  &st_statusbaron,
-		  ST_MAXAMMO2WIDTH);
-    
-    STlib_initNum(&w_maxammo[3],
-		  ST_MAXAMMO3X,
-		  ST_MAXAMMO3Y,
-		  shortnum,
-		  &plyr->maxammo[3],
-		  &st_statusbaron,
-		  ST_MAXAMMO3WIDTH);
+    w_maxammo[2] = std::make_unique<theta::status::Number>(ST_MAXAMMO2X, ST_MAXAMMO2Y,
+        shortnum, &plyr->maxammo[2], &st_statusbaron, ST_MAXAMMO2WIDTH);
 
+    w_maxammo[3] = std::make_unique<theta::status::Number>(ST_MAXAMMO3X, ST_MAXAMMO3Y,
+        shortnum, &plyr->maxammo[3], &st_statusbaron, ST_MAXAMMO3WIDTH);
 }
 
 static boolean	st_stopped = true;

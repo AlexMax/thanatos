@@ -19,9 +19,14 @@
 #ifndef __STLIB__
 #define __STLIB__
 
-
 // We are referring to patches.
 #include "r_defs.h"
+
+namespace theta
+{
+
+namespace status
+{
 
 //
 // Typedefs of widgets
@@ -29,7 +34,7 @@
 
 // Number widget
 
-typedef struct
+class Number
 {
     // upper right-hand corner
     //  of the number (right-justified)
@@ -50,32 +55,37 @@ typedef struct
     boolean*	on;
 
     // list of patches for 0-9
-    patch_t**	p;
+    const video::Graphic**  p;
 
     // user data
     int data;
-    
-} st_number_t;
+public:
+    Number(int x, int y, const video::Graphic** pl, int* num, boolean* on, int width) :
+        x(x), y(y), oldnum(0), width(width), num(num), on(on), p(pl) { }
+    int GetX() const;
+    int GetY() const;
+    void SetData(int data);
+    void SetNum(int* num);
+    void Update(boolean refresh);
+};
 
 
 
 // Percent widget ("child" of number widget,
 //  or, more precisely, contains a number widget.)
-typedef struct
+class Percent
 {
     // number information
-    st_number_t		n;
+    Number                  n;
 
     // percent sign graphic
-    patch_t*		p;
-    
-} st_percent_t;
-
-namespace theta
-{
-
-namespace status
-{
+    const video::Graphic*   p;
+public:
+    Percent(int x, int y, const video::Graphic** pl, int* num,
+        boolean* on, const video::Graphic* percent) :
+        n(Number(x, y, pl, num, on, 3)), p(percent) { }
+    void Update(boolean refresh);
+};
 
 // Multiple Icon widget
 class Multiicon
@@ -146,41 +156,5 @@ public:
 //  everything else is done somewhere else.
 //
 void STlib_init(void);
-
-
-
-// Number widget routines
-void
-STlib_initNum
-( st_number_t*		n,
-  int			x,
-  int			y,
-  patch_t**		pl,
-  int*			num,
-  boolean*		on,
-  int			width );
-
-void
-STlib_updateNum
-( st_number_t*		n,
-  boolean		refresh );
-
-
-// Percent widget routines
-void
-STlib_initPercent
-( st_percent_t*		p,
-  int			x,
-  int			y,
-  patch_t**		pl,
-  int*			num,
-  boolean*		on,
-  patch_t*		percent );
-
-
-void
-STlib_updatePercent
-( st_percent_t*		per,
-  int			refresh );
 
 #endif
