@@ -36,6 +36,8 @@ namespace status
 
 class Number
 {
+    friend class Percent;
+
     // upper right-hand corner
     //  of the number (right-justified)
     int		x;
@@ -62,8 +64,6 @@ class Number
 public:
     Number(int x, int y, const video::Graphic** pl, int* num, boolean* on, int width) :
         x(x), y(y), oldnum(0), width(width), num(num), on(on), p(pl) { }
-    int GetX() const;
-    int GetY() const;
     void SetData(int data);
     void SetNum(int* num);
     void Update(boolean refresh);

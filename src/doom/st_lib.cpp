@@ -59,16 +59,6 @@ namespace theta
 namespace status
 {
 
-int Number::GetX() const
-{
-    return this->x;
-}
-
-int Number::GetY() const
-{
-    return this->y;
-}
-
 void Number::SetData(int data)
 {
     this->data = data;
@@ -86,6 +76,11 @@ void Number::SetNum(int* num)
 //
 void Number::Update(boolean refresh)
 {
+    if (*this->on == false)
+    {
+        return;
+    }
+
     int numdigits = this->width;
     int num = *this->num;
 
@@ -152,14 +147,19 @@ void Number::Update(boolean refresh)
 
 void Percent::Update(boolean refresh)
 {
-    video::DrawScaledGraphic(this->n.GetX(), this->n.GetY(), *this->p);
+    if (*this->n.on == false)
+    {
+        return;
+    }
+
+    video::DrawScaledGraphic(this->n.x, this->n.y, *this->p);
 
     this->n.Update(refresh);
 }
 
 void Multiicon::Update(boolean refresh)
 {
-    if (*this->inum == -1)
+    if (*this->on == false || *this->inum == -1)
     {
         return;
     }
@@ -179,6 +179,11 @@ void Multiicon::Update(boolean refresh)
 
 void Binicon::Update(boolean refresh)
 {
+    if (*this->on == false)
+    {
+        return;
+    }
+
     int x = this->x + this->p.xoff;
     int y = this->y + this->p.yoff;
     int w = this->p.width;
