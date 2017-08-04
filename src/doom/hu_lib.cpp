@@ -49,7 +49,7 @@ HUlib_initTextLine
 ( hu_textline_t*	t,
   int			x,
   int			y,
-  patch_t**		f,
+  const theta::video::Graphic** f,
   int			sc )
 {
     t->x = x;
@@ -110,25 +110,28 @@ HUlib_drawTextLine
 	    && c >= l->sc
 	    && c <= '_')
 	{
-	    w = SHORT(l->f[c - l->sc]->width);
-	    if (x+w > SCREENWIDTH)
-		break;
-	    V_DrawPatchDirect(x, l->y, l->f[c - l->sc]);
+            w = l->f[c - l->sc]->width;
+            if (x + w > VIRTUALWIDTH)
+            {
+                break;
+            }
+            theta::video::DrawScaledGraphic(x, l->y, *l->f[c - l->sc]);
 	    x += w;
 	}
 	else
 	{
 	    x += 4;
-	    if (x >= SCREENWIDTH)
-		break;
+            if (x >= VIRTUALWIDTH)
+            {
+                break;
+            }
 	}
     }
 
     // draw the cursor if requested
-    if (drawcursor
-	&& x + SHORT(l->f['_' - l->sc]->width) <= SCREENWIDTH)
+    if (drawcursor && x + l->f['_' - l->sc]->width <= VIRTUALWIDTH)
     {
-	V_DrawPatchDirect(x, l->y, l->f['_' - l->sc]);
+        theta::video::DrawScaledGraphic(x, l->y, *l->f['_' - l->sc]);
     }
 }
 
@@ -171,7 +174,7 @@ HUlib_initSText
   int		x,
   int		y,
   int		h,
-  patch_t**	font,
+  const theta::video::Graphic** font,
   int		startchar,
   boolean*	on )
 {
@@ -263,7 +266,7 @@ HUlib_initIText
 ( hu_itext_t*	it,
   int		x,
   int		y,
-  patch_t**	font,
+  const theta::video::Graphic** font,
   int		startchar,
   boolean*	on )
 {

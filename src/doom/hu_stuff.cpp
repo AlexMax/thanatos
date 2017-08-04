@@ -91,7 +91,7 @@ const char*	player_names[] =
 
 char			chat_char; // remove later.
 static player_t*	plr;
-patch_t*		hu_font[HU_FONTSIZE];
+const theta::video::Graphic*    hu_font[HU_FONTSIZE];
 static hu_textline_t	w_title;
 static hu_textline_t    w_fps;
 boolean			chat_on;
@@ -356,7 +356,7 @@ void HU_Init(void)
     for (i=0;i<HU_FONTSIZE;i++)
     {
 	DEH_snprintf(buffer, 9, "STCFN%.3d", j++);
-	hu_font[i] = (patch_t *) W_CacheLumpName(buffer, PU_STATIC);
+        hu_font[i] = &theta::video::GraphicsManager::Instance().LoadPatch(buffer);
     }
 
 }

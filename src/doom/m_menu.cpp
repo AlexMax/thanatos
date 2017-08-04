@@ -60,7 +60,7 @@
 #include "m_menu.h"
 
 
-extern patch_t*		hu_font[HU_FONTSIZE];
+extern const theta::video::Graphic* hu_font[HU_FONTSIZE];
 extern boolean		message_dontfuckwithme;
 
 extern boolean		chat_on;		// in heads-up code
@@ -1278,7 +1278,7 @@ int M_StringHeight(const char* string)
 {
     size_t             i;
     int             h;
-    int             height = SHORT(hu_font[0]->height);
+    int             height = hu_font[0]->height;
 	
     h = height;
     for (i = 0;i < strlen(string);i++)
@@ -1328,10 +1328,10 @@ M_WriteText
 	    continue;
 	}
 		
-	w = SHORT (hu_font[c]->width);
-	if (cx+w > SCREENWIDTH)
+        w = hu_font[c]->width;
+	if (cx+w > VIRTUALWIDTH)
 	    break;
-	V_DrawPatchDirect(cx, cy, hu_font[c]);
+        theta::video::DrawScaledGraphic(cx, cy, *hu_font[c]);
 	cx+=w;
     }
 }
@@ -1913,7 +1913,7 @@ void M_Drawer (void)
     if (messageToPrint)
     {
 	start = 0;
-	y = SCREENHEIGHT/2 - M_StringHeight(messageString) / 2;
+        y = VIRTUALHEIGHT / 2 - M_StringHeight(messageString) / 2;
 	while (messageString[start] != '\0')
 	{
 	    int foundnewline = 0;
@@ -1941,9 +1941,9 @@ void M_Drawer (void)
                 start += strlen(string);
             }
 
-	    x = SCREENWIDTH/2 - M_StringWidth(string) / 2;
+            x = VIRTUALWIDTH / 2 - M_StringWidth(string) / 2;
 	    M_WriteText(x, y, string);
-	    y += SHORT(hu_font[0]->height);
+            y += hu_font[0]->height;
 	}
 
 	return;

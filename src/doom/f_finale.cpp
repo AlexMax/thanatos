@@ -221,7 +221,7 @@ void F_Ticker (void)
 //
 
 #include "hu_stuff.h"
-extern	patch_t *hu_font[HU_FONTSIZE];
+extern const theta::video::Graphic* hu_font[HU_FONTSIZE];
 
 
 void F_TextWrite (void)
@@ -283,10 +283,10 @@ void F_TextWrite (void)
 	    continue;
 	}
 		
-	w = SHORT (hu_font[c]->width);
+        w = hu_font[c]->width;
 	if (cx+w > SCREENWIDTH)
 	    break;
-	V_DrawPatch(cx, cy, hu_font[c]);
+        theta::video::DrawScaledGraphic(cx, cy, *hu_font[c]);
 	cx+=w;
     }
 	
@@ -507,7 +507,7 @@ void F_CastPrint (const char* text)
 	    continue;
 	}
 		
-	w = SHORT (hu_font[c]->width);
+        w = hu_font[c]->width;
 	width += w;
     }
     
@@ -527,7 +527,7 @@ void F_CastPrint (const char* text)
 	}
 		
 	w = SHORT (hu_font[c]->width);
-	V_DrawPatch(cx, 180, hu_font[c]);
+        theta::video::DrawScaledGraphic(cx, 180, *hu_font[c]);
 	cx+=w;
     }
 	
