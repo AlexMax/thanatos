@@ -664,7 +664,7 @@ void R_DrawPSprite (pspdef_t* psp)
     flip = (boolean)sprframe->flip[0];
     
     // calculate edges of the shape
-    tx = psp->sx - (I_VideoBuffer->GetWidth() / 2) * FRACUNIT;
+    tx = psp->sx - (VIRTUALWIDTH / 2) * FRACUNIT;
 	
     tx -= spriteoffset[lump];	
     x1 = (centerxfrac + FixedMul (tx,pspritescale) ) >>FRACBITS;
@@ -683,8 +683,7 @@ void R_DrawPSprite (pspdef_t* psp)
     // store information in a vissprite
     vis = &avis;
     vis->mobjflags = 0;
-    // vis->texturemid = ((SCREENHEIGHT/2)<<FRACBITS)+FRACUNIT/2-(psp->sy-spritetopoffset[lump]);
-    vis->texturemid = (I_VideoBuffer->GetHeight() / 2 << FRACBITS) + FRACUNIT / 2 - (psp->sy-spritetopoffset[lump]);
+    vis->texturemid = (VIRTUALHEIGHT / 2 << FRACBITS) + FRACUNIT / 2 - (psp->sy-spritetopoffset[lump]);
     vis->x1 = x1 < 0 ? 0 : x1;
     vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;	
     vis->scale = pspritescale;

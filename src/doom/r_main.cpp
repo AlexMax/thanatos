@@ -699,9 +699,9 @@ void R_ExecuteSetViewSize (void)
     R_InitTextureMapping ();
     
     // psprite scales
-    pspritescale = FRACUNIT * viewwidth / I_VideoBuffer->GetWidth();
-    pspriteiscale = FRACUNIT * I_VideoBuffer->GetWidth() / viewwidth;
-    
+    pspritescale = FRACUNIT * viewwidth / VIRTUALWIDTH;
+    pspriteiscale = FRACUNIT * VIRTUALWIDTH / viewwidth;
+
     // thing clipping
     for (i=0 ; i<viewwidth ; i++)
 	screenheightarray[i] = viewheight;
