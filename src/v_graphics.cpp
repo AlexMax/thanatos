@@ -48,7 +48,7 @@ const Graphic& GraphicsManager::AddPatch(patch_t* patch)
     // Put the graphic associated with the handle into the texture atlas
     // if our renderer is active.
     if (system::renderer != nullptr) {
-        system::renderer->AddGraphic(handle, handle.data);
+        system::renderer->AddGraphic(handle);
     }
 
     return handle;

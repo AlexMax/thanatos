@@ -61,9 +61,7 @@ class Atlas
 public:
     Atlas(int width, int height) : width(width), height(height) { }
     Atlas(const Atlas&) = delete;
-    void Add(const Graphic& handle, int w, int h);
-    bool Check(const Graphic& handle);
-    bool Find(const Graphic& handle, AtlasEntry& out);
+    bool Add(const Graphic& handle, AtlasEntry& out);
     int GetHeight() const;
     int GetWidth() const;
 };

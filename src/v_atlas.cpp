@@ -25,15 +25,22 @@ namespace theta
 namespace video
 {
 
-// Insert a graphic of width w and height h into the atlas.
-void Atlas::Add(const Graphic& handle, int w, int h)
+// Insert a graphic into the atlas.  Returns true if the atlas entry is
+// brand new, false if the texture already existed in the atlas.
+bool Atlas::Add(const Graphic& handle, AtlasEntry& out)
 {
     auto entry = this->atlas.find(&handle);
     if (entry != this->atlas.end())
     {
-        // Atlas entry already exists, silently don't do anything.
-        return;
+        // Atlas entry already exists, just return it.
+        out = entry->second;
+        return false;
     }
+
+    // FIXME: Once I figure out if the Graphic or RGABBuffer will hold
+    //        the width and height, come back and fix this.
+    auto w = handle.data.GetWidth();
+    auto h = handle.data.GetHeight();
 
     if (w > this->width || h > this->height)
     {
@@ -56,7 +63,8 @@ void Atlas::Add(const Graphic& handle, int w, int h)
                     I_Error("Couldn't emplace into to the atlas");
                 }
                 it->w += w;
-                return;
+                out = res.first->second;
+                return true;
             }
         }
 
@@ -73,35 +81,14 @@ void Atlas::Add(const Graphic& handle, int w, int h)
         {
             I_Error("Couldn't emplace into to the atlas");
         }
-        return;
+        out = ares.first->second;
+        return true;
     }
 
     // No space.
     I_Error("No space left in texture atlas");
-}
 
-// Check to see if an atlas entry - any atlas entry - exists for the given
-// lump.
-bool Atlas::Check(const Graphic& handle)
-{
-    auto res = this->atlas.find(&handle);
-    if (res == this->atlas.end())
-    {
-        return false;
-    }
-    return true;
-}
-
-// Find the atlas entry that belongs to the given lump.
-bool Atlas::Find(const Graphic& handle, AtlasEntry& out)
-{
-    auto res = this->atlas.find(&handle);
-    if (res == this->atlas.end())
-    {
-        return false;
-    }
-    out = res->second;
-    return true;
+    return false; // Unreachable
 }
 
 // Get height of atlas.

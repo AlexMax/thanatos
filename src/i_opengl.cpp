@@ -674,36 +674,33 @@ void Renderer::Render()
     this->renderSource = renderSources::world;
 }
 
-// Add graphic to the texture atlas.
-void Renderer::AddGraphic(const video::Graphic& handle, const video::RGBABuffer& pixels)
+// Cache graphic to the texture atlas without drawing it.
+void Renderer::AddGraphic(const video::Graphic& handle)
 {
-    this->graphicsAtlas->Add(handle, pixels.GetWidth(), pixels.GetHeight());
-
     video::AtlasEntry atlas(0, 0, 0, 0);
-    if (this->graphicsAtlas->Find(handle, atlas) == false)
+    if (this->graphicsAtlas->Add(handle, atlas) == false)
     {
+        // Don't actually blit the texture to the atlas unless it's new.
         return;
     }
 
     // Use the atlas entry to draw our graphic into the atlas texture.
     glBindTexture(GL_TEXTURE_2D, this->graphicsPixels);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, atlas.x, atlas.y, atlas.w, atlas.h, GL_RGBA, GL_UNSIGNED_BYTE, pixels.GetRawPixels());
+    glTexSubImage2D(GL_TEXTURE_2D, 0, atlas.x, atlas.y, atlas.w, atlas.h, GL_RGBA, GL_UNSIGNED_BYTE, handle.data.GetRawPixels());
 }
 
-// Check to see if a graphic exists in the texture atlas.
-bool Renderer::CheckGraphic(const video::Graphic& handle)
-{
-    return this->graphicsAtlas->Check(handle);
-}
-
-// Draw a graphic that should exist in the texture atlas.
+// Draw a graphic.  If the graphic doesn't exist in the texture atlas,
+// add it.
 void Renderer::DrawGraphic(const video::Graphic& handle, int x, int y, double scalex, double scaley)
 {
     video::AtlasEntry atlas(0, 0, 0, 0);
-    if (this->graphicsAtlas->Find(handle, atlas) == false)
+    if (this->graphicsAtlas->Add(handle, atlas) == true)
     {
-        this->AddGraphic(handle, handle.data);
-        this->graphicsAtlas->Find(handle, atlas);
+        // Use the atlas entry to draw our graphic into the atlas texture.
+        //
+        // FIXME: DRY violation, move this into a private method.
+        glBindTexture(GL_TEXTURE_2D, this->graphicsPixels);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, atlas.x, atlas.y, atlas.w, atlas.h, GL_RGBA, GL_UNSIGNED_BYTE, handle.data.GetRawPixels());
     }
 
     // Doom uses X, Y coordinates that begin in the upper left, but OpenGL
