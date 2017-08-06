@@ -56,7 +56,7 @@ ticcmd_t* I_BaseTiccmd (void);
 // Clean exit, displays sell blurb.
 void I_Quit (void);
 
-#define I_Error(error, ...) theta::system::detail::Error2(__BASE_FILE__, __LINE__, error, __VA_ARGS__)
+#define I_Error(error, ...) theta::system::detail::Error2(__BASE_FILE__, __LINE__, error, ##__VA_ARGS__)
 
 namespace theta
 {
