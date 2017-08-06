@@ -96,6 +96,7 @@ private:
     std::vector<GLfloat> graphicsVertices;
 
     void constructPage();
+    const video::Graphic* pageGraphic;
     GLuint pagePixels;
     std::unique_ptr<Program> pageProgram;
     GLuint pageVAO;
@@ -119,7 +120,7 @@ public:
     void DrawGraphic(const video::Graphic& handle, int x, int y, double scalex, double scaley);
     int GetWidth() const;
     int GetHeight() const;
-    void SetPagePixels(const video::RGBABuffer& pixels);
+    void SetPageGraphic(const video::Graphic& handle);
     void SetResolution(int width, int height);
     void SetWorldPalette(const byte* palette);
     void SetWorldPixels(const video::PalletedBuffer& pixels);

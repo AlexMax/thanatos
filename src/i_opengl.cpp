@@ -524,7 +524,7 @@ Renderer::Renderer(SDL_Window* window) :
     window(window),
     graphicsAtlas(nullptr), graphicsIBO(0), graphicsIndices(0), graphicsPixels(0),
     graphicsProgram(nullptr), graphicsVAO(0), graphicsVBO(0), graphicsVertices(0),
-    pagePixels(0), pageProgram(nullptr), pageVAO(0),
+    pageGraphic(nullptr), pagePixels(0), pageProgram(nullptr), pageVAO(0),
     worldPixels(0), worldPalettes(0), worldProgram(nullptr), worldVAO(0)
 {
     // Do some OpenGL initialization stuff.  We want a core profile.
@@ -719,41 +719,35 @@ void Renderer::DrawGraphic(const video::Graphic& handle, int x, int y, double sc
     GLfloat z = 0.0f;
 
     // Top left
-    this->graphicsVertices.emplace_back(x1);
-    this->graphicsVertices.emplace_back(y1);
-    this->graphicsVertices.emplace_back(z);
-    this->graphicsVertices.emplace_back(u1);
-    this->graphicsVertices.emplace_back(v1);
+    for (auto&& v : { x1, y1, z, u1, v1 })
+    {
+        this->graphicsVertices.emplace_back(v);
+    }
 
     // Top right
-    this->graphicsVertices.emplace_back(x2);
-    this->graphicsVertices.emplace_back(y1);
-    this->graphicsVertices.emplace_back(z);
-    this->graphicsVertices.emplace_back(u2);
-    this->graphicsVertices.emplace_back(v1);
+    for (auto&& v : { x2, y1, z, u2, v1 })
+    {
+        this->graphicsVertices.emplace_back(v);
+    }
 
     // Bottom left
-    this->graphicsVertices.emplace_back(x1);
-    this->graphicsVertices.emplace_back(y2);
-    this->graphicsVertices.emplace_back(z);
-    this->graphicsVertices.emplace_back(u1);
-    this->graphicsVertices.emplace_back(v2);
+    for (auto&& v : { x1, y2, z, u1, v2 })
+    {
+        this->graphicsVertices.emplace_back(v);
+    }
 
     // Bottom right
-    this->graphicsVertices.emplace_back(x2);
-    this->graphicsVertices.emplace_back(y2);
-    this->graphicsVertices.emplace_back(z);
-    this->graphicsVertices.emplace_back(u2);
-    this->graphicsVertices.emplace_back(v2);
+    for (auto&& v : { x2, y2, z, u2, v2 })
+    {
+        this->graphicsVertices.emplace_back(v);
+    }
 
     // Indices.
     GLuint offset = static_cast<GLuint>((this->graphicsVertices.size() / 20 - 1) * 4);
-    this->graphicsIndices.emplace_back(offset + 3);
-    this->graphicsIndices.emplace_back(offset + 1);
-    this->graphicsIndices.emplace_back(offset + 2);
-    this->graphicsIndices.emplace_back(offset + 0);
-    this->graphicsIndices.emplace_back(offset + 2);
-    this->graphicsIndices.emplace_back(offset + 1);
+    for (auto&& v : { 3, 1, 2, 0, 2, 1 })
+    {
+        this->graphicsIndices.emplace_back(offset + v);
+    }
 }
 
 // Get the height of the viewport.
@@ -768,13 +762,20 @@ int Renderer::GetWidth() const
     return this->viewportWidth;
 }
 
-
-// Set pixel data for a full screen "page".
-void Renderer::SetPagePixels(const video::RGBABuffer& pixels)
+// Set data for a full screen "page".
+void Renderer::SetPageGraphic(const video::Graphic& handle)
 {
     this->renderSource = renderSources::page;
-    glBindTexture(GL_TEXTURE_2D, this->pagePixels);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, pixels.GetWidth(), pixels.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.GetRawPixels());
+    if (&handle != this->pageGraphic)
+    {
+        // Our page has changed - update the handle and upload the graphic.
+        this->pageGraphic = &handle;
+
+        glBindTexture(GL_TEXTURE_2D, this->pagePixels);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, handle.data.GetWidth(),
+            handle.data.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+            handle.data.GetRawPixels());
+    }
 }
 
 // Nudge OpenGL to change the size of the viewport to match the new resolution.

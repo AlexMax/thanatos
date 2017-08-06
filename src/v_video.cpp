@@ -509,12 +509,9 @@ void DrawScaledLump(int x, int y, const std::string& lump)
 }
 
 // Draw a page using the appropriate renderer method.
-//FIXME: Do this by Graphic and not by patch data.
-void DrawPage(const patch_t* patch)
+void DrawPage(const char* lump)
 {
-    auto doompal = static_cast<byte*>(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
-    RGBABuffer page(patch, doompal);
-    system::renderer->SetPagePixels(page);
+    system::renderer->SetPageGraphic(GraphicsManager::Instance().LoadPatch(lump));
 }
 
 }

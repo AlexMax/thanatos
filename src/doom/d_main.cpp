@@ -536,7 +536,7 @@ void D_PageTicker (void)
 //
 void D_PageDrawer (void)
 {
-    theta::video::DrawPage(static_cast<patch_t*>(W_CacheLumpName(pagename, PU_CACHE)));
+    theta::video::DrawPage(pagename);
 }
 
 
