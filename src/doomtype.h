@@ -29,7 +29,7 @@
 // Outside Windows, we use strings.h for str[n]casecmp.
 
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 
 #include <string.h>
 #define strcasecmp stricmp
