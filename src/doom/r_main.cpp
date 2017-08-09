@@ -672,14 +672,21 @@ void R_ExecuteSetViewSize (void)
 
     if (setblocks == 11)
     {
-	viewwidth = I_VideoBuffer->GetWidth();
-	viewheight = I_VideoBuffer->GetHeight();
+        // Full screen
+        theta::system::SetWorldResolution(1.0, 1.0);
+    }
+    else if (setblocks == 10)
+    {
+        // Status bar
+        theta::system::SetWorldResolution(1.0, (200 - 32) / 200.0);
     }
     else
     {
-	viewwidth = setblocks*32;
-	viewheight = (setblocks*168/10)&~7;
+        // Who cares...
+        theta::system::SetWorldResolution(1.0, (200 - 32) / 200.0);
     }
+    viewwidth = I_VideoBuffer->GetWidth();
+    viewheight = I_VideoBuffer->GetHeight();
     
     centery = viewheight/2;
     centerx = viewwidth/2;
@@ -727,7 +734,7 @@ void R_ExecuteSetViewSize (void)
 	startmap = ((LIGHTLEVELS-1-i)*2)*NUMCOLORMAPS/LIGHTLEVELS;
 	for (j=0 ; j<MAXLIGHTSCALE ; j++)
 	{
-	    level = startmap - j * I_VideoBuffer->GetWidth() / (viewwidth) / DISTMAP;
+	    level = startmap - j * viewwidth / (viewwidth) / DISTMAP;
 	    
 	    if (level < 0)
 		level = 0;

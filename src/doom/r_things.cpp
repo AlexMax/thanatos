@@ -585,7 +585,7 @@ void R_ProjectSprite (mobj_t* thing)
     else
     {
 	// diminished light - scale of sprite divided by resolution
-	index = (fixed_t)(xscale * (VIRTUALHEIGHT / (double)I_VideoBuffer->GetHeight())) >> (LIGHTSCALESHIFT);
+	index = (fixed_t)(xscale * (VIRTUALHEIGHT / (double)viewheight)) >> (LIGHTSCALESHIFT);
 
 	if (index >= MAXLIGHTSCALE) 
 	    index = MAXLIGHTSCALE-1;

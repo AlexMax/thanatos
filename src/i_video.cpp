@@ -1411,6 +1411,57 @@ static void CheckGLVersion(void)
     }
 }
 
+namespace theta
+{
+
+namespace system
+{
+
+// Set the resolution of the buffer used to render the world.  In terms of
+// width and height, 0.0 is no pixels, and 1.0 is taking up the entire screen.
+void SetWorldResolution(double width, double height)
+{
+    // Clamp to 0.0-1.0
+    if (width > 1.0)
+    {
+        width = 1.0;
+    }
+    else if (width < 0.0)
+    {
+        width = 0.0;
+    }
+
+    // Clamp to 0.0-1.0
+    if (height > 1.0)
+    {
+        height = 1.0;
+    }
+    else if (height < 0.0)
+    {
+        height = 0.0;
+    }
+
+    if (renderer->GetWidth() == 0 || renderer->GetHeight() == 0)
+    {
+        I_Error("Attempting to set world resolution with no renderer");
+    }
+
+    // Create or replace the existing world buffer with a brand new one.
+    int actual_width = static_cast<int>(renderer->GetWidth() * width);
+    int actual_height = static_cast<int>(renderer->GetHeight() * height);
+    I_VideoBuffer = std::make_unique<video::PalletedBuffer>(
+        actual_width, actual_height);
+
+    if (I_VideoBuffer->GetWidth() <= 0 || I_VideoBuffer->GetHeight() <= 0)
+    {
+        I_Error("Attempted to set 0 width or height in world resolution");
+    }
+}
+
+}
+
+}
+
 void I_InitGraphics(void)
 {
     SDL_Event dummy;
@@ -1487,7 +1538,7 @@ void I_InitGraphics(void)
     // 32-bit RGBA screen buffer that gets loaded into a texture that gets
     // finally rendered into our window or full screen in I_FinishUpdate().
 
-    I_VideoBuffer = std::make_unique<theta::video::PalletedBuffer>(960 - 1, 600 - 1);
+    theta::system::SetWorldResolution(1.0, 1.0);
     V_RestoreBuffer();
 
     // Clear the screen to black.

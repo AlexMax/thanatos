@@ -24,42 +24,6 @@ namespace theta
 namespace video
 {
 
-// Resize the buffer for the presumably updated width and height.
-void PalletedBuffer::resize()
-{
-    this->pixels.resize(this->width * this->height);
-}
-
-// Get the width of the buffer.
-int PalletedBuffer::GetWidth() const
-{
-    return this->width;
-}
-
-// Get the height of the buffer.
-int PalletedBuffer::GetHeight() const
-{
-    return this->height;
-}
-
-int PalletedBuffer::GetSize() const
-{
-    return this->width * this->height;
-}
-
-// Get raw write access to the buffer.
-pixel_t* PalletedBuffer::GetRawPixels()
-{
-    return &this->pixels.front();
-}
-
-// Get raw read-only access to the buffer.
-const pixel_t* PalletedBuffer::GetRawPixels() const
-{
-    return &this->pixels.front();
-}
-
-
 // Initialize the buffer with the contents of a patch.
 RGBABuffer::RGBABuffer(const patch_t* patch, const byte* palette) :
     width(patch->width), height(patch->height), pixels(patch->width * patch->height * 4)
@@ -91,41 +55,6 @@ RGBABuffer::RGBABuffer(const patch_t* patch, const byte* palette) :
             column = (column_t *)((byte *)column + column->length + 4);
         }
     }
-}
-
-// Resize the buffer for the presumably updated width and height.
-void RGBABuffer::resize()
-{
-    this->pixels.resize(this->width * this->height * 4);
-}
-
-// Get the width of the buffer.
-int RGBABuffer::GetWidth() const
-{
-    return this->width;
-}
-
-// Get the height of the buffer.
-int RGBABuffer::GetHeight() const
-{
-    return this->height;
-}
-
-int RGBABuffer::GetSize() const
-{
-    return this->width * this->height * 4;
-}
-
-// Get raw write access to the buffer.
-pixel_t* RGBABuffer::GetRawPixels()
-{
-    return &this->pixels.front();
-}
-
-// Get raw read-only access to the buffer.
-const pixel_t* RGBABuffer::GetRawPixels() const
-{
-    return &this->pixels.front();
 }
 
 }

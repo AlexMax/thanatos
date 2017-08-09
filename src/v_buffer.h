@@ -35,15 +35,14 @@ class PalletedBuffer
     int width;
     int height;
     std::vector<pixel_t> pixels;
-    void resize();
 public:
     PalletedBuffer(int width, int height) :
         width(width), height(height), pixels(width * height) { }
-    int GetWidth() const;
-    int GetHeight() const;
-    int GetSize() const;
-    pixel_t* GetRawPixels();
-    const pixel_t* GetRawPixels() const;
+    inline int GetWidth() const { return this->width; };
+    inline int GetHeight() const { return this->height; };
+    inline int GetSize() const { return this->width * this->height; };
+    pixel_t* GetRawPixels() { return &this->pixels.front(); }
+    const pixel_t* GetRawPixels() const { return &this->pixels.front(); };
 };
 
 // A buffer of truecolor + transparency pixels that knows its own resolution.
@@ -52,16 +51,15 @@ class RGBABuffer
     int width;
     int height;
     std::vector<pixel_t> pixels;
-    void resize();
 public:
     RGBABuffer(int width, int height) :
         width(width), height(height), pixels(width * height * 4) { }
     RGBABuffer(const patch_t* patch, const byte* palette);
-    int GetWidth() const;
-    int GetHeight() const;
-    int GetSize() const;
-    pixel_t* GetRawPixels();
-    const pixel_t* GetRawPixels() const;
+    int GetWidth() const { return this->width; };
+    int GetHeight() const { return this->height; };
+    int GetSize() const { return this->width * this->height; };
+    pixel_t* GetRawPixels() { return &this->pixels.front(); }
+    const pixel_t* GetRawPixels() const { return &this->pixels.front(); };
 };
 
 }
