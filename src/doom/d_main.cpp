@@ -228,12 +228,12 @@ void D_Display (void)
 	    break;
 	if (automapactive)
 	    AM_Drawer ();
-	if (wipe || (viewheight != I_VideoBuffer->GetHeight() && fullscreen))
+	if (wipe || (viewheight != theta::system::renderer->GetHeight() && fullscreen))
 	    redrawsbar = true;
 	if (inhelpscreensstate && !inhelpscreens)
 	    redrawsbar = true;              // just put away the help screen
-	ST_Drawer (viewheight == I_VideoBuffer->GetHeight(), redrawsbar );
-	fullscreen = viewheight == I_VideoBuffer->GetHeight();
+	ST_Drawer (viewheight == theta::system::renderer->GetHeight(), redrawsbar );
+	fullscreen = viewheight == theta::system::renderer->GetHeight();
 	break;
 
       case GS_INTERMISSION:
