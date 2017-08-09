@@ -71,6 +71,7 @@ fixed_t			viewx;
 fixed_t			viewy;
 fixed_t			viewz;
 
+// Angle that the player is currently looking.
 angle_t			viewangle;
 
 fixed_t			viewcos;

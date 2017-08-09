@@ -302,8 +302,7 @@ void D_Display (void)
 	    y = 4;
 	else
 	    y = viewwindowy+4;
-	V_DrawPatchDirect(viewwindowx + (viewwidth - 68) / 2, y,
-                          static_cast<patch_t*>(W_CacheLumpName (DEH_String("M_PAUSE"), PU_CACHE)));
+        theta::video::DrawScaledLump(/*viewwindowx + */(VIRTUALWIDTH - 68) / 2, y, DEH_String("M_PAUSE"));
     }
 
     console::Draw();

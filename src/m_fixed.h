@@ -34,6 +34,7 @@ typedef int fixed_t;
 fixed_t FixedMul	(fixed_t a, fixed_t b);
 fixed_t FixedDiv	(fixed_t a, fixed_t b);
 
+#define FIX2DBL(f) ((f >> FRACBITS) + ((f & (FRACUNIT - 1)) / (double)(FRACUNIT)))
 
 
 #endif

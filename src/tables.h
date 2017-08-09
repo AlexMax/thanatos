@@ -91,6 +91,7 @@ extern const angle_t tantoangle[SLOPERANGE+1];
 //  called by R_PointToAngle.
 int SlopeDiv(unsigned int num, unsigned int den);
 
+#define ANG2DEG(a) (a / (double)ANG_MAX * 360)
 
 #endif
 
