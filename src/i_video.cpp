@@ -321,6 +321,7 @@ static int EffectiveScreenHeight(void)
 // ratio consistent with the aspect_ratio_correct variable.
 static void AdjustWindowSize(void)
 {
+    /*
     int h;
 
     h = EffectiveScreenHeight();
@@ -335,6 +336,7 @@ static void AdjustWindowSize(void)
     {
         window_width = window_height * SCREENWIDTH / h;
     }
+    */
 }
 
 static void HandleWindowEvent(SDL_WindowEvent *event)
@@ -716,7 +718,7 @@ static void CreateUpscaledTexture(boolean force)
 //
 // I_FinishUpdate
 //
-void I_FinishUpdate (void)
+void I_FinishUpdate(boolean& setsizeneeded)
 {
     static int lasttic;
     int tics;
@@ -746,6 +748,7 @@ void I_FinishUpdate (void)
                 SDL_SetWindowSize(screen, window_width, window_height);
             }
             theta::system::renderer->SetResolution(window_width, window_height);
+            setsizeneeded = true;
             /* CreateUpscaledTexture(false); */
             need_resize = false;
             palette_to_set = true;

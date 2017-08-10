@@ -159,7 +159,25 @@ void D_ProcessEvents (void)
     }
 }
 
+// Update the FPS counter
+static void UpdateFPSCounter(uint64_t start_display_time, uint64_t end_display_time)
+{
+    // Calculate maximum frame time.
+    static std::vector<uint64_t> display_times;
+    display_times.push_back(end_display_time - start_display_time);
 
+    static int lastmili;
+    int i = I_GetTimeMS();
+    int mili = i - lastmili;
+
+    if (mili >= 1000)
+    {
+        auto maximum = *(std::max_element(display_times.cbegin(), display_times.cend()));
+        max_display_time = (maximum * 1000) / (double)I_GetPerformanceFrequency();
+        display_times.clear();
+        lastmili = i;
+    }
+}
 
 
 //
@@ -315,24 +333,10 @@ void D_Display (void)
     // normal update
     if (!wipe)
     {
-	I_FinishUpdate ();              // page flip or blit buffer
+	I_FinishUpdate(setsizeneeded);              // page flip or blit buffer
         if (display_fps_counter)
         {
-            // Calculate maximum frame time.
-            static std::vector<uint64_t> display_times;
-            display_times.push_back(I_GetPerformanceTime() - start_display_time);
-
-            static int lastmili;
-            int i = I_GetTimeMS();
-            int mili = i - lastmili;
-
-            if (mili >= 1000)
-            {
-                auto maximum = *(std::max_element(display_times.cbegin(), display_times.cend()));
-                max_display_time = (maximum * 1000) / (double)I_GetPerformanceFrequency();
-                display_times.clear();
-                lastmili = i;
-            }
+            UpdateFPSCounter(start_display_time, I_GetPerformanceTime());
         }
 	return;
     }
@@ -357,7 +361,7 @@ void D_Display (void)
 	I_UpdateNoBlit ();
         console::Draw();
 	M_Drawer ();                            // menu is drawn even on top of wipes
-	I_FinishUpdate ();                      // page flip or blit buffer
+	I_FinishUpdate(setsizeneeded);          // page flip or blit buffer
     } while (!done);
 }
 

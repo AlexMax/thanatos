@@ -66,7 +66,7 @@ void I_SetPalette (byte* palette);
 int I_GetPaletteIndex(int r, int g, int b);
 
 void I_UpdateNoBlit (void);
-void I_FinishUpdate (void);
+void I_FinishUpdate(boolean& setsizeneeded);
 
 void I_ReadScreen (pixel_t* scr);
 
