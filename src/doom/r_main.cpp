@@ -59,6 +59,7 @@ int			centery;
 fixed_t			centerxfrac;
 fixed_t			centeryfrac;
 fixed_t			projection;
+fixed_t                 projectiony;
 
 // just for profiling purposes
 int			framecount;	
@@ -477,7 +478,7 @@ fixed_t R_ScaleFromGlobalAngle (angle_t visangle)
     // both sines are allways positive
     sinea = finesine[anglea>>ANGLETOFINESHIFT];	
     sineb = finesine[angleb>>ANGLETOFINESHIFT];
-    num = FixedMul(projection,sineb);
+    num = FixedMul(projectiony,sineb);
     den = FixedMul(rw_distance,sinea);
 
     if (den > num>>FRACBITS)
@@ -674,17 +675,17 @@ void R_ExecuteSetViewSize (void)
     if (setblocks == 11)
     {
         // Full screen
-        theta::system::SetWorldResolution(1.0, 1.0);
+        theta::system::SetWorldView(1.0, 1.0);
     }
     else if (setblocks == 10)
     {
         // Status bar
-        theta::system::SetWorldResolution(1.0, (200 - 32) / 200.0);
+        theta::system::SetWorldView(1.0, (200 - 32) / 200.0);
     }
     else
     {
         // Who cares...
-        theta::system::SetWorldResolution(1.0, (200 - 32) / 200.0);
+        theta::system::SetWorldView(1.0, (200 - 32) / 200.0);
     }
     viewwidth = I_VideoBuffer->GetWidth();
     viewheight = I_VideoBuffer->GetHeight();
@@ -694,6 +695,11 @@ void R_ExecuteSetViewSize (void)
     centerxfrac = centerx<<FRACBITS;
     centeryfrac = centery<<FRACBITS;
     projection = centerxfrac;
+
+    // [AM] The original game assumed a 320x200 resolution stretched over
+    //      a 4:3 aspect ratio.  Here, we stretch the vertical resolution
+    //      in the renderer by 1.2 to compensate.
+    projectiony = FixedMul(centerxfrac, FixedDiv(240 << FRACBITS, 200 << FRACBITS));
 
     // This used to be the place where the "Low Detail" drawers were set, if
     // detailshift was set.  Not anymore though...
@@ -709,6 +715,8 @@ void R_ExecuteSetViewSize (void)
     // psprite scales
     pspritescale = FRACUNIT * viewwidth / VIRTUALWIDTH;
     pspriteiscale = FRACUNIT * VIRTUALWIDTH / viewwidth;
+    // [AM] Also stretch the psprite by 1.2
+    pspriteyscale = FixedMul(pspritescale, FixedDiv(240 << FRACBITS, 200 << FRACBITS));
 
     // thing clipping
     for (i=0 ; i<viewwidth ; i++)
@@ -719,7 +727,7 @@ void R_ExecuteSetViewSize (void)
     {
 	dy = ((i-viewheight/2)<<FRACBITS)+FRACUNIT/2;
 	dy = abs(dy);
-	yslope[i] = FixedDiv ( (viewwidth)/2*FRACUNIT, dy);
+        yslope[i] = FixedDiv(projectiony, dy);
     }
 	
     for (i=0 ; i<viewwidth ; i++)

@@ -106,6 +106,7 @@ private:
     GLuint worldPixels;
     std::unique_ptr<Program> worldProgram;
     GLuint worldVAO;
+    GLuint worldVBO;
 
     static void debugCall(const char* name, void* funcptr, int len_args, ...);
     static void debugMessage(GLenum source, GLenum type, GLuint id,
@@ -124,6 +125,7 @@ public:
     void SetResolution(int width, int height);
     void SetWorldPalette(const byte* palette);
     void SetWorldPixels(const video::PalletedBuffer& pixels);
+    void SetWorldSize(double x, double y, double width, double height);
 };
 
 }

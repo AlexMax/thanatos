@@ -66,6 +66,7 @@ typedef struct
 //
 fixed_t		pspritescale;
 fixed_t		pspriteiscale;
+fixed_t         pspriteyscale;
 
 lighttable_t**	spritelights;
 
@@ -412,7 +413,7 @@ R_DrawVisSprite
 	    ( (vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT-8) );
     }
 	
-    dc_iscale = abs(vis->xiscale);
+    dc_iscale = FixedDiv(FRACUNIT, vis->scale);
     dc_texturemid = vis->texturemid;
     frac = vis->startfrac;
     spryscale = vis->scale;
@@ -540,7 +541,7 @@ void R_ProjectSprite (mobj_t* thing)
     // store information in a vissprite
     vis = R_NewVisSprite ();
     vis->mobjflags = thing->flags;
-    vis->scale = xscale;
+    vis->scale = FixedDiv(projectiony, tz);
     vis->gx = thing->x;
     vis->gy = thing->y;
     vis->gz = thing->z;
@@ -686,7 +687,7 @@ void R_DrawPSprite (pspdef_t* psp)
     vis->texturemid = (VIRTUALHEIGHT / 2 << FRACBITS) + FRACUNIT / 2 - (psp->sy-spritetopoffset[lump]);
     vis->x1 = x1 < 0 ? 0 : x1;
     vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;	
-    vis->scale = pspritescale;
+    vis->scale = pspriteyscale;
     
     if (flip)
     {

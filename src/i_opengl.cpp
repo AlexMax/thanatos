@@ -425,9 +425,8 @@ void Renderer::constructWorld()
     glGenVertexArrays(1, &this->worldVAO);
     glBindVertexArray(this->worldVAO);
 
-    GLuint VBOnum;
-    glGenBuffers(1, &VBOnum);
-    glBindBuffer(GL_ARRAY_BUFFER, VBOnum);
+    glGenBuffers(1, &this->worldVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, this->worldVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // location 0
@@ -525,7 +524,7 @@ Renderer::Renderer(SDL_Window* window) :
     graphicsAtlas(nullptr), graphicsIBO(0), graphicsIndices(0), graphicsPixels(0),
     graphicsProgram(nullptr), graphicsVAO(0), graphicsVBO(0), graphicsVertices(0),
     pageGraphic(nullptr), pagePixels(0), pageProgram(nullptr), pageVAO(0),
-    worldPixels(0), worldPalettes(0), worldProgram(nullptr), worldVAO(0)
+    worldPixels(0), worldPalettes(0), worldProgram(nullptr), worldVAO(0), worldVBO(0)
 {
     // Do some OpenGL initialization stuff.  We want a core profile.
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -798,6 +797,22 @@ void Renderer::SetWorldPixels(const video::PalletedBuffer& pixels)
 {
     glBindTexture(GL_TEXTURE_2D, this->worldPixels);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, pixels.GetWidth(), pixels.GetHeight(), 0, GL_RED, GL_UNSIGNED_BYTE, pixels.GetRawPixels());
+}
+
+// Update the position of the world view.
+void Renderer::SetWorldSize(double x, double y, double width, double height)
+{
+    GLfloat h = height * -2 + 1;
+
+    GLfloat vertices[][5] = {
+        { 1.0f, h, 0.0f, 1.0f, 1.0f },
+        { 1.0f, 1.0f, 0.0f, 1.0f, 0.0f },
+        { -1.0f, h, 0.0f, 0.0f, 1.0f },
+        { -1.0f, 1.0f, 0.0f, 0.0f, 0.0f }
+    };
+
+    glBindBuffer(GL_ARRAY_BUFFER, this->worldVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 }
 
 }

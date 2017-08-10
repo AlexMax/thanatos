@@ -103,7 +103,7 @@ namespace theta
 namespace system
 {
 
-void SetWorldResolution(double width, double height);
+void SetWorldView(double width, double height);
 
 extern std::unique_ptr<RendererInterface> renderer;
 

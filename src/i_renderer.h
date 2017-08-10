@@ -42,6 +42,7 @@ public:
     virtual void SetResolution(int width, int height) = 0;
     virtual void SetWorldPalette(const byte* palette) = 0;
     virtual void SetWorldPixels(const video::PalletedBuffer& pixels) = 0;
+    virtual void SetWorldSize(double x, double y, double width, double height) = 0;
 };
 
 }

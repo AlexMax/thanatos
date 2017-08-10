@@ -1419,7 +1419,7 @@ namespace system
 
 // Set the resolution of the buffer used to render the world.  In terms of
 // width and height, 0.0 is no pixels, and 1.0 is taking up the entire screen.
-void SetWorldResolution(double width, double height)
+void SetWorldView(double width, double height)
 {
     // Clamp to 0.0-1.0
     if (width > 1.0)
@@ -1456,6 +1456,9 @@ void SetWorldResolution(double width, double height)
     {
         I_Error("Attempted to set 0 width or height in world resolution");
     }
+
+    // Set the position of the world view.
+    renderer->SetWorldSize(0.0, 0.0, width, height);
 }
 
 }
@@ -1538,7 +1541,7 @@ void I_InitGraphics(void)
     // 32-bit RGBA screen buffer that gets loaded into a texture that gets
     // finally rendered into our window or full screen in I_FinishUpdate().
 
-    theta::system::SetWorldResolution(1.0, 1.0);
+    theta::system::SetWorldView(1.0, 1.0);
     V_RestoreBuffer();
 
     // Clear the screen to black.
