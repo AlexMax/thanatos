@@ -61,6 +61,11 @@ int SlopeDiv(unsigned int num, unsigned int den)
     }
 }
 
+double AngleToDeg(angle_t a)
+{
+    return (a / static_cast<double>(ANG_MAX) * 360);
+}
+
 const fixed_t finetangent[4096] =
 {
     -170910304,-56965752,-34178904,-24413316,-18988036,-15535599,-13145455,-11392683,

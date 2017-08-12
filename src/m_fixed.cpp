@@ -60,3 +60,7 @@ fixed_t FixedDiv(fixed_t a, fixed_t b)
     }
 }
 
+double FixedToFloat(fixed_t f)
+{
+    return ((f >> FRACBITS) + ((f & (FRACUNIT - 1)) / static_cast<double>(FRACUNIT)));
+}
