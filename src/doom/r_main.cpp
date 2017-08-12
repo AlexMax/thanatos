@@ -543,15 +543,17 @@ void R_InitTextureMapping (void)
     int			t;
     fixed_t		focallength;
     
+    int FieldOfView = 90.0 * FINEANGLES / 360.0;
+
     // Use tangent table to generate viewangletox:
     //  viewangletox will give the next greatest x
     //  after the view angle.
     //
     // Calc focallength
     //  so FIELDOFVIEW angles covers SCREENWIDTH.
-    focallength = FixedDiv (centerxfrac,
-			    finetangent[FINEANGLES/4+FIELDOFVIEW/2] );
-	
+    focallength = projection = FixedDiv(centerxfrac,
+        finetangent[FINEANGLES / 4 + FieldOfView / 2]);
+
     for (i=0 ; i<FINEANGLES/2 ; i++)
     {
 	if (finetangent[i] > FRACUNIT*2)
@@ -694,12 +696,6 @@ void R_ExecuteSetViewSize (void)
     centerx = viewwidth/2;
     centerxfrac = centerx<<FRACBITS;
     centeryfrac = centery<<FRACBITS;
-    projection = centerxfrac;
-
-    // [AM] The original game assumed a 320x200 resolution stretched over
-    //      a 4:3 aspect ratio.  Here, we stretch the vertical resolution
-    //      in the renderer by 1.2 to compensate.
-    projectiony = FixedMul(centerxfrac, FixedDiv(240 << FRACBITS, 200 << FRACBITS));
 
     // This used to be the place where the "Low Detail" drawers were set, if
     // detailshift was set.  Not anymore though...
@@ -710,8 +706,13 @@ void R_ExecuteSetViewSize (void)
 
     R_InitBuffer (viewwidth, viewheight);
 	
-    R_InitTextureMapping ();
+    R_InitTextureMapping (); // sets projection
     
+    // [AM] The original game assumed a 320x200 resolution stretched over
+    //      a 4:3 aspect ratio.  Here, we stretch the vertical resolution
+    //      in the renderer by 1.2 to compensate.
+    projectiony = FixedMul(centerxfrac, FixedDiv(240 << FRACBITS, 200 << FRACBITS));
+
     // psprite scales
     pspritescale = FRACUNIT * viewwidth / VIRTUALWIDTH;
     pspriteiscale = FRACUNIT * VIRTUALWIDTH / viewwidth;
