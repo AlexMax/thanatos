@@ -130,6 +130,11 @@ void R_DrawColumn (void)
     fracstep = dc_iscale; 
     frac = dc_texturemid + (dc_yl-centery)*fracstep; 
 
+    // Clamp starting position so we don't render the previous column.
+    if (frac < 0) {
+        frac = 0;
+    }
+
     // Inner loop that does the actual texture mapping,
     //  e.g. a DDA-lile scaling.
     // This is as fast as it gets.
