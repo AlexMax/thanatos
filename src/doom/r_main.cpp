@@ -726,12 +726,9 @@ void SetupProjection()
     // a normal 4:3 aspect ratio, so we must take that into consideration.
     projectiony = FloatToFixed((sdwidth / 2.0) * 1.2);
 
-    // Convert our fov angle into something we can use with the renderer.
-    int field_of_view = static_cast<int>(fov * FINEANGLES / 360.0);
-
-    // Calc focallength
-    //  so FIELDOFVIEW angles covers SCREENWIDTH.
-    projection = FixedDiv(centerxfrac, finetangent[FINEANGLES / 4 + field_of_view / 2]);
+    // Calculate horizontal projection based on our possibly widescreen
+    // adjusting for FOV.
+    projection = FloatToFixed(centerx / tan((fov / 2) * M_PI / 180.0));
 
     // psprite scales
     pspritescale = FloatToFixed(sdwidth / VIRTUALWIDTH);
