@@ -542,17 +542,11 @@ void R_InitTextureMapping (void)
     int			x;
     int			t;
     fixed_t		focallength;
-    
-    int FieldOfView = 90.0 * FINEANGLES / 360.0;
 
     // Use tangent table to generate viewangletox:
     //  viewangletox will give the next greatest x
     //  after the view angle.
-    //
-    // Calc focallength
-    //  so FIELDOFVIEW angles covers SCREENWIDTH.
-    focallength = projection = FixedDiv(centerxfrac,
-        finetangent[FINEANGLES / 4 + FieldOfView / 2]);
+    focallength = projection;
 
     for (i=0 ; i<FINEANGLES/2 ; i++)
     {
@@ -660,6 +654,95 @@ R_SetViewSize
 }
 
 
+#define M_PI 3.14159265358979323846
+
+namespace theta
+{
+
+namespace render
+{
+
+// The amount of letterboxing of the world view.
+//
+// This is defined as an amount between 0.0 and 1.0 that determines how
+// much the world view is being letterboxed, for the purposes of showing
+// the status bar and such.  1.0 means there is no letterboxing going on.
+double letterbox_amount;
+
+// Set up projection, projectiony and other globals dimensions.
+void SetupProjection()
+{
+    if (setblocks == 11)
+    {
+        // Full screen
+        letterbox_amount = 1.0;
+    }
+    else if (setblocks <= 10)
+    {
+        // Status bar
+        letterbox_amount = (200 - 32) / 200.0;
+    }
+
+    // Set the world view ratio, then set the renderer view width and height
+    // based on the resulting buffer width/height.
+    theta::system::SetWorldView(1.0, letterbox_amount);
+    viewwidth = I_VideoBuffer->GetWidth();
+    viewheight = I_VideoBuffer->GetHeight();
+
+    centery = viewheight / 2;
+    centerx = viewwidth / 2;
+    centerxfrac = centerx << FRACBITS;
+    centeryfrac = centery << FRACBITS;
+
+    double fovheight;
+    if (letterbox_amount < 1.0)
+    {
+        // We're letterboxing the renderer.  Figure out the proper height.
+        fovheight = viewheight / letterbox_amount;
+    }
+    else
+    {
+        // No letterboxing, use the actual view height.
+        fovheight = static_cast<double>(viewheight);
+    }
+
+    double fov;
+    if ((viewwidth / fovheight) > (4 / 3.0))
+    {
+        // If we're in widescreen, calculate FOV based on current width.
+        fov = atan(tan(90.0 * M_PI / 360.0) * 0.75 * viewwidth / fovheight) * 360.0 / M_PI;
+    }
+    else
+    {
+        // Cap horizontal FOV at 90 degrees, otherwise funky stuff happens.
+        fov = 90.0;
+    }
+
+    // Calculate the width assuming 4:3
+    double sdwidth = ((fovheight * 4.0) / 3.0);
+
+    // Calculate vertical projection based on a normal 4:3 view.  However,
+    // the engine was designed to be rendered at 320x200 stretched over
+    // a normal 4:3 aspect ratio, so we must take that into consideration.
+    projectiony = FloatToFixed((sdwidth / 2.0) * 1.2);
+
+    // Convert our fov angle into something we can use with the renderer.
+    int field_of_view = static_cast<int>(fov * FINEANGLES / 360.0);
+
+    // Calc focallength
+    //  so FIELDOFVIEW angles covers SCREENWIDTH.
+    projection = FixedDiv(centerxfrac, finetangent[FINEANGLES / 4 + field_of_view / 2]);
+
+    // psprite scales
+    pspritescale = FloatToFixed(sdwidth / VIRTUALWIDTH);
+    pspriteiscale = FloatToFixed(VIRTUALWIDTH / sdwidth);
+    pspriteyscale = FloatToFixed(sdwidth / VIRTUALWIDTH * 1.2);
+}
+
+}
+
+}
+
 //
 // R_ExecuteSetViewSize
 //
@@ -674,28 +757,7 @@ void R_ExecuteSetViewSize (void)
 
     setsizeneeded = false;
 
-    if (setblocks == 11)
-    {
-        // Full screen
-        theta::system::SetWorldView(1.0, 1.0);
-    }
-    else if (setblocks == 10)
-    {
-        // Status bar
-        theta::system::SetWorldView(1.0, (200 - 32) / 200.0);
-    }
-    else
-    {
-        // Who cares...
-        theta::system::SetWorldView(1.0, (200 - 32) / 200.0);
-    }
-    viewwidth = I_VideoBuffer->GetWidth();
-    viewheight = I_VideoBuffer->GetHeight();
-    
-    centery = viewheight/2;
-    centerx = viewwidth/2;
-    centerxfrac = centerx<<FRACBITS;
-    centeryfrac = centery<<FRACBITS;
+    theta::render::SetupProjection();
 
     // This used to be the place where the "Low Detail" drawers were set, if
     // detailshift was set.  Not anymore though...
@@ -706,18 +768,7 @@ void R_ExecuteSetViewSize (void)
 
     R_InitBuffer (viewwidth, viewheight);
 	
-    R_InitTextureMapping (); // sets projection
-    
-    // [AM] The original game assumed a 320x200 resolution stretched over
-    //      a 4:3 aspect ratio.  Here, we stretch the vertical resolution
-    //      in the renderer by 1.2 to compensate.
-    projectiony = FixedMul(centerxfrac, FixedDiv(240 << FRACBITS, 200 << FRACBITS));
-
-    // psprite scales
-    pspritescale = FRACUNIT * viewwidth / VIRTUALWIDTH;
-    pspriteiscale = FRACUNIT * VIRTUALWIDTH / viewwidth;
-    // [AM] Also stretch the psprite by 1.2
-    pspriteyscale = FixedMul(pspritescale, FixedDiv(240 << FRACBITS, 200 << FRACBITS));
+    R_InitTextureMapping ();
 
     // thing clipping
     for (i=0 ; i<viewwidth ; i++)

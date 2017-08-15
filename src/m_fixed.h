@@ -34,7 +34,8 @@ typedef int fixed_t;
 fixed_t FixedMul	(fixed_t a, fixed_t b);
 fixed_t FixedDiv	(fixed_t a, fixed_t b);
 
-double FixedToDouble(fixed_t f);
+double FixedToFloat(fixed_t f);
+fixed_t FloatToFixed(double d);
 
 
 #endif

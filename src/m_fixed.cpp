@@ -60,7 +60,22 @@ fixed_t FixedDiv(fixed_t a, fixed_t b)
     }
 }
 
+// Turn a fixed-point number into a floating point number.
+// WARNING: DO NOT USE THIS IN GAMEPLAY CODE
 double FixedToFloat(fixed_t f)
 {
-    return ((f >> FRACBITS) + ((f & (FRACUNIT - 1)) / static_cast<double>(FRACUNIT)));
+    double whole = f >> FRACBITS;
+    double frac = (f & (FRACUNIT - 1)) / static_cast<double>(FRACUNIT);
+    return whole + frac;
 }
+
+// Turn a floating-point number into a fixed-point number.
+// WARNING: DO NOT USE THIS IN GAMEPLAY CODE
+fixed_t FloatToFixed(double d)
+{
+    int whole = static_cast<int>(d);
+    assert(whole < FRACUNIT && whole > -FRACUNIT);
+    int frac = static_cast<int>((d - whole) * FRACUNIT);
+    return (whole << FRACBITS) + frac;
+}
+
