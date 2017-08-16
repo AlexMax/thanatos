@@ -377,7 +377,39 @@ void R_DrawSpan (void)
     // We do not check for zero spans here?
     count = ds_x2 - ds_x1;
 
-    do
+    // [AM] An unrolled version of the loop at the bottom.  Seems to save
+    //      a few hundreths of a ms.
+    while (count >= 3)
+    {
+        ytemp = (ds_yfrac >> 10) & 0x0fc0;
+        xtemp = (ds_xfrac >> 16) & 0x3f;
+        int spot1 = xtemp | ytemp;
+
+        ytemp = (ds_yfrac + ds_ystep >> 10) & 0x0fc0;
+        xtemp = (ds_xfrac + ds_xstep >> 16) & 0x3f;
+        int spot2 = xtemp | ytemp;
+
+        ytemp = (ds_yfrac + (ds_ystep * 2) >> 10) & 0x0fc0;
+        xtemp = (ds_xfrac + (ds_xstep * 2) >> 16) & 0x3f;
+        int spot3 = xtemp | ytemp;
+
+        ytemp = (ds_yfrac + (ds_ystep * 3) >> 10) & 0x0fc0;
+        xtemp = (ds_xfrac + (ds_xstep * 3) >> 16) & 0x3f;
+        int spot4 = xtemp | ytemp;
+
+        dest[0] = ds_colormap[ds_source[spot1]];
+        dest[1] = ds_colormap[ds_source[spot2]];
+        dest[2] = ds_colormap[ds_source[spot3]];
+        dest[3] = ds_colormap[ds_source[spot4]];
+
+        ds_xfrac += (ds_xstep * 4);
+        ds_yfrac += (ds_ystep * 4);
+
+        dest += 4;
+        count -= 4;
+    }
+
+    while (count >= 0)
     {
 	// Calculate current texture index in u,v.
         // [crispy] fix flats getting more distorted the closer they are to the right
@@ -392,7 +424,8 @@ void R_DrawSpan (void)
         ds_xfrac += ds_xstep;
         ds_yfrac += ds_ystep;
 
-    } while (count--);
+        count--;
+    }
 }
 
 
