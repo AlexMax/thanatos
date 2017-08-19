@@ -40,9 +40,12 @@ GraphicsManager& GraphicsManager::Instance()
 // the graphic therafter.  Don't lose it, there's no duplicate detection.
 const Graphic& GraphicsManager::AddPatch(patch_t* patch)
 {
+    // Unpack patch data into properly-aligned variables.
+    int pwidth = patch->width, pheight = patch->height, pxoff = -patch->leftoffset, pyoff = -patch->topoffset;
+
     // Create a Graphic handle with our patch data.
     auto doompal = static_cast<byte*>(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
-    this->handles.emplace_back(std::make_unique<Graphic>(RGBABuffer(patch, doompal), patch->width, patch->height, -patch->leftoffset, -patch->topoffset));
+    this->handles.emplace_back(std::make_unique<Graphic>(RGBABuffer(patch, doompal), pwidth, pheight, pxoff, pyoff));
     const Graphic& handle = *((this->handles.cend() - 1)->get());
 
     // Put the graphic associated with the handle into the texture atlas

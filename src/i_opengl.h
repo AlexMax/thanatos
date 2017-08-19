@@ -68,7 +68,7 @@ public:
     Program(const Program &obj) = delete;
     ~Program();
     void Attach(const Shader& shader);
-    bool Program::Link();
+    bool Link();
     GLuint Ref() const;
     std::string Log() const;
 };
@@ -114,7 +114,7 @@ private:
 public:
     Renderer(SDL_Window* window);
     Renderer(const Renderer&) = delete;
-    Renderer::~Renderer();
+    ~Renderer();
     void Flip();
     void Render();
     void AddGraphic(const video::Graphic& handle);
