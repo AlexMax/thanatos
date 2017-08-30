@@ -20,17 +20,20 @@ set(PACKAGE_BUGREPORT "chocolate-doom-dev-list@chocolate-doom.org")
 set(PACKAGE_COPYRIGHT "Copyright (C) 1993-2017")
 set(PACKAGE_LICENSE "GNU General Public License, version 2")
 
+# Force C++14 standard on all targets.
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 if(MSVC)
+    # Visual C++ defines and options.
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
 else()
-    # If this is gcc, we have some options we'd like to turn on.  Turn on 
-    # optimisation and debugging symbols.
+    # GCC and compatibles defines and options.
     add_compile_options(-Wall -Wredundant-decls)
-    add_compile_options(-std=c++14)
 endif()
 
 if(WIN32)
-    # Fix some Win32-specific brain damage...
+    # Windows-specific defines and options.
     add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX)
 endif()
 
