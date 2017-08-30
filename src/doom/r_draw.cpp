@@ -86,6 +86,7 @@ int			dc_yl;
 int			dc_yh; 
 fixed_t			dc_iscale; 
 fixed_t			dc_texturemid;
+int			dc_texheight; // [crispy] Tutti-Frutti fix
 
 // first pixel in a column (possibly virtual) 
 byte*			dc_source;		
@@ -100,56 +101,85 @@ int			dccount;
 // Thus a special case loop for very fast rendering can
 //  be used. It has also been used with Wolfenstein 3D.
 // 
-void R_DrawColumn (void) 
-{ 
-    int			count; 
-    pixel_t*		dest;
+// [crispy] replace R_DrawColumn() with Lee Killough's implementation
+// found in MBF to fix Tutti-Frutti, taken from mbfsrc/R_DRAW.C:99-1979
+
+void R_DrawColumn(void)
+{
+    int			count;
+    byte*		dest;
     fixed_t		frac;
-    fixed_t		fracstep;	 
- 
-    count = dc_yh - dc_yl; 
+    fixed_t		fracstep;
+    int			heightmask = dc_texheight - 1;
+
+    count = dc_yh - dc_yl;
 
     // Zero length, column does not exceed a pixel.
-    if (count < 0) 
-	return; 
-				 
+    if (count < 0)
+        return;
+
 #ifdef RANGECHECK 
-    if ((unsigned)dc_x >= viewwidth || dc_yl < 0 || dc_yh >= viewheight)
-    {
+    if ((unsigned)dc_x >= viewwidth
+        || dc_yl < 0
+        || dc_yh >= viewheight)
         I_Error("R_DrawColumn: %i to %i at %i", dc_yl, dc_yh, dc_x);
-    }
 #endif 
 
     // Framebuffer destination address.
     // Use ylookup LUT to avoid multiply with ScreenWidth.
     // Use columnofs LUT for subwindows? 
-    dest = ylookup[dc_yl] + columnofs[dc_x];  
+    dest = ylookup[dc_yl] + columnofs[dc_x];
 
     // Determine scaling,
     //  which is the only mapping to be done.
-    fracstep = dc_iscale; 
-    frac = dc_texturemid + (dc_yl-centery)*fracstep; 
-
-    // Clamp starting position so we don't render the previous column.
-    if (frac < 0) {
-        frac = 0;
-    }
+    fracstep = dc_iscale;
+    frac = dc_texturemid + (dc_yl - centery)*fracstep;
 
     // Inner loop that does the actual texture mapping,
     //  e.g. a DDA-lile scaling.
     // This is as fast as it gets.
-    do 
-    {
-	// Re-map color indices from wall texture column
-	//  using a lighting/special effects LUT.
-	*dest = dc_colormap[dc_source[(frac>>FRACBITS)&127]];
-	
-	dest += viewwidth;
-	frac += fracstep;
-	
-    } while (count--); 
-} 
 
+    // heightmask is the Tutti-Frutti fix -- killough
+    if (dc_texheight & heightmask) // not a power of 2 -- killough
+    {
+        heightmask++;
+        heightmask <<= FRACBITS;
+
+        if (frac < 0)
+        {
+            while ((frac += heightmask) < 0);
+        }
+        else
+        {
+            while (frac >= heightmask)
+            {
+                frac -= heightmask;
+            }
+        }
+
+        do
+        {
+            *dest = dc_colormap[dc_source[frac >> FRACBITS]];
+            dest += viewwidth;
+
+            if ((frac += fracstep) >= heightmask)
+            {
+                frac -= heightmask;
+            }
+        } while (count--);
+    }
+    else // texture height is a power of 2 -- killough
+    {
+        do
+        {
+            // Re-map color indices from wall texture column
+            //  using a lighting/special effects LUT.
+            *dest = dc_colormap[dc_source[(frac >> FRACBITS)&heightmask]];
+            dest += viewwidth;
+            frac += fracstep;
+        } while (count--);
+    }
+}
 
 //
 // Spectre/Invisibility.
