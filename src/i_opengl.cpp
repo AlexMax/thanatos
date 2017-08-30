@@ -519,7 +519,7 @@ void Renderer::debugMessage(GLenum source, GLenum type, GLuint id,
 
 Renderer::Renderer(SDL_Window* window) :
     constructed(false), context(nullptr), maxTextureSize(0),
-    renderSource(renderSources::none), viewportHeight(0), viewportWidth(0),
+    renderSource(renderSources::world), viewportHeight(0), viewportWidth(0),
     window(window),
     graphicsAtlas(nullptr), graphicsIBO(0), graphicsIndices(0), graphicsPixels(0),
     graphicsProgram(nullptr), graphicsVAO(0), graphicsVBO(0), graphicsVertices(0),
