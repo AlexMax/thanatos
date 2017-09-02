@@ -337,10 +337,10 @@ static int		NUMCMAPS;
 //
 
 // You Are Here graphic
-static patch_t*		yah[3] = { NULL, NULL, NULL }; 
+static std::vector<std::reference_wrapper<const video::Graphic>> yah;
 
 // splat
-static patch_t*		splat[2] = { NULL, NULL };
+static std::vector<std::reference_wrapper<const video::Graphic>> splat;
 
 // %, : graphics
 static const video::Graphic* percent;
@@ -452,50 +452,37 @@ void WI_drawEL(void)
         (VIRTUALWIDTH - lnames[wbs->next].get().width) / 2, y, lnames[wbs->next]);
 }
 
-void
-WI_drawOnLnode
-( int		n,
-  patch_t*	c[] )
+void WI_drawOnLnode(int n, std::vector<std::reference_wrapper<const video::Graphic>>& c)
 {
+    boolean fits = false;
 
-    int		i;
-    int		left;
-    int		top;
-    int		right;
-    int		bottom;
-    boolean	fits = false;
-
-    i = 0;
+    int i = 0;
     do
     {
-	left = lnodes[wbs->epsd][n].x - SHORT(c[i]->leftoffset);
-	top = lnodes[wbs->epsd][n].y - SHORT(c[i]->topoffset);
-	right = left + SHORT(c[i]->width);
-	bottom = top + SHORT(c[i]->height);
+        int left = lnodes[wbs->epsd][n].x + c[i].get().xoff;
+        int top = lnodes[wbs->epsd][n].y + c[i].get().yoff;
+        int right = left + c[i].get().width;
+        int bottom = top + c[i].get().height;
 
-	if (left >= 0
-	    && right < SCREENWIDTH
-	    && top >= 0
-	    && bottom < SCREENHEIGHT)
-	{
-	    fits = true;
-	}
-	else
-	{
-	    i++;
-	}
-    } while (!fits && i!=2 && c[i] != NULL);
+        if (left >= 0 && right < VIRTUALWIDTH && top >= 0 && bottom < VIRTUALHEIGHT)
+        {
+            fits = true;
+        }
+        else
+        {
+            i++;
+        }
+    } while (!fits && i != 2 && c.size() >= i);
 
-    if (fits && i<2)
+    if (fits && i < 2)
     {
-	V_DrawPatch(lnodes[wbs->epsd][n].x,
-                    lnodes[wbs->epsd][n].y,
-		    c[i]);
+        video::DrawScaledGraphic(lnodes[wbs->epsd][n].x,
+            lnodes[wbs->epsd][n].y, c[i]);
     }
     else
     {
-	// DEBUG
-	printf("Could not place patch on level %d", n+1); 
+        // DEBUG
+        printf("Could not place patch on level %d", n + 1); 
     }
 }
 
@@ -1539,7 +1526,8 @@ static void WI_loadData2()
         for (i = 0;i < NUMCMAPS;i++)
         {
             DEH_snprintf(name, 9, "CWILV%2.2d", i);
-            lnames.emplace_back(std::cref(video::GraphicsManager::Instance().LoadPatch(name)));
+            lnames.emplace_back(std::cref(
+                video::GraphicsManager::Instance().LoadPatch(name)));
         }
     }
     else
@@ -1547,17 +1535,23 @@ static void WI_loadData2()
         for (i = 0;i < NUMMAPS;i++)
         {
             DEH_snprintf(name, 9, "WILV%d%d", wbs->epsd, i);
-            lnames.emplace_back(std::cref(video::GraphicsManager::Instance().LoadPatch(name)));
+            lnames.emplace_back(std::cref(
+                video::GraphicsManager::Instance().LoadPatch(name)));
         }
 
         // you are here
-        /*callback(DEH_String("WIURH0"), yah[0]);
+        yah.clear();
+        yah.emplace_back(std::cref(
+            video::GraphicsManager::Instance().LoadPatch(DEH_String("WIURH0"))));
 
         // you are here (alt.)
-        callback(DEH_String("WIURH1"), yah[1]);
+        yah.emplace_back(std::cref(
+            video::GraphicsManager::Instance().LoadPatch(DEH_String("WIURH1"))));
 
         // splat
-        callback(DEH_String("WISPLAT"), splat[0]);*/
+        splat.clear();
+        splat.emplace_back(std::cref(
+            video::GraphicsManager::Instance().LoadPatch(DEH_String("WISPLAT"))));
 
         if (wbs->epsd < 3)
         {
@@ -1572,7 +1566,8 @@ static void WI_loadData2()
                     {
                         // animations
                         DEH_snprintf(name, 9, "WIA%d%.2d%.2d", wbs->epsd, j, i);
-                        a->p.emplace_back(std::cref(video::GraphicsManager::Instance().LoadPatch(name)));
+                        a->p.emplace_back(std::cref(
+                            video::GraphicsManager::Instance().LoadPatch(name)));
                     }
                     else
                     {
@@ -1592,7 +1587,8 @@ static void WI_loadData2()
     {
         // numbers 0-9
         DEH_snprintf(name, 9, "WINUM%d", i);
-        num.emplace_back(std::cref(video::GraphicsManager::Instance().LoadPatch(name)));
+        num.emplace_back(std::cref(
+            video::GraphicsManager::Instance().LoadPatch(name)));
     }
 
     // percent sign
@@ -1659,11 +1655,13 @@ static void WI_loadData2()
     {
         // "1,2,3,4"
         DEH_snprintf(name, 9, "STPB%d", i);
-        p.emplace_back(std::cref(video::GraphicsManager::Instance().LoadPatch(name)));
+        p.emplace_back(std::cref(
+            video::GraphicsManager::Instance().LoadPatch(name)));
 
         // "1,2,3,4"
         DEH_snprintf(name, 9, "WIBP%d", i+1);
-        bp.emplace_back(std::cref(video::GraphicsManager::Instance().LoadPatch(name)));
+        bp.emplace_back(std::cref(
+            video::GraphicsManager::Instance().LoadPatch(name)));
     }
 
     // Background image
