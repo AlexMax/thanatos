@@ -22,6 +22,9 @@
 #include "sha1.h"
 #include "net_defs.h"
 
+namespace theta
+{
+
 boolean NET_CL_Connect(net_addr_t *addr, net_connect_data_t *data);
 void NET_CL_Disconnect(void);
 void NET_CL_Run(void);
@@ -48,5 +51,7 @@ extern sha1_digest_t net_local_deh_sha1sum;
 extern unsigned int net_local_is_freedoom;
 
 extern boolean drone;
+
+}
 
 #endif /* #ifndef NET_CLIENT_H */

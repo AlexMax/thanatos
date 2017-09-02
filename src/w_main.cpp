@@ -25,6 +25,9 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+namespace theta
+{
+
 // Parse the command line, merging WAD files that are sppecified.
 // Returns true if at least one file was added.
 boolean W_ParseCommandLine(void)
@@ -233,3 +236,4 @@ void W_CheckCorrectIWAD(GameMission_t mission)
     }
 }
 
+}

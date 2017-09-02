@@ -20,7 +20,8 @@
 #ifndef __R_THINGS__
 #define __R_THINGS__
 
-
+namespace theta
+{
 
 #define MAXVISSPRITES  	128
 
@@ -61,5 +62,6 @@ R_ClipVisSprite
   int			xl,
   int			xh );
 
+}
 
 #endif

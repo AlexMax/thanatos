@@ -23,6 +23,8 @@
 #include "doomdef.h"
 #include "info.h"
 
+namespace theta
+{
 
 // Weapon info: sprite frames, ammunition use.
 typedef struct
@@ -37,5 +39,7 @@ typedef struct
 } weaponinfo_t;
 
 extern  weaponinfo_t    weaponinfo[NUMWEAPONS];
+
+}
 
 #endif

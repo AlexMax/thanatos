@@ -30,6 +30,9 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+namespace theta
+{
+
 #define MAX_INSTRUMENTS 256
 
 typedef struct
@@ -299,3 +302,4 @@ boolean GUS_WriteConfig(char *path)
     return result;
 }
 
+}

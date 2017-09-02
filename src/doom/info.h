@@ -24,6 +24,9 @@
 // Needed for action function pointer handling.
 #include "d_think.h"
 
+namespace theta
+{
+
 typedef enum
 {
     SPR_TROO,
@@ -1327,5 +1330,7 @@ typedef struct
 } mobjinfo_t;
 
 extern mobjinfo_t mobjinfo[NUMMOBJTYPES];
+
+}
 
 #endif

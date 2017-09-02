@@ -23,6 +23,9 @@
 // We are referring to patches.
 #include "r_defs.h"
 
+namespace theta
+{
+
 //
 // Typedefs of widgets
 //
@@ -205,5 +208,7 @@ void
 STlib_updateBinIcon
 ( st_binicon_t*		bi,
   boolean		refresh );
+
+}
 
 #endif

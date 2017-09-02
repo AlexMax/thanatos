@@ -29,6 +29,9 @@
 #include "w_file.h"
 #include "z_zone.h"
 
+namespace theta
+{
+
 // This constant doesn't exist in VC6:
 
 #ifndef INVALID_SET_FILE_POINTER
@@ -193,6 +196,7 @@ wad_file_class_t win32_wad_file =
     W_Win32_Read,
 };
 
+}
 
 #endif /* #ifdef _WIN32 */
 

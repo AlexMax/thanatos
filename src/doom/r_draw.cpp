@@ -36,6 +36,8 @@
 // State.
 #include "doomstat.h"
 
+namespace theta
+{
 
 // ?
 #define MAXWIDTH			1120
@@ -972,4 +974,4 @@ void R_DrawViewBorder (void)
     V_MarkRect (0,0,SCREENWIDTH, SCREENHEIGHT-SBARHEIGHT); 
 } 
  
- 
+}

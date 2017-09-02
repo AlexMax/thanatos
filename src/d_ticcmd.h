@@ -24,6 +24,9 @@
 #include "doomtype.h"
 
 
+namespace theta
+{
+
 // The data sampled per tick (single player)
 // and transmitted to other peers (multiplayer).
 // Mainly movements/button commands per game tick,
@@ -51,6 +54,6 @@ typedef struct
     byte arti;                  // artitype_t to use
 } ticcmd_t;
 
-
+}
 
 #endif

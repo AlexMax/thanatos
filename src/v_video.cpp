@@ -42,6 +42,9 @@
 #include <png.h>
 #endif
 
+namespace theta
+{
+
 // TODO: There are separate RANGECHECK defines for different games, but this
 // is common code. Fix this.
 #define RANGECHECK
@@ -1002,3 +1005,4 @@ void V_DrawMouseSpeedBox(int speed)
     }
 }
 
+}

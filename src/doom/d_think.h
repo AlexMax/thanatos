@@ -24,7 +24,8 @@
 
 
 
-
+namespace theta
+{
 
 //
 // Experimental stuff.
@@ -63,6 +64,6 @@ typedef struct thinker_s
     
 } thinker_t;
 
-
+}
 
 #endif

@@ -20,6 +20,9 @@
 #include "net_packet.h"
 #include "z_zone.h"
 
+namespace theta
+{
+
 static int total_packet_memory = 0;
 
 net_packet_t *NET_NewPacket(int initial_size)
@@ -291,6 +294,6 @@ void NET_WriteString(net_packet_t *packet, const char *string)
     packet->len += string_size;
 }
 
-
+}
 
 

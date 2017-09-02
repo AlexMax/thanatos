@@ -21,10 +21,11 @@
 #define __P_INTER__
 
 
-
+namespace theta
+{
 
 boolean	P_GivePower(player_t*, int);
 
-
+}
 
 #endif

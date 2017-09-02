@@ -41,6 +41,9 @@
 
 #include "doomtype.h"
 
+namespace theta
+{
+
 #define LOW_PASS_FILTER
 //#define DEBUG_DUMP_WAVS
 #define NUM_CHANNELS 16
@@ -1150,3 +1153,4 @@ sound_module_t sound_sdl_module =
     I_SDL_PrecacheSounds,
 };
 
+}

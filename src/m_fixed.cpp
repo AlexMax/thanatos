@@ -26,7 +26,8 @@
 #include "m_fixed.h"
 
 
-
+namespace theta
+{
 
 // Fixme. __USE_C_FIXED__ or something.
 
@@ -60,3 +61,4 @@ fixed_t FixedDiv(fixed_t a, fixed_t b)
     }
 }
 
+}

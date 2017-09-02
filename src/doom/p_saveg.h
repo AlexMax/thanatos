@@ -22,6 +22,9 @@
 
 #include <stdio.h>
 
+namespace theta
+{
+
 #define SAVEGAME_EOF 0x1d
 #define VERSIONSIZE 16
 
@@ -61,5 +64,6 @@ void P_UnArchiveSpecials (void);
 extern FILE *save_stream;
 extern boolean savegame_error;
 
+}
 
 #endif

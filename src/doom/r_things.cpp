@@ -35,7 +35,8 @@
 
 #include "doomstat.h"
 
-
+namespace theta
+{
 
 #define MINZ				(FRACUNIT*4)
 #define BASEYCENTER			(SCREENHEIGHT/2)
@@ -978,5 +979,5 @@ void R_DrawMasked (void)
 	R_DrawPlayerSprites ();
 }
 
-
+}
 

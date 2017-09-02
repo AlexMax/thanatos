@@ -27,7 +27,8 @@
 // Some global defines, that configure the game.
 #include "doomdef.h"
 
-
+namespace theta
+{
 
 //
 // Map level types.
@@ -206,7 +207,7 @@ typedef PACKED_STRUCT (
     short		options;
 }) mapthing_t;
 
-
+}
 
 
 

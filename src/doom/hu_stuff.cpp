@@ -45,6 +45,9 @@
 #include "dstrings.h"
 #include "sounds.h"
 
+namespace theta
+{
+
 //
 // Locally used constants, shortcuts.
 //
@@ -730,4 +733,6 @@ boolean HU_Responder(event_t *ev)
     }
 
     return eatkey;
+}
+
 }

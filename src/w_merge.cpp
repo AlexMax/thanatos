@@ -30,6 +30,9 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+namespace theta
+{
+
 typedef enum 
 { 
     SECTION_NORMAL, 
@@ -720,3 +723,4 @@ void W_NWTDashMerge(char *filename)
     W_CloseFile(wad_file);
 }
 
+}

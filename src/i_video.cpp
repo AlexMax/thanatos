@@ -46,6 +46,9 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+namespace theta
+{
+
 // These are (1) the window (or the full screen) that our game is rendered to
 // and (2) the renderer that scales the texture (see below) into this window.
 
@@ -1483,4 +1486,6 @@ void I_BindVideoVariables(void)
     M_BindStringVariable("window_position",        &window_position);
     M_BindIntVariable("usegamma",                  &usegamma);
     M_BindIntVariable("png_screenshots",           &png_screenshots);
+}
+
 }

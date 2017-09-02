@@ -23,6 +23,8 @@
 #ifndef __P_SPEC__
 #define __P_SPEC__
 
+namespace theta
+{
 
 //
 // End-level timer (-TIMER option)
@@ -633,5 +635,7 @@ EV_Teleport
 ( line_t*	line,
   int		side,
   mobj_t*	thing );
+
+}
 
 #endif

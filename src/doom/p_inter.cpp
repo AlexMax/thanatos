@@ -39,6 +39,8 @@
 
 #include "p_inter.h"
 
+namespace theta
+{
 
 #define BONUSADD	6
 
@@ -921,3 +923,4 @@ P_DamageMobj
 			
 }
 
+}

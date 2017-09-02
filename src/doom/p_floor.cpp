@@ -30,6 +30,8 @@
 // Data.
 #include "sounds.h"
 
+namespace theta
+{
 
 //
 // FLOORS
@@ -550,3 +552,4 @@ EV_BuildStairs
     return rtn;
 }
 
+}

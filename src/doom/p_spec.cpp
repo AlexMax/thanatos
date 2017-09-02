@@ -47,6 +47,8 @@
 // Data.
 #include "sounds.h"
 
+namespace theta
+{
 
 //
 // Animating textures and planes
@@ -1486,4 +1488,6 @@ void P_SpawnSpecials (void)
 
     // UNUSED: no horizonal sliders.
     //	P_InitSlidingDoorFrames();
+}
+
 }

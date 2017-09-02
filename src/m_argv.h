@@ -22,6 +22,9 @@
 
 #include "doomtype.h"
 
+namespace theta
+{
+
 //
 // MISC
 //
@@ -45,5 +48,7 @@ boolean M_ParmExists(const char *check);
 // Get name of executable used to run this program:
 
 char *M_GetExecutableName(void);
+
+}
 
 #endif

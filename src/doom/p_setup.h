@@ -21,7 +21,8 @@
 #define __P_SETUP__
 
 
-
+namespace theta
+{
 
 // NOT called by W_Ticker. Fixme.
 void
@@ -33,5 +34,7 @@ P_SetupLevel
 
 // Called by startup code.
 void P_Init (void);
+
+}
 
 #endif

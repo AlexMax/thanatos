@@ -21,6 +21,9 @@
 
 #include "d_mode.h"
 
+namespace theta
+{
+
 #define IWAD_MASK_DOOM    ((1 << doom)           \
                          | (1 << doom2)          \
                          | (1 << pack_tnt)       \
@@ -47,6 +50,8 @@ const char *D_SaveGameIWADName(GameMission_t gamemission);
 const char *D_SuggestIWADName(GameMission_t mission, GameMode_t mode);
 const char *D_SuggestGameName(GameMission_t mission, GameMode_t mode);
 void D_CheckCorrectIWAD(GameMission_t mission);
+
+}
 
 #endif
 

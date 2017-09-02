@@ -31,6 +31,9 @@
 
 #include "d_player.h"
 
+namespace theta
+{
+
 const char *sprnames[] = {
     "TROO","SHTG","PUNG","PISG","PISF","SHTF","SHT2","CHGG","CHGF","MISG",
     "MISF","SAWG","PLSG","PLSF","BFGG","BFGF","BLUD","PUFF","BAL1","BAL2",
@@ -4662,3 +4665,4 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
     }
 };
 
+}

@@ -27,6 +27,9 @@
 #include "net_server.h"
 #include "z_zone.h"
 
+namespace theta
+{
+
 void NET_CL_Run(void)
 {
     // No client present :-)
@@ -45,3 +48,4 @@ void D_DoomMain(void)
     NET_DedicatedServer();
 }
 
+}

@@ -36,6 +36,9 @@
 #include "doomkeys.h"
 #include "m_controls.h"
 
+namespace theta
+{
+
 namespace console
 {
 
@@ -687,6 +690,8 @@ boolean Responder(event_t* ev)
     }
 
     return false;
+}
+
 }
 
 }

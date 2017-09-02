@@ -39,7 +39,8 @@
 #include "sounds.h"
 
 
-
+namespace theta
+{
 
 typedef enum
 {
@@ -2003,4 +2004,6 @@ void A_PlayerScream (mobj_t* mo)
     }
     
     S_StartSound (mo, sound);
+}
+
 }

@@ -73,6 +73,8 @@
 
 #include "g_game.h"
 
+namespace theta
+{
 
 #define SAVEGAMESIZE	0x2c000
 
@@ -2299,5 +2301,5 @@ boolean G_CheckDemoStatus (void)
     return false; 
 } 
  
- 
+} 
  

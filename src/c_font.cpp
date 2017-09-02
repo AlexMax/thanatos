@@ -29,6 +29,9 @@
 
 #include "c_font.h"
 
+namespace theta
+{
+
 namespace console
 {
 
@@ -1380,5 +1383,7 @@ Font ConsoleFont{
     { 125, theta::ArrayView(CONFN125) },
     { 126, theta::ArrayView(CONFN126) }
 };
+
+}
 
 }

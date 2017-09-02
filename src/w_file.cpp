@@ -25,6 +25,9 @@
 
 #include "w_file.h"
 
+namespace theta
+{
+
 extern wad_file_class_t stdc_wad_file;
 
 #ifdef _WIN32
@@ -89,3 +92,4 @@ size_t W_Read(wad_file_t *wad, unsigned int offset,
     return wad->file_class->Read(wad, offset, buffer, buffer_len);
 }
 
+}

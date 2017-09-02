@@ -23,6 +23,8 @@
 
 #include "doomstat.h"
 
+namespace theta
+{
 
 int	leveltime;
 
@@ -150,4 +152,6 @@ void P_Ticker (void)
 
     // for par times
     leveltime++;	
+}
+
 }

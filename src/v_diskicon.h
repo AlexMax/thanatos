@@ -19,6 +19,9 @@
 #ifndef __V_DISKICON__
 #define __V_DISKICON__
 
+namespace theta
+{
+
 // Dimensions of the flashing "loading" disk icon
 
 #define LOADING_DISK_W 16
@@ -28,5 +31,7 @@ extern void V_EnableLoadingDisk(const char *lump_name, int xoffs, int yoffs);
 extern void V_BeginRead(size_t nbytes);
 extern void V_DrawDiskIcon(void);
 extern void V_RestoreDiskBackground(void);
+
+}
 
 #endif

@@ -58,6 +58,9 @@
 #include "dstrings.h"
 #include "sounds.h"
 
+namespace theta
+{
+
 //
 // STATUS BAR DATA
 //
@@ -1438,3 +1441,4 @@ void ST_Init (void)
     st_backing_screen = (pixel_t *) Z_Malloc(ST_WIDTH * ST_HEIGHT * sizeof(*st_backing_screen), PU_STATIC, 0);
 }
 
+}

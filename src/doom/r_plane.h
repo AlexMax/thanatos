@@ -23,7 +23,8 @@
 
 #include "r_data.h"
 
-
+namespace theta
+{
 
 // Visplane related.
 extern  short*		lastopening;
@@ -71,6 +72,6 @@ R_CheckPlane
   int		start,
   int		stop );
 
-
+}
 
 #endif

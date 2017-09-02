@@ -24,6 +24,9 @@
 #include "doomtype.h"
 
 
+namespace theta
+{
+
 //
 // Event handling.
 //
@@ -140,6 +143,7 @@ void D_PostEvent (event_t *ev);
 
 event_t *D_PopEvent(void);
 
+}
 
 #endif
 

@@ -22,6 +22,9 @@
 
 #include "doomtype.h"
 
+namespace theta
+{
+
 // so that the individual game logic and sound driver code agree
 #define NORM_PITCH 127
 
@@ -245,6 +248,8 @@ typedef enum {
 } opl_driver_ver_t;
 
 void I_SetOPLDriverVer(opl_driver_ver_t ver);
+
+}
 
 #endif
 

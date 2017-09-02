@@ -24,7 +24,8 @@
 #include "r_data.h"
 
 
-
+namespace theta
+{
 
 //
 // POV related.
@@ -156,5 +157,7 @@ void R_Init (void);
 
 // Called by M_Responder.
 void R_SetViewSize (int blocks, int detail);
+
+}
 
 #endif

@@ -24,6 +24,9 @@
 
 #include "doomtype.h"
 
+namespace theta
+{
+
 void M_LoadDefaults(void);
 void M_SaveDefaults(void);
 void M_SaveDefaultsAlternate(char *main, char *extra);
@@ -40,5 +43,7 @@ void M_SetConfigFilenames(const char *main_config, const char *extra_config);
 const char *M_GetSaveGameDir(const char *iwadname);
 
 extern const char *configdir;
+
+}
 
 #endif

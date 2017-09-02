@@ -35,6 +35,9 @@
 
 #include <SDL_net.h>
 
+namespace theta
+{
+
 #define DEFAULT_PORT 2342
 
 static boolean initted = false;
@@ -379,3 +382,4 @@ net_module_t net_sdl_module =
     NET_SDL_ResolveAddress,
 };
 
+}

@@ -25,6 +25,9 @@
 #include "z_zone.h"
 
 
+namespace theta
+{
+
 //
 // ZONE MEMORY ALLOCATION
 //
@@ -550,3 +553,4 @@ unsigned int Z_ZoneSize(void)
     return mainzone->size;
 }
 
+}

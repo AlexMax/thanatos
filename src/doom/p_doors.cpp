@@ -34,6 +34,9 @@
 #include "dstrings.h"
 #include "sounds.h"
 
+namespace theta
+{
+
 #if 0
 //
 // Sliding door frame information
@@ -783,3 +786,5 @@ EV_SlidingDoor
     }
 }
 #endif
+
+}

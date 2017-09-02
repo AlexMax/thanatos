@@ -27,6 +27,9 @@
 // Needed because we are refering to patches.
 #include "v_patch.h"
 
+namespace theta
+{
+
 //
 // VIDEO
 //
@@ -103,6 +106,8 @@ void V_LoadTintTable(void);
 void V_LoadXlaTable(void);
 
 void V_DrawMouseSpeedBox(int speed);
+
+}
 
 #endif
 

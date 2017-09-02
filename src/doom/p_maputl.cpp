@@ -35,6 +35,9 @@
 // State.
 #include "r_state.h"
 
+namespace theta
+{
+
 //
 // P_AproxDistance
 // Gives an estimation of distance (not exact)
@@ -997,5 +1000,5 @@ P_PathTraverse
     return P_TraverseIntercepts ( trav, FRACUNIT );
 }
 
-
+}
 

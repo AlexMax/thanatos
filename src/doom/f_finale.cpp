@@ -37,6 +37,9 @@
 #include "doomstat.h"
 #include "r_state.h"
 
+namespace theta
+{
+
 typedef enum
 {
     F_STAGE_TEXT,
@@ -715,4 +718,4 @@ void F_Drawer (void)
     }
 }
 
-
+}

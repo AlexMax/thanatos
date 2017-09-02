@@ -27,6 +27,8 @@
 #include "d_ticcmd.h"
 #include "d_event.h"
 
+namespace theta
+{
 
 typedef void (*atexit_func_t)(void);
 
@@ -56,10 +58,7 @@ ticcmd_t* I_BaseTiccmd (void);
 // Clean exit, displays sell blurb.
 void I_Quit (void);
 
-#define I_Error(error, ...) theta::system::detail::Error2(__BASE_FILE__, __LINE__, error, ##__VA_ARGS__)
-
-namespace theta
-{
+#define I_Error(error, ...) system::detail::Error2(__BASE_FILE__, __LINE__, error, ##__VA_ARGS__)
 
 namespace system
 {
@@ -67,9 +66,16 @@ namespace system
 namespace detail
 {
 
-template<typename... Arguments>
-void Error2(const char* file, int line, const char* error, const Arguments&... args);
+void Error3(const fmt::MemoryWriter& buffer);
 
+// This wrapper function simply combines the arguments into a buffer and
+// passes it to the actual error handler.
+template<typename... Arguments>
+void Error2(const char* file, int line, const char* error, const Arguments&... args)
+{
+    fmt::MemoryWriter buffer;
+    buffer << file << ':' << line << ' ' << fmt::sprintf(error, args...);
+    Error3(buffer);
 }
 
 }
@@ -102,7 +108,7 @@ void I_PrintBanner(const char *text);
 
 void I_PrintDivider(void);
 
-#include "i_system.ipp"
+}
 
 #endif
 

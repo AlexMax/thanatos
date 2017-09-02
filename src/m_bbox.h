@@ -24,6 +24,8 @@
 
 #include "m_fixed.h"
 
+namespace theta
+{
 
 // Bounding box coordinate storage.
 enum
@@ -43,5 +45,6 @@ M_AddToBox
   fixed_t	x,
   fixed_t	y );
 
+}
 
 #endif

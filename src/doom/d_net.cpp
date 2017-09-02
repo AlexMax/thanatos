@@ -36,6 +36,9 @@
 
 #include "d_loop.h"
 
+namespace theta
+{
+
 ticcmd_t *netcmds;
 
 // Called when a player leaves the game
@@ -274,3 +277,4 @@ void D_CheckNetGame (void)
     }
 }
 
+}

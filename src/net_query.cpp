@@ -32,6 +32,9 @@
 #include "net_structrw.h"
 #include "net_sdl.h"
 
+namespace theta
+{
+
 // DNS address of the Internet master server.
 
 #define MASTER_SERVER_ADDRESS "master.chocolate-doom.org:2342"
@@ -951,3 +954,4 @@ char *NET_EndSecureDemo(sha1_digest_t demo_hash)
     return signature;
 }
 
+}

@@ -35,6 +35,9 @@
 
 #include "p_pspr.h"
 
+namespace theta
+{
+
 #define LOWERSPEED		FRACUNIT*6
 #define RAISESPEED		FRACUNIT*6
 
@@ -885,4 +888,4 @@ void P_MovePsprites (player_t* player)
     player->psprites[ps_flash].sy = player->psprites[ps_weapon].sy;
 }
 
-
+}

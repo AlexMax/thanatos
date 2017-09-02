@@ -21,6 +21,8 @@
 
 #include "d_items.h"
 
+namespace theta
+{
 
 //
 // PSPRITE ACTIONS for waepons.
@@ -119,7 +121,7 @@ weaponinfo_t	weaponinfo[NUMWEAPONS] =
     },	
 };
 
-
+}
 
 
 

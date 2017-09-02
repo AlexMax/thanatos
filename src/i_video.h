@@ -22,6 +22,9 @@
 
 #include "doomtype.h"
 
+namespace theta
+{
+
 // Screen width and height.
 
 #define SCREENWIDTH  320
@@ -102,5 +105,7 @@ extern unsigned int joywait;
 
 extern int fps_counter;
 extern boolean display_fps_counter;
+
+}
 
 #endif

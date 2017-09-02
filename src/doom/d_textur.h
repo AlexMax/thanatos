@@ -26,6 +26,9 @@
 
 
 
+namespace theta
+{
+
 //
 // Flats?
 //
@@ -37,7 +40,7 @@ typedef struct
     byte		data;
 } pic_t;
 
-
+}
 
 
 #endif

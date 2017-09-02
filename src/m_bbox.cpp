@@ -24,7 +24,8 @@
 #include "m_bbox.h"
 
 
-
+namespace theta
+{
 
 void M_ClearBox (fixed_t *box)
 {
@@ -48,7 +49,7 @@ M_AddToBox
 	box[BOXTOP] = y;
 }
 
-
+}
 
 
 

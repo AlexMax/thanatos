@@ -21,7 +21,8 @@
 #define __M_FIXED__
 
 
-
+namespace theta
+{
 
 //
 // Fixed point, 32bit as 16.16.
@@ -34,6 +35,6 @@ typedef int fixed_t;
 fixed_t FixedMul	(fixed_t a, fixed_t b);
 fixed_t FixedDiv	(fixed_t a, fixed_t b);
 
-
+}
 
 #endif

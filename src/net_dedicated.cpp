@@ -29,6 +29,9 @@
 #include "net_sdl.h"
 #include "net_server.h"
 
+namespace theta
+{
+
 // 
 // People can become confused about how dedicated servers work.  Game
 // options are specified to the controlling player who is the first to
@@ -76,3 +79,4 @@ void NET_DedicatedServer(void)
     }
 }
 
+}

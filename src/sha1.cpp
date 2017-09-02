@@ -39,6 +39,9 @@
 #include "i_swap.h"
 #include "sha1.h"
 
+namespace theta
+{
+
 void SHA1_Init(sha1_context_t *hd)
 {
     hd->h0 = 0x67452301;
@@ -319,3 +322,4 @@ void SHA1_UpdateString(sha1_context_t *context, char *str)
     SHA1_Update(context, (byte *) str, strlen(str) + 1);
 }
 
+}

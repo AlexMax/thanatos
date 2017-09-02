@@ -48,6 +48,9 @@
 #include "am_map.h"
 
 
+namespace theta
+{
+
 // For use if I do walls with outsides/insides
 #define REDS		(256-5*16)
 #define REDRANGE	16
@@ -1374,5 +1377,7 @@ void AM_Drawer (void)
     AM_drawMarks();
 
     V_MarkRect(f_x, f_y, f_w, f_h);
+
+}
 
 }

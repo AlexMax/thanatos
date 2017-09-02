@@ -27,6 +27,9 @@
 #include "i_system.h"
 #include "doomtype.h"
 
+namespace theta
+{
+
 #define ZONEID	0x1d4a11
 
 typedef struct memblock_s memblock_t;
@@ -496,3 +499,4 @@ unsigned int Z_ZoneSize(void)
     return 0;
 }
 
+}

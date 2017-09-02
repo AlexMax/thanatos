@@ -27,6 +27,9 @@
 #include "deh_main.h"
 #include "deh_mapping.h"
 
+namespace theta
+{
+
 DEH_BEGIN_MAPPING(weapon_mapping, weaponinfo_t)
   DEH_MAPPING("Ammo type",        ammo)
   DEH_MAPPING("Deselect frame",   upstate)
@@ -99,3 +102,4 @@ deh_section_t deh_section_weapon =
     DEH_WeaponSHA1Sum,
 };
 
+}

@@ -39,6 +39,9 @@
 #include "r_data.h"
 #include "c_console.h"
 
+namespace theta
+{
+
 //
 // Graphics.
 // DOOM graphics for walls and sprites
@@ -908,6 +911,6 @@ void R_PrecacheLevel (void)
     Z_Free(spritepresent);
 }
 
-
+}
 
 

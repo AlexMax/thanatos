@@ -20,10 +20,15 @@
 
 #include "doomtype.h"
 
+namespace theta
+{
+
 extern const char *gus_patch_path;
 extern int gus_ram_kb;
 
 boolean GUS_WriteConfig(char *path);
+
+}
 
 #endif /* #ifndef __GUSCONF_H__ */
 

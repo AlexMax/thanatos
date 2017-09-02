@@ -41,6 +41,8 @@
 
 
 
+namespace theta
+{
 
 //
 // Player states.
@@ -205,5 +207,6 @@ typedef struct
 
 } wbstartstruct_t;
 
+}
 
 #endif

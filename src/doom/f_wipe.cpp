@@ -27,6 +27,9 @@
 
 #include "f_wipe.h"
 
+namespace theta
+{
+
 //
 //                       SCREEN WIPE PACKAGE
 //
@@ -292,3 +295,4 @@ wipe_ScreenWipe
     return !go;
 }
 
+}

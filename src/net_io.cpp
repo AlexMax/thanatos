@@ -23,6 +23,9 @@
 #include "net_io.h"
 #include "z_zone.h"
 
+namespace theta
+{
+
 #define MAX_MODULES 16
 
 struct _net_context_s
@@ -125,4 +128,4 @@ void NET_FreeAddress(net_addr_t *addr)
     addr->module->FreeAddress(addr);
 }
 
-
+}

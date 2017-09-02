@@ -23,6 +23,9 @@
 #include "i_timer.h"
 #include "i_video.h"
 
+namespace theta
+{
+
 // Palette fade-in takes two seconds
 
 #define FADE_TIME 2000
@@ -255,3 +258,4 @@ boolean I_CheckAbortHR(void)
     return result;
 }
 
+}

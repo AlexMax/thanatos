@@ -24,6 +24,9 @@
 #include "deh_main.h"
 #include "deh_misc.h"
 
+namespace theta
+{
+
 // Dehacked: "Initial Health" 
 // This is the initial health a player has when starting anew.
 // See G_PlayerReborn in g_game.c
@@ -226,3 +229,4 @@ deh_section_t deh_section_misc =
     DEH_MiscSHA1Sum,
 };
 
+}

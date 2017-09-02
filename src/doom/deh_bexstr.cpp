@@ -25,6 +25,9 @@
 
 #include "dstrings.h"
 
+namespace theta
+{
+
 typedef struct {
     const char *macro;
     const char *string;
@@ -374,3 +377,5 @@ deh_section_t deh_section_bexstr =
     NULL,
     NULL,
 };
+
+}

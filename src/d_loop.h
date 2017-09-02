@@ -21,6 +21,9 @@
 
 #include "net_defs.h"
 
+namespace theta
+{
+
 // Callback function invoked while waiting for the netgame to start.
 // The callback is invoked when new players are ready. The callback
 // should return true, or return false to abort startup.
@@ -83,6 +86,8 @@ boolean D_NonVanillaRecord(boolean conditional, const char *feature);
 // Check if it is permitted to play back a demo with a non-vanilla feature.
 boolean D_NonVanillaPlayback(boolean conditional, int lumpnum,
                              const char *feature);
+
+}
 
 #endif
 

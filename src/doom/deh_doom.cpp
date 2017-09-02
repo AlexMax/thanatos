@@ -19,6 +19,9 @@
 #include "deh_defs.h"
 #include "deh_main.h"
 
+namespace theta
+{
+
 const char *deh_signatures[] =
 {
     "Patch File for DeHackEd v2.3",
@@ -66,3 +69,4 @@ deh_section_t *deh_section_types[] =
     NULL
 };
 
+}

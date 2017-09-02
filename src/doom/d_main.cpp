@@ -77,6 +77,9 @@
 #include "d_main.h"
 #include "c_console.h"
 
+namespace theta
+{
+
 //
 // D-DoomLoop()
 // Not a globally visible function,
@@ -1898,3 +1901,4 @@ void D_DoomMain (void)
     D_DoomLoop ();  // never returns
 }
 
+}

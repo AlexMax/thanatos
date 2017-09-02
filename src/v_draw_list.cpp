@@ -18,6 +18,9 @@
 
 #include "v_draw_list.h"
 
+namespace theta
+{
+
 namespace video
 {
 
@@ -70,6 +73,8 @@ void DrawList::Clear()
     this->edicts.clear();
     this->width = 0;
     this->height = 0;
+}
+
 }
 
 }

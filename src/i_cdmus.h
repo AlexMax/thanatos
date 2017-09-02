@@ -18,6 +18,9 @@
 #ifndef __ICDMUS__
 #define __ICDMUS__
 
+namespace theta
+{
+
 #define CDERR_NOTINSTALLED   10 // MSCDEX not installed
 #define CDERR_NOAUDIOSUPPORT 11 // CD-ROM Doesn't support audio
 #define CDERR_NOAUDIOTRACKS  12 // Current CD has no audio tracks
@@ -37,5 +40,7 @@ int I_CDMusSetVolume(int volume);
 int I_CDMusFirstTrack(void);
 int I_CDMusLastTrack(void);
 int I_CDMusTrackLength(int track);
+
+}
 
 #endif

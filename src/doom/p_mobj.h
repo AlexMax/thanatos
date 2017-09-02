@@ -39,7 +39,8 @@
 
 
 
-
+namespace theta
+{
 
 //
 // NOTES: mobj_t
@@ -279,6 +280,6 @@ typedef struct mobj_s
     
 } mobj_t;
 
-
+}
 
 #endif

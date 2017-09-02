@@ -23,11 +23,16 @@
 #include "array_view.h"
 #include "doomtype.h"
 
+namespace theta
+{
+
 namespace console
 {
 
 typedef std::unordered_map<byte, theta::ArrayView> Font;
 extern Font ConsoleFont;
+
+}
 
 }
 

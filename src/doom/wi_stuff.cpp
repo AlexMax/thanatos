@@ -45,6 +45,9 @@
 
 #include "wi_stuff.h"
 
+namespace theta
+{
+
 //
 // Data needed to add patches to full screen intermission pics.
 // Patches are statistics messages, and animations.
@@ -736,10 +739,10 @@ WI_drawTime
     }
 }
 
+void WI_unloadData(void);
 
 void WI_End(void)
 {
-    void WI_unloadData(void);
     WI_unloadData();
 }
 
@@ -1826,4 +1829,6 @@ void WI_Start(wbstartstruct_t* wbstartstruct)
 	WI_initNetgameStats();
     else
 	WI_initStats();
+}
+
 }

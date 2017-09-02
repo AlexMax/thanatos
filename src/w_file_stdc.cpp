@@ -22,6 +22,9 @@
 #include "w_file.h"
 #include "z_zone.h"
 
+namespace theta
+{
+
 typedef struct
 {
     wad_file_t wad;
@@ -94,4 +97,4 @@ wad_file_class_t stdc_wad_file =
     W_StdC_Read,
 };
 
-
+}

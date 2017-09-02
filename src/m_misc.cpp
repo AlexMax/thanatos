@@ -47,6 +47,9 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+namespace theta
+{
+
 //
 // Create a directory
 //
@@ -620,3 +623,4 @@ char *M_OEMToUTF8(const char *oem)
 
 #endif
 
+}

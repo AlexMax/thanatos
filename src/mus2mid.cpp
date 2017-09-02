@@ -24,6 +24,9 @@
 #include "memio.h"
 #include "mus2mid.h"
 
+namespace theta
+{
+
 #define NUM_CHANNELS 16
 
 #define MIDI_PERCUSSION_CHAN 9
@@ -688,6 +691,8 @@ boolean mus2mid(MEMFILE *musinput, MEMFILE *midioutput)
     }
 
     return false;
+}
+
 }
 
 #ifdef STANDALONE

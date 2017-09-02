@@ -27,6 +27,9 @@
 #include "deh_main.h"
 #include "deh_mapping.h"
 
+namespace theta
+{
+
 DEH_BEGIN_MAPPING(state_mapping, state_t)
   DEH_MAPPING("Sprite number",    sprite)
   DEH_MAPPING("Sprite subnumber", frame)
@@ -159,3 +162,4 @@ deh_section_t deh_section_frame =
     DEH_FrameSHA1Sum,
 };
 
+}

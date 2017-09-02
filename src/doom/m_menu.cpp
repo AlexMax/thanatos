@@ -59,6 +59,8 @@
 
 #include "m_menu.h"
 
+namespace theta
+{
 
 extern patch_t*		hu_font[HU_FONTSIZE];
 extern boolean		message_dontfuckwithme;
@@ -2085,3 +2087,4 @@ void M_Init (void)
     opldev = M_CheckParm("-opldev") > 0;
 }
 
+}

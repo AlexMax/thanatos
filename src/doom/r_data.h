@@ -24,6 +24,8 @@
 #include "r_defs.h"
 #include "r_state.h"
 
+namespace theta
+{
 
 // Retrieve column data for span blitting.
 byte*
@@ -47,5 +49,7 @@ int R_FlatNumForName (const char* name);
 // returns the texture number for the texture name.
 int R_TextureNumForName (const char *name);
 int R_CheckTextureNumForName (const char *name);
+
+}
 
 #endif

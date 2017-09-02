@@ -21,7 +21,8 @@
 #define __R_SEGS__
 
 
-
+namespace theta
+{
 
 void
 R_RenderMaskedSegRange
@@ -29,5 +30,6 @@ R_RenderMaskedSegRange
   int		x1,
   int		x2 );
 
+}
 
 #endif

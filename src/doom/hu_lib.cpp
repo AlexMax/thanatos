@@ -28,6 +28,9 @@
 #include "r_local.h"
 #include "r_draw.h"
 
+namespace theta
+{
+
 // boolean : whether the screen is always erased
 #define noterased viewwindowx
 
@@ -345,3 +348,4 @@ void HUlib_eraseIText(hu_itext_t* it)
     it->laston = *it->on;
 }
 
+}

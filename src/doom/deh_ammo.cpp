@@ -26,6 +26,9 @@
 #include "deh_main.h"
 #include "p_local.h"
 
+namespace theta
+{
+
 static void *DEH_AmmoStart(deh_context_t *context, char *line)
 {
     int ammo_number = 0;
@@ -101,3 +104,4 @@ deh_section_t deh_section_ammo =
     DEH_AmmoSHA1Hash,
 };
 
+}

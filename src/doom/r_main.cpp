@@ -37,7 +37,8 @@
 #include "c_console.h"
 
 
-
+namespace theta
+{
 
 // Fineangles in the SCREENWIDTH wide window.
 #define FIELDOFVIEW		2048	
@@ -888,4 +889,6 @@ void R_RenderPlayerView (player_t* player)
 
     // Check for new console commands.
     NetUpdate ();				
+}
+
 }

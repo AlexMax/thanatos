@@ -39,6 +39,9 @@
 #include "net_sdl.h"
 #include "net_structrw.h"
 
+namespace theta
+{
+
 // How often to refresh our registration with the master server.
 
 #define MASTER_REFRESH_PERIOD 20 * 60 /* 20 minutes */
@@ -1933,4 +1936,6 @@ void NET_SV_Shutdown(void)
 
         I_Sleep(1);
     }
+}
+
 }

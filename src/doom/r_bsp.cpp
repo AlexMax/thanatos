@@ -35,7 +35,8 @@
 
 //#include "r_local.h"
 
-
+namespace theta
+{
 
 seg_t*		curline;
 side_t*		sidedef;
@@ -580,4 +581,4 @@ void R_RenderBSPNode (int bspnum)
 	R_RenderBSPNode (bsp->children[side^1]);
 }
 
-
+}

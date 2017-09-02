@@ -40,6 +40,8 @@
 
 #include "doomstat.h"
 
+namespace theta
+{
 
 void	P_SpawnMapThing (mapthing_t*	mthing);
 
@@ -864,5 +866,5 @@ void P_Init (void)
     R_InitSprites (sprnames);
 }
 
-
+}
 

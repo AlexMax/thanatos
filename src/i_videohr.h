@@ -19,6 +19,9 @@
 #ifndef I_VIDEOHR_H
 #define I_VIDEOHR_H
 
+namespace theta
+{
+
 boolean I_SetVideoModeHR(void);
 void I_UnsetVideoModeHR(void);
 void I_SetWindowTitleHR(char *title);
@@ -30,6 +33,8 @@ void I_SetPaletteHR(const byte *palette);
 void I_FadeToPaletteHR(const byte *palette);
 void I_BlackPaletteHR(void);
 boolean I_CheckAbortHR(void);
+
+}
 
 #endif /* #ifndef I_VIDEOHR_H */
 

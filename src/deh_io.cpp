@@ -28,6 +28,9 @@
 #include "deh_defs.h"
 #include "deh_io.h"
 
+namespace theta
+{
+
 typedef enum
 {
     DEH_INPUT_FILE,
@@ -335,3 +338,4 @@ boolean DEH_HadError(deh_context_t *context)
     return context->had_error;
 }
 
+}

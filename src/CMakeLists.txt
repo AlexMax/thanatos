@@ -14,7 +14,7 @@ include_directories(${CMAKE_BINARY_DIR})
 
 set(COMMON_SOURCE_FILES
     i_main.cpp
-    i_system.cpp  i_system.h    i_system.ipp
+    i_system.cpp  i_system.h
     m_argv.cpp    m_argv.h
     m_misc.cpp    m_misc.h)
 

@@ -30,6 +30,9 @@
 // Data.
 #include "sounds.h"
 
+namespace theta
+{
+
 //
 // CEILINGS
 //
@@ -321,4 +324,6 @@ int	EV_CeilingCrushStop(line_t	*line)
     
 
     return rtn;
+}
+
 }

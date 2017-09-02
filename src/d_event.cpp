@@ -22,6 +22,9 @@
 #include <stdlib.h>
 #include "d_event.h"
 
+namespace theta
+{
+
 #define MAXEVENTS 64
 
 static event_t events[MAXEVENTS];
@@ -60,4 +63,4 @@ event_t *D_PopEvent(void)
     return result;
 }
 
-
+}

@@ -24,6 +24,9 @@
 #include "i_system.h"
 #include "m_config.h"
 
+namespace theta
+{
+
 namespace console
 {
 
@@ -221,6 +224,8 @@ void Commands::Execute(const std::string& line)
 
     // Run the command.
     cmd_iter->second(args);
+}
+
 }
 
 }

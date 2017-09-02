@@ -27,6 +27,9 @@
 #include "i_timer.h"
 #include "d_mode.h"
 
+namespace theta
+{
+
 //
 // Global parameters/defines.
 //
@@ -165,5 +168,7 @@ typedef enum
     IRONTICS	= (60*TICRATE)
     
 } powerduration_t;
+
+}
 
 #endif          // __DOOMDEF__
