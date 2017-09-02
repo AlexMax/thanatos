@@ -24,6 +24,9 @@
 
 #include "z_zone.h"
 
+namespace theta
+{
+
 typedef enum {
 	MODE_READ,
 	MODE_WRITE,
@@ -194,4 +197,4 @@ int mem_fseek(MEMFILE *stream, signed long position, mem_rel_t whence)
 	}
 }
 
-
+}

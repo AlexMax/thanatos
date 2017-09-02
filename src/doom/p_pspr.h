@@ -35,7 +35,8 @@
 // and the Frame Sequence table.
 #include "info.h"
 
-
+namespace theta
+{
 
 //
 // Frame flags:
@@ -67,5 +68,7 @@ typedef struct
     fixed_t	sy;
 
 } pspdef_t;
+
+}
 
 #endif

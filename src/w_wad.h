@@ -25,6 +25,8 @@
 #include "doomtype.h"
 #include "w_file.h"
 
+namespace theta
+{
 
 //
 // TYPES
@@ -71,5 +73,7 @@ extern unsigned int W_LumpNameHash(const char *s);
 
 void W_ReleaseLumpNum(lumpindex_t lump);
 void W_ReleaseLumpName(const char *name);
+
+}
 
 #endif

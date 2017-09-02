@@ -26,6 +26,9 @@
 #include "net_packet.h"
 #include "net_structrw.h"
 
+namespace theta
+{
+
 // connections time out after 30 seconds
 
 #define CONNECTION_TIMEOUT_LEN 30
@@ -532,3 +535,4 @@ boolean NET_ValidGameSettings(GameMode_t mode, GameMission_t mission,
     return true;
 }
 
+}

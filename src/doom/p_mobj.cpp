@@ -33,6 +33,8 @@
 
 #include "doomstat.h"
 
+namespace theta
+{
 
 void G_PlayerReborn (int player);
 void P_SpawnMapThing (mapthing_t*	mthing);
@@ -1059,3 +1061,4 @@ P_SpawnPlayerMissile
     P_CheckMissileSpawn (th);
 }
 
+}

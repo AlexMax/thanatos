@@ -28,6 +28,9 @@
 #include "r_local.h"
 #include "r_draw.h"
 
+namespace theta
+{
+
 // boolean : whether the screen is always erased
 #define noterased viewwindowx
 
@@ -49,7 +52,7 @@ HUlib_initTextLine
 ( hu_textline_t*	t,
   int			x,
   int			y,
-  const theta::video::Graphic** f,
+  const video::Graphic** f,
   int			sc )
 {
     t->x = x;
@@ -115,7 +118,7 @@ HUlib_drawTextLine
             {
                 break;
             }
-            theta::video::DrawScaledGraphic(x, l->y, *l->f[c - l->sc]);
+            video::DrawScaledGraphic(x, l->y, *l->f[c - l->sc]);
 	    x += w;
 	}
 	else
@@ -131,7 +134,7 @@ HUlib_drawTextLine
     // draw the cursor if requested
     if (drawcursor && x + l->f['_' - l->sc]->width <= VIRTUALWIDTH)
     {
-        theta::video::DrawScaledGraphic(x, l->y, *l->f['_' - l->sc]);
+        video::DrawScaledGraphic(x, l->y, *l->f['_' - l->sc]);
     }
 }
 
@@ -174,7 +177,7 @@ HUlib_initSText
   int		x,
   int		y,
   int		h,
-  const theta::video::Graphic** font,
+  const video::Graphic** font,
   int		startchar,
   boolean*	on )
 {
@@ -266,7 +269,7 @@ HUlib_initIText
 ( hu_itext_t*	it,
   int		x,
   int		y,
-  const theta::video::Graphic** font,
+  const video::Graphic** font,
   int		startchar,
   boolean*	on )
 {
@@ -348,3 +351,4 @@ void HUlib_eraseIText(hu_itext_t* it)
     it->laston = *it->on;
 }
 
+}

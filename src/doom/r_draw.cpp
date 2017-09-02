@@ -36,6 +36,9 @@
 // State.
 #include "doomstat.h"
 
+namespace theta
+{
+
 // status bar height at bottom of screen
 #define SBARHEIGHT		32
 
@@ -671,4 +674,4 @@ void R_DrawViewBorder (void)
     V_MarkRect(0, 0, viewwidth, viewheight - SBARHEIGHT);
 } 
  
- 
+}

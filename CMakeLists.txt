@@ -10,13 +10,13 @@ if(NOT CMAKE_GENERATOR MATCHES "^Visual Studio.+" AND NOT CMAKE_GENERATOR STREQU
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS None Debug Release RelWithDebInfo MinSizeRel)
 endif()
 
-project("Chocolate Doom" VERSION "3.0.0" LANGUAGES CXX)
+project("Thanatos" VERSION "0.0.1" LANGUAGES CXX)
 
 set(PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
-set(PACKAGE_VERSION "${PROJECT_VERSION}-beta1")
+set(PACKAGE_VERSION "${PROJECT_VERSION}-alpha")
 set(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
-set(PACKAGE_TARNAME "chocolate-doom")
-set(PACKAGE_BUGREPORT "chocolate-doom-dev-list@chocolate-doom.org")
+set(PACKAGE_TARNAME "thanatos")
+set(PACKAGE_BUGREPORT "alexmax2742@gmail.com")
 set(PACKAGE_COPYRIGHT "Copyright (C) 1993-2017")
 set(PACKAGE_LICENSE "GNU General Public License, version 2")
 
@@ -74,7 +74,7 @@ set(WINDOWS_RC_VERSION
 # if this is changed to "lemon-", the programs generated will be named
 # lemon-doom, lemon-heretic, etc.
 
-set(PROGRAM_PREFIX "chocolate-"
+set(PROGRAM_PREFIX "thanatos-"
     CACHE STRING "Change this when you create your awesome forked version")
 
 configure_file(config.h.in config.h)

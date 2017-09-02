@@ -25,6 +25,9 @@
 #include "d_event.h"
 #include "m_cheat.h"
 
+namespace theta
+{
+
 // Size of statusbar.
 // Now sensitive for scaling.
 #define ST_HEIGHT	32
@@ -85,5 +88,6 @@ extern cheatseq_t cheat_choppers;
 extern cheatseq_t cheat_clev;
 extern cheatseq_t cheat_mypos;
 
+}
 
 #endif

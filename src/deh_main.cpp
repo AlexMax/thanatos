@@ -29,6 +29,9 @@
 #include "deh_defs.h"
 #include "deh_io.h"
 
+namespace theta
+{
+
 extern deh_section_t *deh_section_types[];
 extern const char *deh_signatures[];
 
@@ -488,3 +491,4 @@ void DEH_ParseCommandLine(void)
     }
 }
 
+}

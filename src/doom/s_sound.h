@@ -23,6 +23,9 @@
 #include "p_mobj.h"
 #include "sounds.h"
 
+namespace theta
+{
+
 //
 // Initializes sound stuff, including volume
 // Sets channels, SFX and music volume,
@@ -84,6 +87,8 @@ void S_SetMusicVolume(int volume);
 void S_SetSfxVolume(int volume);
 
 extern int snd_channels;
+
+}
 
 #endif
 

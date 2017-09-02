@@ -50,6 +50,9 @@
 
 #include "wi_stuff.h"
 
+namespace theta
+{
+
 //
 // Data needed to add patches to full screen intermission pics.
 // Patches are statistics messages, and animations.
@@ -146,7 +149,7 @@ struct Animation
     int		data2; 
 
     // actual graphics for frames of animations
-    std::vector<std::reference_wrapper<const theta::video::Graphic>> p;
+    std::vector<std::reference_wrapper<const video::Graphic>> p;
 
     // following must be initialized to zero before use!
 
@@ -264,11 +267,11 @@ static std::array<std::size_t, NUMEPISODES> NUMANIMS
     epsd2animinfo.size(),
 };
 
-static std::array<theta::ArrayView<Animation>, NUMEPISODES - 1> anims
+static std::array<ArrayView<Animation>, NUMEPISODES - 1> anims
 {
-    theta::ArrayView<Animation>(epsd0animinfo),
-    theta::ArrayView<Animation>(epsd1animinfo),
-    theta::ArrayView<Animation>(epsd2animinfo),
+    ArrayView<Animation>(epsd0animinfo),
+    ArrayView<Animation>(epsd1animinfo),
+    ArrayView<Animation>(epsd2animinfo),
 };
 
 
@@ -340,55 +343,55 @@ static patch_t*		yah[3] = { NULL, NULL, NULL };
 static patch_t*		splat[2] = { NULL, NULL };
 
 // %, : graphics
-static const theta::video::Graphic* percent;
-static const theta::video::Graphic* colon;
+static const video::Graphic* percent;
+static const video::Graphic* colon;
 
 // 0-9 graphic
-static std::vector<std::reference_wrapper<const theta::video::Graphic>> num;
+static std::vector<std::reference_wrapper<const video::Graphic>> num;
 
 // minus sign
-static const theta::video::Graphic* wiminus;
+static const video::Graphic* wiminus;
 
 // "Finished!" graphics
-static const theta::video::Graphic* finished;
+static const video::Graphic* finished;
 
 // "Entering" graphic
-static const theta::video::Graphic* entering;
+static const video::Graphic* entering;
 
 // "secret"
-static const theta::video::Graphic* sp_secret;
+static const video::Graphic* sp_secret;
 
  // "Kills", "Scrt", "Items", "Frags"
-static const theta::video::Graphic* kills;
-static const theta::video::Graphic* secret;
-static const theta::video::Graphic* items;
-static const theta::video::Graphic* frags;
+static const video::Graphic* kills;
+static const video::Graphic* secret;
+static const video::Graphic* items;
+static const video::Graphic* frags;
 
 // Time sucks.
-static const theta::video::Graphic* timepatch;
-static const theta::video::Graphic* par;
-static const theta::video::Graphic* sucks;
+static const video::Graphic* timepatch;
+static const video::Graphic* par;
+static const video::Graphic* sucks;
 
 // "killers", "victims"
-static const theta::video::Graphic* killers;
-static const theta::video::Graphic* victims;
+static const video::Graphic* killers;
+static const video::Graphic* victims;
 
 // "Total", your face, your dead face
-static const theta::video::Graphic* total;
-static const theta::video::Graphic* star;
-static const theta::video::Graphic* bstar;
+static const video::Graphic* total;
+static const video::Graphic* star;
+static const video::Graphic* bstar;
 
 // "red P[1..MAXPLAYERS]"
-static std::vector<std::reference_wrapper<const theta::video::Graphic>> p;
+static std::vector<std::reference_wrapper<const video::Graphic>> p;
 
 // "gray P[1..MAXPLAYERS]"
-static std::vector<std::reference_wrapper<const theta::video::Graphic>> bp;
+static std::vector<std::reference_wrapper<const video::Graphic>> bp;
 
  // Name graphics of each level (centered)
-static std::vector<std::reference_wrapper<const theta::video::Graphic>> lnames;
+static std::vector<std::reference_wrapper<const video::Graphic>> lnames;
 
 // Buffer storing the backdrop
-static const theta::video::Graphic* background;
+static const video::Graphic* background;
 
 //
 // CODE
@@ -397,7 +400,7 @@ static const theta::video::Graphic* background;
 // slam background
 void WI_slamBackground(void)
 {
-    theta::video::DrawPageGraphic(*background);
+    video::DrawPageGraphic(*background);
 }
 
 // The ticker is used to detect keys
@@ -416,14 +419,14 @@ void WI_drawLF(void)
     if (gamemode != commercial || wbs->last < NUMCMAPS)
     {
         // draw <LevelName> 
-        theta::video::DrawScaledGraphic(
+        video::DrawScaledGraphic(
             (VIRTUALWIDTH - lnames[wbs->last].get().width) / 2, y,
             lnames[wbs->last].get());
 
         // draw "Finished!"
         y += (5 * lnames[wbs->last].get().height) / 4;
 
-        theta::video::DrawScaledGraphic(
+        video::DrawScaledGraphic(
             (VIRTUALWIDTH - finished->width) / 2, y, *finished);
     }
     else if (wbs->last >= NUMCMAPS)
@@ -440,12 +443,12 @@ void WI_drawEL(void)
     int y = WI_TITLEY;
 
     // draw "Entering"
-    theta::video::DrawScaledGraphic((VIRTUALWIDTH - entering->width) / 2, y, *entering);
+    video::DrawScaledGraphic((VIRTUALWIDTH - entering->width) / 2, y, *entering);
 
     // draw level
     y += (5 * lnames[wbs->next].get().height) / 4;
 
-    theta::video::DrawScaledGraphic(
+    video::DrawScaledGraphic(
         (VIRTUALWIDTH - lnames[wbs->next].get().width) / 2, y, lnames[wbs->next]);
 }
 
@@ -596,7 +599,7 @@ void WI_drawAnimatedBack(void)
 
         if (a->ctr >= 0)
         {
-            theta::video::DrawScaledGraphic(a->loc.x, a->loc.y, a->p[a->ctr]);
+            video::DrawScaledGraphic(a->loc.x, a->loc.y, a->p[a->ctr]);
         }
     }
 }
@@ -649,14 +652,14 @@ int WI_drawNum(int x, int y, int n, int digits)
     while (digits--)
     {
         x -= fontwidth;
-        theta::video::DrawScaledGraphic(x, y, num[ n % 10 ]);
+        video::DrawScaledGraphic(x, y, num[ n % 10 ]);
         n /= 10;
     }
 
     // draw a minus sign if necessary
     if (neg)
     {
-        theta::video::DrawScaledGraphic(x -= 8, y, *wiminus);
+        video::DrawScaledGraphic(x -= 8, y, *wiminus);
     }
 
     return x;
@@ -669,7 +672,7 @@ void WI_drawPercent(int x, int y, int p)
         return;
     }
 
-    theta::video::DrawScaledGraphic(x, y, *percent);
+    video::DrawScaledGraphic(x, y, *percent);
     WI_drawNum(x, y, p, -1);
 }
 
@@ -699,21 +702,21 @@ void WI_drawTime(int x, int y, int t)
             // draw
             if (div == 60 || t / div)
             {
-                theta::video::DrawScaledGraphic(x, y, *colon);
+                video::DrawScaledGraphic(x, y, *colon);
             }
         } while (t / div);
     }
     else
     {
         // "sucks"
-        theta::video::DrawScaledGraphic(x - sucks->width, y, *sucks);
+        video::DrawScaledGraphic(x - sucks->width, y, *sucks);
     }
 }
 
+void WI_unloadData(void);
 
 void WI_End(void)
 {
-    void WI_unloadData(void);
     WI_unloadData();
 }
 
@@ -984,11 +987,11 @@ void WI_drawDeathmatchStats(void)
     WI_drawLF();
 
     // draw stat titles (top line)
-    theta::video::DrawScaledGraphic(DM_TOTALSX - total->width / 2,
+    video::DrawScaledGraphic(DM_TOTALSX - total->width / 2,
         DM_MATRIXY - WI_SPACINGY + 10, *total);
 
-    theta::video::DrawScaledGraphic(DM_KILLERSX, DM_KILLERSY, *killers);
-    theta::video::DrawScaledGraphic(DM_VICTIMSX, DM_VICTIMSY, *victims);
+    video::DrawScaledGraphic(DM_KILLERSX, DM_KILLERSY, *killers);
+    video::DrawScaledGraphic(DM_VICTIMSX, DM_VICTIMSY, *victims);
 
     // draw P?
     int x = DM_MATRIXX + DM_SPACINGX;
@@ -998,18 +1001,18 @@ void WI_drawDeathmatchStats(void)
     {
         if (playeringame[i])
         {
-            theta::video::DrawScaledGraphic(x - p[i].get().width / 2,
+            video::DrawScaledGraphic(x - p[i].get().width / 2,
                 DM_MATRIXY - WI_SPACINGY, p[i]);
 
-            theta::video::DrawScaledGraphic(DM_MATRIXX - p[i].get().width / 2,
+            video::DrawScaledGraphic(DM_MATRIXX - p[i].get().width / 2,
                 y, p[i]);
 
             if (i == me)
             {
-                theta::video::DrawScaledGraphic(x - p[i].get().width / 2,
+                video::DrawScaledGraphic(x - p[i].get().width / 2,
                     DM_MATRIXY - WI_SPACINGY, *bstar);
 
-                theta::video::DrawScaledGraphic(DM_MATRIXX - p[i].get().width / 2,
+                video::DrawScaledGraphic(DM_MATRIXX - p[i].get().width / 2,
                     y, *star);
             }
         }
@@ -1251,18 +1254,18 @@ void WI_drawNetgameStats(void)
     WI_drawLF();
 
     // draw stat titles (top line)
-    theta::video::DrawScaledGraphic(NG_STATSX + NG_SPACINGX - kills->width,
+    video::DrawScaledGraphic(NG_STATSX + NG_SPACINGX - kills->width,
         NG_STATSY, *kills);
 
-    theta::video::DrawScaledGraphic(NG_STATSX + 2 * NG_SPACINGX - items->width,
+    video::DrawScaledGraphic(NG_STATSX + 2 * NG_SPACINGX - items->width,
         NG_STATSY, *items);
 
-    theta::video::DrawScaledGraphic(NG_STATSX + 3 * NG_SPACINGX - secret->width,
+    video::DrawScaledGraphic(NG_STATSX + 3 * NG_SPACINGX - secret->width,
         NG_STATSY, *secret);
 
     if (dofrags)
     {
-        theta::video::DrawScaledGraphic(NG_STATSX + 4 * NG_SPACINGX - frags->width,
+        video::DrawScaledGraphic(NG_STATSX + 4 * NG_SPACINGX - frags->width,
             NG_STATSY, *frags);
     }
 
@@ -1277,11 +1280,11 @@ void WI_drawNetgameStats(void)
         }
 
         x = NG_STATSX;
-        theta::video::DrawScaledGraphic(x - p[i].get().width, y, p[i]);
+        video::DrawScaledGraphic(x - p[i].get().width, y, p[i]);
 
         if (i == me)
         {
-            theta::video::DrawScaledGraphic(x - p[i].get().width, y, *star);
+            video::DrawScaledGraphic(x - p[i].get().width, y, *star);
         }
 
         x += NG_SPACINGX;
@@ -1433,21 +1436,21 @@ void WI_drawStats(void)
 
     WI_drawLF();
 
-    theta::video::DrawScaledGraphic(SP_STATSX, SP_STATSY, *kills);
+    video::DrawScaledGraphic(SP_STATSX, SP_STATSY, *kills);
     WI_drawPercent(VIRTUALWIDTH - SP_STATSX, SP_STATSY, cnt_kills[0]);
 
-    theta::video::DrawScaledGraphic(SP_STATSX, SP_STATSY + lh, *items);
+    video::DrawScaledGraphic(SP_STATSX, SP_STATSY + lh, *items);
     WI_drawPercent(VIRTUALWIDTH - SP_STATSX, SP_STATSY + lh, cnt_items[0]);
 
-    theta::video::DrawScaledGraphic(SP_STATSX, SP_STATSY + 2 * lh, *sp_secret);
+    video::DrawScaledGraphic(SP_STATSX, SP_STATSY + 2 * lh, *sp_secret);
     WI_drawPercent(VIRTUALWIDTH - SP_STATSX, SP_STATSY + 2 * lh, cnt_secret[0]);
 
-    theta::video::DrawScaledGraphic(SP_TIMEX, SP_TIMEY, *timepatch);
+    video::DrawScaledGraphic(SP_TIMEX, SP_TIMEY, *timepatch);
     WI_drawTime(VIRTUALWIDTH / 2 - SP_TIMEX, SP_TIMEY, cnt_time);
 
     if (wbs->epsd < 3)
     {
-        theta::video::DrawScaledGraphic(VIRTUALWIDTH / 2 + SP_TIMEX, SP_TIMEY, *par);
+        video::DrawScaledGraphic(VIRTUALWIDTH / 2 + SP_TIMEX, SP_TIMEY, *par);
         WI_drawTime(VIRTUALWIDTH - SP_TIMEX, SP_TIMEY, cnt_par);
     }
 }
@@ -1536,7 +1539,7 @@ static void WI_loadData2()
         for (i = 0;i < NUMCMAPS;i++)
         {
             DEH_snprintf(name, 9, "CWILV%2.2d", i);
-            lnames.emplace_back(std::cref(theta::video::GraphicsManager::Instance().LoadPatch(name)));
+            lnames.emplace_back(std::cref(video::GraphicsManager::Instance().LoadPatch(name)));
         }
     }
     else
@@ -1544,7 +1547,7 @@ static void WI_loadData2()
         for (i = 0;i < NUMMAPS;i++)
         {
             DEH_snprintf(name, 9, "WILV%d%d", wbs->epsd, i);
-            lnames.emplace_back(std::cref(theta::video::GraphicsManager::Instance().LoadPatch(name)));
+            lnames.emplace_back(std::cref(video::GraphicsManager::Instance().LoadPatch(name)));
         }
 
         // you are here
@@ -1569,7 +1572,7 @@ static void WI_loadData2()
                     {
                         // animations
                         DEH_snprintf(name, 9, "WIA%d%.2d%.2d", wbs->epsd, j, i);
-                        a->p.emplace_back(std::cref(theta::video::GraphicsManager::Instance().LoadPatch(name)));
+                        a->p.emplace_back(std::cref(video::GraphicsManager::Instance().LoadPatch(name)));
                     }
                     else
                     {
@@ -1582,33 +1585,33 @@ static void WI_loadData2()
     }
 
     // More hacks on minus sign.
-    wiminus = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIMINUS"));
+    wiminus = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WIMINUS"));
 
     num.clear();
     for (i = 0;i < 10;i++)
     {
         // numbers 0-9
         DEH_snprintf(name, 9, "WINUM%d", i);
-        num.emplace_back(std::cref(theta::video::GraphicsManager::Instance().LoadPatch(name)));
+        num.emplace_back(std::cref(video::GraphicsManager::Instance().LoadPatch(name)));
     }
 
     // percent sign
-    percent = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIPCNT"));
+    percent = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WIPCNT"));
 
     // "finished"
-    finished = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIF"));
+    finished = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WIF"));
 
     // "entering"
-    entering = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIENTER"));
+    entering = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WIENTER"));
 
     // "kills"
-    kills = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOSTK"));
+    kills = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOSTK"));
 
     // "scrt"
-    secret = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOSTS"));
+    secret = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOSTS"));
 
      // "secret"
-    sp_secret = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WISCRT2"));
+    sp_secret = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WISCRT2"));
 
     // french wad uses WIOBJ (?)
     if (W_CheckNumForName(DEH_String("WIOBJ")) >= 0)
@@ -1616,39 +1619,39 @@ static void WI_loadData2()
     	// "items"
         if (netgame && !deathmatch)
         {
-            items = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOBJ"));
+            items = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOBJ"));
         }
         else
         {
-            items = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOSTI"));
+            items = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOSTI"));
         }
     } else {
-        items = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOSTI"));
+        items = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOSTI"));
     }
 
     // "frgs"
-    frags = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIFRGS"));
+    frags = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WIFRGS"));
 
     // ":"
-    colon = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WICOLON"));
+    colon = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WICOLON"));
 
     // "time"
-    timepatch = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WITIME"));
+    timepatch = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WITIME"));
 
     // "sucks"
-    sucks = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WISUCKS"));
+    sucks = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WISUCKS"));
 
     // "par"
-    par = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIPAR"));
+    par = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WIPAR"));
 
     // "killers" (vertical)
-    killers = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIKILRS"));
+    killers = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WIKILRS"));
 
     // "victims" (horiz)
-    victims = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIVCTMS"));
+    victims = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WIVCTMS"));
 
     // "total"
-    total = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIMSTT"));
+    total = &video::GraphicsManager::Instance().LoadPatch(DEH_String("WIMSTT"));
 
     p.clear();
     bp.clear();
@@ -1656,11 +1659,11 @@ static void WI_loadData2()
     {
         // "1,2,3,4"
         DEH_snprintf(name, 9, "STPB%d", i);
-        p.emplace_back(std::cref(theta::video::GraphicsManager::Instance().LoadPatch(name)));
+        p.emplace_back(std::cref(video::GraphicsManager::Instance().LoadPatch(name)));
 
         // "1,2,3,4"
         DEH_snprintf(name, 9, "WIBP%d", i+1);
-        bp.emplace_back(std::cref(theta::video::GraphicsManager::Instance().LoadPatch(name)));
+        bp.emplace_back(std::cref(video::GraphicsManager::Instance().LoadPatch(name)));
     }
 
     // Background image
@@ -1679,7 +1682,7 @@ static void WI_loadData2()
     }
 
     // Draw backdrop and save to a temporary buffer
-    background = &theta::video::GraphicsManager::Instance().LoadPatch(name);
+    background = &video::GraphicsManager::Instance().LoadPatch(name);
 }
 
 void WI_loadData(void)
@@ -1700,10 +1703,10 @@ void WI_loadData(void)
     // them with the status bar code
 
     // your face
-    star = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("STFST01"));
+    star = &video::GraphicsManager::Instance().LoadPatch(DEH_String("STFST01"));
 
     // dead face
-    star = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("STFDEAD0"));
+    star = &video::GraphicsManager::Instance().LoadPatch(DEH_String("STFDEAD0"));
 }
 
 static void WI_unloadCallback(const char *name, patch_t **variable)
@@ -1803,4 +1806,6 @@ void WI_Start(wbstartstruct_t* wbstartstruct)
 	WI_initNetgameStats();
     else
 	WI_initStats();
+}
+
 }

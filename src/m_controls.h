@@ -17,6 +17,9 @@
 #ifndef __M_CONTROLS_H__
 #define __M_CONTROLS_H__
  
+namespace theta
+{
+
 extern int key_right;
 extern int key_left;
 
@@ -167,6 +170,8 @@ void M_BindMenuControls(void);
 void M_BindChatControls(unsigned int num_players);
 
 void M_ApplyPlatformDefaults(void);
+
+}
 
 #endif /* #ifndef __M_CONTROLS_H__ */
 

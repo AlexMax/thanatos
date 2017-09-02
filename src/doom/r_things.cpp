@@ -35,7 +35,8 @@
 
 #include "doomstat.h"
 
-
+namespace theta
+{
 
 #define MINZ				(FRACUNIT*4)
 
@@ -979,5 +980,5 @@ void R_DrawMasked (void)
 	R_DrawPlayerSprites ();
 }
 
-
+}
 

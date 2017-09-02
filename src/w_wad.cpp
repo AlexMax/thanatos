@@ -35,6 +35,9 @@
 
 #include "w_wad.h"
 
+namespace theta
+{
+
 typedef PACKED_STRUCT (
 {
     // Should be "IWAD" or "PWAD".
@@ -624,3 +627,4 @@ void W_Reload(void)
     W_GenerateHashTable();
 }
 
+}

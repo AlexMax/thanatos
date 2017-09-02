@@ -22,6 +22,9 @@
 
 #include "SDL_endian.h"
 
+namespace theta
+{
+
 // Endianess handling.
 // WAD files are stored little endian.
 
@@ -38,6 +41,8 @@
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #define SYS_BIG_ENDIAN
 #endif
+
+}
 
 #endif
 

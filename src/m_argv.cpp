@@ -26,6 +26,9 @@
 #include "m_misc.h"
 #include "m_argv.h"  // haleyjd 20110212: warning fix
 
+namespace theta
+{
+
 int		myargc;
 char**		myargv;
 
@@ -259,3 +262,4 @@ char *M_GetExecutableName(void)
     }
 }
 
+}

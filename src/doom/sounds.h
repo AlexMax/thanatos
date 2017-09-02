@@ -22,6 +22,9 @@
 
 #include "i_sound.h"
 
+namespace theta
+{
+
 // the complete set of sound effects
 extern sfxinfo_t	S_sfx[];
 
@@ -223,5 +226,7 @@ typedef enum
     sfx_radio,
     NUMSFX
 } sfxenum_t;
+
+}
 
 #endif

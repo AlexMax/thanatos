@@ -27,7 +27,8 @@
 
 
 
-
+namespace theta
+{
 
 //
 // Refresh internal data structures,
@@ -122,5 +123,6 @@ extern int		sscount;
 extern visplane_t*	floorplane;
 extern visplane_t*	ceilingplane;
 
+}
 
 #endif

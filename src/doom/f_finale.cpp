@@ -37,6 +37,9 @@
 #include "doomstat.h"
 #include "r_state.h"
 
+namespace theta
+{
+
 typedef enum
 {
     F_STAGE_TEXT,
@@ -221,7 +224,7 @@ void F_Ticker (void)
 //
 
 #include "hu_stuff.h"
-extern const theta::video::Graphic* hu_font[HU_FONTSIZE];
+extern const video::Graphic* hu_font[HU_FONTSIZE];
 
 
 void F_TextWrite (void)
@@ -286,7 +289,7 @@ void F_TextWrite (void)
         w = hu_font[c]->width;
 	if (cx+w > SCREENWIDTH)
 	    break;
-        theta::video::DrawScaledGraphic(cx, cy, *hu_font[c]);
+        video::DrawScaledGraphic(cx, cy, *hu_font[c]);
 	cx+=w;
     }
 	
@@ -527,7 +530,7 @@ void F_CastPrint (const char* text)
 	}
 		
 	w = SHORT (hu_font[c]->width);
-        theta::video::DrawScaledGraphic(cx, 180, *hu_font[c]);
+        video::DrawScaledGraphic(cx, 180, *hu_font[c]);
 	cx+=w;
     }
 	
@@ -715,4 +718,4 @@ void F_Drawer (void)
     }
 }
 
-
+}

@@ -26,6 +26,9 @@
 
 #include <stdio.h>
 
+namespace theta
+{
+
 //
 // ZONE MEMORY
 // PU - purge tags.
@@ -69,5 +72,6 @@ unsigned int Z_ZoneSize(void);
 #define Z_ChangeTag(p,t)                                       \
     Z_ChangeTag2((p), (t), __FILE__, __LINE__)
 
+}
 
 #endif

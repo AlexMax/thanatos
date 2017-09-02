@@ -144,8 +144,6 @@ public:
 
 }
 
-}
-
 
 //
 // Widget creation, access, and update routines
@@ -156,5 +154,7 @@ public:
 //  everything else is done somewhere else.
 //
 void STlib_init(void);
+
+}
 
 #endif

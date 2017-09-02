@@ -24,6 +24,9 @@
 #include "i_swap.h"
 #include "midifile.h"
 
+namespace theta
+{
+
 #define HEADER_CHUNK_ID "MThd"
 #define TRACK_CHUNK_ID  "MTrk"
 #define MAX_BUFFER_SIZE 0x10000
@@ -717,6 +720,8 @@ unsigned int MIDI_GetFileTimeDivision(midi_file_t *file)
 void MIDI_RestartIterator(midi_track_iter_t *iter)
 {
     iter->position = 0;
+}
+
 }
 
 #ifdef TEST

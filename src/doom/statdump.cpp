@@ -29,6 +29,9 @@
 
 #include "statdump.h"
 
+namespace theta
+{
+
 /* Par times for E1M1-E1M9. */
 static const int doom1_par_times[] =
 {
@@ -354,3 +357,4 @@ void StatDump(void)
     }
 }
 
+}

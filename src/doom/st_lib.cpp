@@ -35,6 +35,8 @@
 #include "st_lib.h"
 #include "r_local.h"
 
+namespace theta
+{
 
 // in AM_map.c
 extern boolean		automapactive; 
@@ -46,15 +48,12 @@ extern boolean		automapactive;
 // Hack display negative frags.
 //  Loads and store the stminus lump.
 //
-const theta::video::Graphic*    sttminus;
+const video::Graphic*    sttminus;
 
 void STlib_init(void)
 {
-    sttminus = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("STTMINUS"));
+    sttminus = &video::GraphicsManager::Instance().LoadPatch(DEH_String("STTMINUS"));
 }
-
-namespace theta
-{
 
 namespace status
 {

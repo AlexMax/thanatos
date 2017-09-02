@@ -37,7 +37,10 @@
 #include "doomtype.h"
 
 #include "m_fixed.h"
-	
+
+namespace theta
+{
+
 #define FINEANGLES		8192
 #define FINEMASK		(FINEANGLES-1)
 
@@ -92,6 +95,8 @@ extern const angle_t tantoangle[SLOPERANGE+1];
 int SlopeDiv(unsigned int num, unsigned int den);
 
 double AngleToDeg(angle_t a);
+
+}
 
 #endif
 

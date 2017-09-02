@@ -24,6 +24,9 @@
 
 #include "i_cdmus.h"
 
+namespace theta
+{
+
 int cd_Error;
 
 int I_CDMusInit(void)
@@ -73,3 +76,4 @@ int I_CDMusTrackLength(int track_num)
     return 0;
 }
 
+}

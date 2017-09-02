@@ -31,6 +31,9 @@
 #include "m_config.h"
 #include "m_misc.h"
 
+namespace theta
+{
+
 // When an axis is within the dead zone, it is set to zero.
 // This is 5% of the full range:
 
@@ -384,3 +387,4 @@ void I_BindJoystickVariables(void)
     }
 }
 
+}

@@ -38,6 +38,9 @@
 
 #include "z_zone.h"
 
+namespace theta
+{
+
 //
 // DEFAULTS
 //
@@ -2309,3 +2312,4 @@ const char *M_GetSaveGameDir(const char *iwadname)
     return savegamedir;
 }
 
+}

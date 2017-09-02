@@ -27,6 +27,9 @@
 
 #include "deh_mapping.h"
 
+namespace theta
+{
+
 static deh_mapping_entry_t *GetMappingEntryByName(deh_context_t *context,
                                                   deh_mapping_t *mapping,
                                                   char *name)
@@ -198,3 +201,4 @@ void DEH_StructSHA1Sum(sha1_context_t *context, deh_mapping_t *mapping,
     }
 }
 
+}

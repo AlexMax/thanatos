@@ -25,6 +25,9 @@
 #include "w_checksum.h"
 #include "w_wad.h"
 
+namespace theta
+{
+
 static wad_file_t **open_wadfiles = NULL;
 static int num_open_wadfiles = 0;
 
@@ -85,3 +88,4 @@ void W_Checksum(sha1_digest_t digest)
     SHA1_Final(digest, &sha1_context);
 }
 
+}

@@ -20,6 +20,8 @@
 
 #include "d_event.h"
 
+namespace theta
+{
 
 //
 // Globally visible constants.
@@ -54,6 +56,8 @@ char HU_dequeueChatChar(void);
 void HU_Erase(void);
 
 extern const char *chat_macros[10];
+
+}
 
 #endif
 

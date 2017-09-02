@@ -22,6 +22,9 @@
 
 #include "doomtype.h"
 
+namespace theta
+{
+
 // Patches.
 // A patch holds one or more columns.
 // Patches are used for sprites and all masked pictures,
@@ -47,6 +50,8 @@ typedef PACKED_STRUCT (
 
 // column_t is a list of 0 or more post_t, (byte)-1 terminated
 typedef post_t	column_t;
+
+}
 
 #endif 
 

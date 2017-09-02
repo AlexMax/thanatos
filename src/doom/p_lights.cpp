@@ -29,6 +29,9 @@
 // State.
 #include "r_state.h"
 
+namespace theta
+{
+
 //
 // FIRELIGHT FLICKER
 //
@@ -348,3 +351,4 @@ void P_SpawnGlowingLight(sector_t*	sector)
     sector->special = 0;
 }
 
+}

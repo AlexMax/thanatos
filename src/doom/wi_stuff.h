@@ -23,6 +23,9 @@
 
 #include "doomdef.h"
 
+namespace theta
+{
+
 // States for the intermission
 
 typedef enum
@@ -44,5 +47,7 @@ void WI_Start(wbstartstruct_t*	 wbstartstruct);
 
 // Shut down the intermission screen
 void WI_End(void);
+
+}
 
 #endif

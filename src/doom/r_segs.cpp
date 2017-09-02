@@ -32,6 +32,8 @@
 #include "r_local.h"
 #include "r_sky.h"
 
+namespace theta
+{
 
 // OPTIMIZE: closed two sided lines as single sided
 
@@ -751,3 +753,4 @@ R_StoreWallRange
     ds_p++;
 }
 
+}

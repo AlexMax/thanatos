@@ -24,6 +24,9 @@
 #include "r_local.h"
 #endif
 
+namespace theta
+{
+
 #define FLOATSPEED		(FRACUNIT*4)
 
 
@@ -287,6 +290,8 @@ P_DamageMobj
   mobj_t*	source,
   int		damage );
 
+
+}
 
 //
 // P_SPEC

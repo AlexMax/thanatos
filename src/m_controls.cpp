@@ -22,6 +22,9 @@
 #include "m_config.h"
 #include "m_misc.h"
 
+namespace theta
+{
+
 //
 // Keyboard controls
 //
@@ -407,3 +410,4 @@ void M_ApplyPlatformDefaults(void)
     // no-op. Add your platform-specific patches here.
 }
 
+}

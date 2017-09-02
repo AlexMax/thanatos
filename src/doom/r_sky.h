@@ -20,7 +20,8 @@
 #ifndef __R_SKY__
 #define __R_SKY__
 
-
+namespace theta
+{
 
 // SKY, store the number for name.
 #define			SKYFLATNAME  "F_SKY1"
@@ -33,5 +34,7 @@ extern int		skytexturemid;
 
 // Called whenever the view size changes.
 void R_InitSkyMap (void);
+
+}
 
 #endif

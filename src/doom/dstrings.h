@@ -26,6 +26,9 @@
 
 #include "d_englsh.h"
 
+namespace theta
+{
+
 // Misc. other strings.
 #define SAVEGAMENAME	"doomsav"
 
@@ -37,5 +40,6 @@
 extern const char *doom1_endmsg[];
 extern const char *doom2_endmsg[];
 
+}
 
 #endif

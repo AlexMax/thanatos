@@ -16,6 +16,9 @@
 //	Random number LUT.
 //
 
+namespace theta
+{
+
 //
 // M_Random
 // Returns a 0-255 number
@@ -69,4 +72,6 @@ int P_SubRandom (void)
 {
     int r = P_Random();
     return r - P_Random();
+}
+
 }

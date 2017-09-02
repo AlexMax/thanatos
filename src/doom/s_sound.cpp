@@ -37,6 +37,9 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+namespace theta
+{
+
 // when to clip out sounds
 // Does not fit the large outdoor areas.
 
@@ -705,3 +708,4 @@ void S_StopMusic(void)
     }
 }
 
+}

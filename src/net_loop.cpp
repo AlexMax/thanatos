@@ -25,6 +25,9 @@
 #include "net_loop.h"
 #include "net_packet.h"
 
+namespace theta
+{
+
 #define MAX_QUEUE_SIZE 16
 
 typedef struct
@@ -228,4 +231,4 @@ net_module_t net_loop_server_module =
     NET_SV_ResolveAddress,
 };
 
-
+}

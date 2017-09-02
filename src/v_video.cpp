@@ -42,6 +42,9 @@
 #include <png.h>
 #endif
 
+namespace theta
+{
+
 // TODO: There are separate RANGECHECK defines for different games, but this
 // is common code. Fix this.
 #define RANGECHECK
@@ -484,9 +487,6 @@ void V_DrawShadowedPatch(int x, int y, patch_t *patch)
     }
 }
 
-namespace theta
-{
-
 namespace video
 {
 
@@ -518,8 +518,6 @@ void DrawPageGraphic(const Graphic& graphic)
 void DrawPageLump(const std::string& lump)
 {
     system::renderer->SetPageGraphic(GraphicsManager::Instance().LoadPatch(lump));
-}
-
 }
 
 }
@@ -1046,3 +1044,4 @@ void V_DrawMouseSpeedBox(int speed)
     }
 }
 
+}

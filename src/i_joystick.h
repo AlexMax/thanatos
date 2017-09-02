@@ -19,6 +19,9 @@
 #ifndef __I_JOYSTICK__
 #define __I_JOYSTICK__
 
+namespace theta
+{
+
 // Number of "virtual" joystick buttons defined in configuration files.
 // This needs to be at least as large as the number of different key
 // bindings supported by the higher-level game code (joyb* variables).
@@ -65,6 +68,8 @@ void I_ShutdownJoystick(void);
 void I_UpdateJoystick(void);
 
 void I_BindJoystickVariables(void);
+
+}
 
 #endif /* #ifndef __I_JOYSTICK__ */
 

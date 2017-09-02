@@ -33,6 +33,9 @@
 #include "m_misc.h"
 #include "r_state.h"
 
+namespace theta
+{
+
 FILE *save_stream;
 int savegamelength;
 boolean savegame_error;
@@ -1898,3 +1901,4 @@ void P_UnArchiveSpecials (void)
 
 }
 
+}

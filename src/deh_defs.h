@@ -20,6 +20,9 @@
 
 #include "sha1.h"
 
+namespace theta
+{
+
 typedef struct deh_context_s deh_context_t;
 typedef struct deh_section_s deh_section_t;
 typedef void (*deh_section_init_t)(void);
@@ -53,6 +56,8 @@ struct deh_section_s
 
     deh_sha1_hash_t sha1_hash;
 };
+
+}
 
 #endif /* #ifndef DEH_DEFS_H */
 

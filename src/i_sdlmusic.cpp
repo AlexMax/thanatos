@@ -42,6 +42,9 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+namespace theta
+{
+
 #define MAXMIDLENGTH (96 * 1024)
 #define MID_HEADER_MAGIC "MThd"
 #define MUS_HEADER_MAGIC "MUS\x1a"
@@ -1310,3 +1313,4 @@ music_module_t music_sdl_module =
     I_SDL_PollMusic,
 };
 
+}

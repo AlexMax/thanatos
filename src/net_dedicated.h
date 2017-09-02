@@ -18,7 +18,12 @@
 #ifndef NET_DEDICATED_H
 #define NET_DEDICATED_H
 
+namespace theta
+{
+
 void NET_DedicatedServer(void);
+
+}
 
 #endif /* #ifndef NET_DEDICATED_H */
 

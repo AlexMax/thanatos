@@ -20,6 +20,9 @@
 #ifndef __D_ENGLSH__
 #define __D_ENGLSH__
 
+namespace theta
+{
+
 //
 //	Printed strings for translation
 //
@@ -689,5 +692,6 @@
 #define CC_CYBER	"THE CYBERDEMON"
 #define CC_HERO	"OUR HERO"
 
+}
 
 #endif

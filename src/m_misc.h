@@ -25,6 +25,9 @@
 
 #include "doomtype.h"
 
+namespace theta
+{
+
 boolean M_WriteFile(char *name, void *source, int length);
 int M_ReadFile(char *name, byte **buffer);
 void M_MakeDirectory(const char *dir);
@@ -48,6 +51,8 @@ boolean M_StringEndsWith(const char *s, const char *suffix);
 int M_vsnprintf(char *buf, size_t buf_len, const char *s, va_list args);
 int M_snprintf(char *buf, size_t buf_len, const char *s, ...);
 char *M_OEMToUTF8(const char *ansi);
+
+}
 
 #endif
 

@@ -20,6 +20,9 @@
 
 #include "dstrings.h"
 
+namespace theta
+{
+
 const char *doom1_endmsg[] =
 {
   "are you sure you want to\nquit this great game?",
@@ -68,6 +71,6 @@ char* endmsg[] =
 
 #endif
 
-  
+}
 
 

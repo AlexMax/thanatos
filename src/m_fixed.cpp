@@ -26,7 +26,8 @@
 #include "m_fixed.h"
 
 
-
+namespace theta
+{
 
 // Fixme. __USE_C_FIXED__ or something.
 
@@ -79,3 +80,4 @@ fixed_t FloatToFixed(double d)
     return (whole << FRACBITS) + frac;
 }
 
+}

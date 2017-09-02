@@ -26,6 +26,9 @@
 #include "deh_io.h"
 #include "deh_main.h"
 
+namespace theta
+{
+
 static actionf_t codeptrs[NUMSTATES];
 
 static int CodePointerIndex(actionf_t *ptr)
@@ -140,3 +143,4 @@ deh_section_t deh_section_pointer =
     DEH_PointerSHA1Sum,
 };
 
+}

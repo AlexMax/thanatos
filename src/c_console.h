@@ -20,6 +20,9 @@
 
 #include "d_event.h"
 
+namespace theta
+{
+
 namespace console
 {
 
@@ -28,6 +31,8 @@ void printf(const char* format, ...);
 
 void Draw();
 boolean Responder(event_t* ev);
+
+}
 
 }
 

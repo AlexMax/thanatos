@@ -28,7 +28,8 @@
 
 #include "doomstat.h"
 
-
+namespace theta
+{
 
 // Index of the special effects (INVUL inverse) map.
 #define INVERSECOLORMAP		32
@@ -376,4 +377,4 @@ void P_PlayerThink (player_t* player)
 	player->fixedcolormap = 0;
 }
 
-
+}

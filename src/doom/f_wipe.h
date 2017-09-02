@@ -20,6 +20,9 @@
 #ifndef __F_WIPE_H__
 #define __F_WIPE_H__
 
+namespace theta
+{
+
 //
 //                       SCREEN WIPE PACKAGE
 //
@@ -59,5 +62,7 @@ wipe_ScreenWipe
   int		width,
   int		height,
   int		ticks );
+
+}
 
 #endif

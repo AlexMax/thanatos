@@ -20,6 +20,9 @@
 #include "doomtype.h"
 #include "d_mode.h"
 
+namespace theta
+{
+
 // Valid game mode/mission combinations, with the number of
 // episodes/maps for each.
 
@@ -210,3 +213,4 @@ const char *D_GameMissionString(GameMission_t mission)
     }
 }
 
+}

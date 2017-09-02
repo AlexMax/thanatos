@@ -26,6 +26,9 @@
 
 #include "info.h"
 
+namespace theta
+{
+
 DEH_BEGIN_MAPPING(thing_mapping, mobjinfo_t)
   DEH_MAPPING("ID #",                doomednum)
   DEH_MAPPING("Initial frame",       spawnstate)
@@ -129,3 +132,4 @@ deh_section_t deh_section_thing =
     DEH_ThingSHA1Sum,
 };
 
+}

@@ -17,6 +17,9 @@
 #ifndef NET_SERVER_H
 #define NET_SERVER_H
 
+namespace theta
+{
+
 // initialize server and wait for connections
 
 void NET_SV_Init(void);
@@ -37,6 +40,8 @@ void NET_SV_AddModule(net_module_t *module);
 // Register server with master server.
 
 void NET_SV_RegisterWithMaster(void);
+
+}
 
 #endif /* #ifndef NET_SERVER_H */
 

@@ -31,6 +31,9 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+namespace theta
+{
+
 static const iwad_t iwads[] =
 {
     { "doom2.wad",    doom2,     commercial, "Doom II" },
@@ -938,3 +941,4 @@ const char *D_SuggestGameName(GameMission_t mission, GameMode_t mode)
     return "Unknown game?";
 }
 
+}

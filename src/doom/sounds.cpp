@@ -24,6 +24,9 @@
 #include "doomtype.h"
 #include "sounds.h"
 
+namespace theta
+{
+
 //
 // Information about all the music
 //
@@ -227,3 +230,4 @@ sfxinfo_t S_sfx[] =
   SOUND("radio",  60),
 };
 
+}

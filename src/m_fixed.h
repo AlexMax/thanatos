@@ -21,7 +21,8 @@
 #define __M_FIXED__
 
 
-
+namespace theta
+{
 
 //
 // Fixed point, 32bit as 16.16.
@@ -37,5 +38,6 @@ fixed_t FixedDiv	(fixed_t a, fixed_t b);
 double FixedToFloat(fixed_t f);
 fixed_t FloatToFixed(double d);
 
+}
 
 #endif

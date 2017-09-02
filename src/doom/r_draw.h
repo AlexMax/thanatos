@@ -21,7 +21,8 @@
 #define __R_DRAW__
 
 
-
+namespace theta
+{
 
 extern lighttable_t*	dc_colormap;
 extern int		dc_x;
@@ -94,6 +95,6 @@ void R_FillBackScreen (void);
 // If the view size is not full screen, draws a border around it.
 void R_DrawViewBorder (void);
 
-
+}
 
 #endif

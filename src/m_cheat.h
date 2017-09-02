@@ -20,6 +20,9 @@
 #ifndef __M_CHEAT__
 #define __M_CHEAT__
 
+namespace theta
+{
+
 //
 // CHEAT SEQUENCE PACKAGE
 //
@@ -58,5 +61,6 @@ cht_GetParam
 ( cheatseq_t*		cht,
   char*			buffer );
 
+}
 
 #endif

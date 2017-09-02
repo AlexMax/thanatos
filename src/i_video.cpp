@@ -59,8 +59,6 @@ std::unique_ptr<RendererInterface> renderer;
 
 }
 
-}
-
 // These are (1) the window (or the full screen) that our game is rendered to
 // and (2) the renderer that scales the texture (see below) into this window.
 
@@ -169,7 +167,7 @@ static boolean nograbmouse_override = false;
 
 // The screen buffer; this is modified to draw things to the screen
 
-std::unique_ptr<theta::video::PalletedBuffer> I_VideoBuffer = nullptr;
+std::unique_ptr<video::PalletedBuffer> I_VideoBuffer = nullptr;
 
 // If true, game is running as a screensaver
 
@@ -747,7 +745,7 @@ void I_FinishUpdate(boolean& setsizeneeded)
                 AdjustWindowSize();
                 SDL_SetWindowSize(screen, window_width, window_height);
             }
-            theta::system::renderer->SetResolution(window_width, window_height);
+            system::renderer->SetResolution(window_width, window_height);
             setsizeneeded = true;
             /* CreateUpscaledTexture(false); */
             need_resize = false;
@@ -811,7 +809,7 @@ void I_FinishUpdate(boolean& setsizeneeded)
 
     if (palette_to_set)
     {
-        theta::system::renderer->SetWorldPalette(palette);
+        system::renderer->SetWorldPalette(palette);
         /* SDL_SetPaletteColors(screenbuffer->format->palette, palette, 0, 256); */
         palette_to_set = false;
 
@@ -825,7 +823,7 @@ void I_FinishUpdate(boolean& setsizeneeded)
     }
 
     // Blit from the screen buffer to the renderer.
-    theta::system::renderer->SetWorldPixels(*I_VideoBuffer);
+    system::renderer->SetWorldPixels(*I_VideoBuffer);
 
 #ifdef _DEBUG
     // Show any unrendered screen area as dark purple.
@@ -860,8 +858,8 @@ void I_FinishUpdate(boolean& setsizeneeded)
 
     // Draw!
 
-    theta::system::renderer->Render();
-    theta::system::renderer->Flip();
+    system::renderer->Render();
+    system::renderer->Flip();
     /* SDL_RenderPresent(renderer); */
 
     // Restore background and undo the disk indicator, if it was drawn.
@@ -877,17 +875,12 @@ void I_ReadScreen (pixel_t* scr)
     memcpy(scr, I_VideoBuffer->GetRawPixels(), I_VideoBuffer->GetSize() * sizeof(*scr));
 }
 
-namespace theta
-{
-
 namespace system
 {
 
 void ReadScreen(video::PalletedBuffer& scr)
 {
     scr = *I_VideoBuffer;
-}
-
 }
 
 }
@@ -1283,7 +1276,7 @@ static void SetVideoMode(void)
         I_InitWindowIcon();
     }
 
-    theta::system::renderer = std::make_unique<theta::system::gl::Renderer>(screen);
+    system::renderer = std::make_unique<system::gl::Renderer>(screen);
     return;
 
     /*
@@ -1414,9 +1407,6 @@ static void CheckGLVersion(void)
     }
 }
 
-namespace theta
-{
-
 namespace system
 {
 
@@ -1462,8 +1452,6 @@ void SetWorldView(double width, double height)
 
     // Set the position of the world view.
     renderer->SetWorldSize(0.0, 0.0, width, height);
-}
-
 }
 
 }
@@ -1523,7 +1511,7 @@ void I_InitGraphics(void)
 
     doompal = static_cast<byte*>(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
     I_SetPalette(doompal);
-    theta::system::renderer->SetWorldPalette(palette);
+    system::renderer->SetWorldPalette(palette);
     /* SDL_SetPaletteColors(screenbuffer->format->palette, palette, 0, 256); */
 
     // SDL2-TODO UpdateFocus();
@@ -1544,7 +1532,7 @@ void I_InitGraphics(void)
     // 32-bit RGBA screen buffer that gets loaded into a texture that gets
     // finally rendered into our window or full screen in I_FinishUpdate().
 
-    theta::system::SetWorldView(1.0, 1.0);
+    system::SetWorldView(1.0, 1.0);
     V_RestoreBuffer();
 
     // Clear the screen to black.
@@ -1584,4 +1572,6 @@ void I_BindVideoVariables(void)
     M_BindStringVariable("window_position",        &window_position);
     M_BindIntVariable("usegamma",                  &usegamma);
     M_BindIntVariable("png_screenshots",           &png_screenshots);
+}
+
 }

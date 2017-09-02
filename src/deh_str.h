@@ -20,6 +20,9 @@
 
 #include <stdio.h>
 
+namespace theta
+{
+
 // Used to do dehacked text substitutions throughout the program
 
 const char *DEH_String(const char *s);
@@ -38,6 +41,8 @@ void DEH_AddStringReplacement(const char *from_text, const char *to_text);
 #define DEH_snprintf snprintf
 
 #endif
+
+}
 
 #endif /* #ifndef DEH_STR_H */
 

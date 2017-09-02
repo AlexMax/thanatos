@@ -24,6 +24,9 @@
 #include "deh_mapping.h"
 #include "sounds.h"
 
+namespace theta
+{
+
 DEH_BEGIN_MAPPING(sound_mapping, sfxinfo_t)
     DEH_UNSUPPORTED_MAPPING("Offset")
     DEH_UNSUPPORTED_MAPPING("Zero/One")
@@ -100,3 +103,4 @@ deh_section_t deh_section_sound =
     NULL,
 };
 
+}

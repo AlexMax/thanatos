@@ -20,6 +20,9 @@
 
 #include "i_timer.h"
 
+namespace theta
+{
+
 //
 // I_GetTime
 // returns time in 1/35th second tics
@@ -89,3 +92,4 @@ void I_InitTimer(void)
     SDL_Init(SDL_INIT_TIMER);
 }
 
+}

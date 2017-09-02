@@ -38,7 +38,8 @@
 
 #include "net_defs.h"
 
-
+namespace theta
+{
 
 // ------------------------
 // Command line parameters.
@@ -275,5 +276,6 @@ extern	int		rndindex;
 
 extern  ticcmd_t       *netcmds;
 
+}
 
 #endif

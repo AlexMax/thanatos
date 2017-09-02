@@ -48,6 +48,9 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+namespace theta
+{
+
 #define DEFAULT_RAM 16 /* MiB */
 #define MIN_RAM     4  /* MiB */
 
@@ -251,9 +254,6 @@ void I_Quit (void)
     exit(0);
 }
 
-namespace theta
-{
-
 namespace system
 {
 
@@ -312,8 +312,6 @@ void Error3(const fmt::MemoryWriter& buffer)
     ::system("pause"); // pause so the console doesn't disappear...
 #endif
     exit(-1);
-}
-
 }
 
 }
@@ -426,3 +424,4 @@ boolean I_GetMemoryValue(unsigned int offset, void *value, int size)
     return false;
 }
 
+}

@@ -31,6 +31,9 @@
 
 #include "r_sky.h"
 
+namespace theta
+{
+
 //
 // sky mapping
 //
@@ -51,3 +54,4 @@ void R_InitSkyMap (void)
     skytexturemid = SCREENHEIGHT/2*FRACUNIT;
 }
 
+}

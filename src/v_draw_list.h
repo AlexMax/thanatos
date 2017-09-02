@@ -25,6 +25,9 @@
 #include "doomtype.h"
 #include "v_patch.h"
 
+namespace theta
+{
+
 namespace video
 {
 
@@ -57,6 +60,8 @@ public:
     void SetHeight(int h);
     void Clear();
 };
+
+}
 
 }
 

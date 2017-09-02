@@ -27,6 +27,9 @@
 
 #include "z_zone.h"
 
+namespace theta
+{
+
 typedef struct 
 {
     char *from_text;
@@ -432,3 +435,4 @@ void DEH_snprintf(char *buffer, size_t len, const char *fmt, ...)
     va_end(args);
 }
 
+}

@@ -24,6 +24,9 @@
 #include "net_packet.h"
 #include "net_structrw.h"
 
+namespace theta
+{
+
 void NET_WriteConnectData(net_packet_t *packet, net_connect_data_t *data)
 {
     NET_WriteInt8(packet, data->gamemode);
@@ -569,4 +572,6 @@ void NET_SafePuts(const char *s)
     }
 
     putchar('\n');
+}
+
 }

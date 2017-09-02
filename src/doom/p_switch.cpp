@@ -35,6 +35,8 @@
 #include "doomstat.h"
 #include "r_state.h"
 
+namespace theta
+{
 
 //
 // CHANGE THE TEXTURE OF A WALL SWITCH TO ITS OPPOSITE
@@ -646,3 +648,4 @@ P_UseSpecialLine
     return true;
 }
 
+}

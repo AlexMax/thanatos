@@ -37,6 +37,13 @@
 #include "net_sdl.h"
 #include "net_loop.h"
 
+// TODO: Move nonvanilla demo functions into a dedicated file.
+#include "m_misc.h"
+#include "w_wad.h"
+
+namespace theta
+{
+
 // The complete set of data for a particular tic.
 
 typedef struct
@@ -801,10 +808,6 @@ void D_RegisterLoopCallbacks(loop_interface_t *i)
     loop_interface = i;
 }
 
-// TODO: Move nonvanilla demo functions into a dedicated file.
-#include "m_misc.h"
-#include "w_wad.h"
-
 static boolean StrictDemos(void)
 {
     //!
@@ -882,3 +885,4 @@ boolean D_NonVanillaPlayback(boolean conditional, int lumpnum,
     return true;
 }
 
+}

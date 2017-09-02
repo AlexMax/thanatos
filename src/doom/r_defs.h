@@ -39,7 +39,8 @@
 #include "v_patch.h"
 
 
-
+namespace theta
+{
 
 // Silhouette, needed for clipping Segs (mainly)
 // and sprites representing things.
@@ -456,7 +457,7 @@ typedef struct
     uint16_t pad4;
 } visplane_t;
 
-
+}
 
 
 #endif

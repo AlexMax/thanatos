@@ -26,6 +26,9 @@
 #include "am_map.h"
 #include "st_stuff.h"
 
+namespace theta
+{
+
 typedef struct 
 {
     const char *name;
@@ -144,3 +147,4 @@ deh_section_t deh_section_cheat =
     NULL,
 };
 
+}

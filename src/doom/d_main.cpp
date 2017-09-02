@@ -77,6 +77,9 @@
 #include "d_main.h"
 #include "c_console.h"
 
+namespace theta
+{
+
 //
 // D-DoomLoop()
 // Not a globally visible function,
@@ -246,12 +249,12 @@ void D_Display (void)
 	    break;
 	if (automapactive)
 	    AM_Drawer ();
-	if (wipe || (viewheight != theta::system::renderer->GetHeight() && fullscreen))
+	if (wipe || (viewheight != system::renderer->GetHeight() && fullscreen))
 	    redrawsbar = true;
 	if (inhelpscreensstate && !inhelpscreens)
 	    redrawsbar = true;              // just put away the help screen
-	ST_Drawer (viewheight == theta::system::renderer->GetHeight(), redrawsbar );
-	fullscreen = viewheight == theta::system::renderer->GetHeight();
+	ST_Drawer (viewheight == system::renderer->GetHeight(), redrawsbar );
+	fullscreen = viewheight == system::renderer->GetHeight();
 	break;
 
       case GS_INTERMISSION:
@@ -320,7 +323,7 @@ void D_Display (void)
 	    y = 4;
 	else
 	    y = viewwindowy+4;
-        theta::video::DrawScaledLump(/*viewwindowx + */(VIRTUALWIDTH - 68) / 2, y, DEH_String("M_PAUSE"));
+        video::DrawScaledLump(/*viewwindowx + */(VIRTUALWIDTH - 68) / 2, y, DEH_String("M_PAUSE"));
     }
 
     console::Draw();
@@ -539,7 +542,7 @@ void D_PageTicker (void)
 //
 void D_PageDrawer (void)
 {
-    theta::video::DrawPageLump(pagename);
+    video::DrawPageLump(pagename);
 }
 
 
@@ -1901,3 +1904,4 @@ void D_DoomMain (void)
     D_DoomLoop ();  // never returns
 }
 
+}

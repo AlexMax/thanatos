@@ -32,7 +32,8 @@
 #include "r_local.h"
 #include "r_sky.h"
 
-
+namespace theta
+{
 
 planefunction_t		floorfunc;
 planefunction_t		ceilingfunc;
@@ -445,4 +446,6 @@ void R_DrawPlanes (void)
 	
         W_ReleaseLumpNum(lumpnum);
     }
+}
+
 }

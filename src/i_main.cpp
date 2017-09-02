@@ -26,6 +26,9 @@
 #include "i_system.h"
 #include "m_argv.h"
 
+namespace theta
+{
+
 //
 // D_DoomMain()
 // Not a globally visible function, just included for source reference,
@@ -34,19 +37,20 @@
 
 void D_DoomMain (void);
 
+}
+
 int main(int argc, char **argv)
 {
     // save arguments
 
-    myargc = argc;
-    myargv = argv;
+    theta::myargc = argc;
+    theta::myargv = argv;
 
-    M_FindResponseFile();
+    theta::M_FindResponseFile();
 
     // start doom
 
-    D_DoomMain ();
+    theta::D_DoomMain ();
 
     return 0;
 }
-

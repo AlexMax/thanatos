@@ -62,6 +62,9 @@
 #include "dstrings.h"
 #include "sounds.h"
 
+namespace theta
+{
+
 //
 // STATUS BAR DATA
 //
@@ -312,59 +315,59 @@ static boolean		st_fragson;
 static patch_t*		sbar;
 
 // 0-9, tall numbers
-static const theta::video::Graphic* tallnum[10];
+static const video::Graphic* tallnum[10];
 
 // tall % sign
-static const theta::video::Graphic* tallpercent;
+static const video::Graphic* tallpercent;
 
 // 0-9, short, yellow (,different!) numbers
-static const theta::video::Graphic* shortnum[10];
+static const video::Graphic* shortnum[10];
 
 // 3 key-cards, 3 skulls
-static const theta::video::Graphic* keys[NUMCARDS];
+static const video::Graphic* keys[NUMCARDS];
 
 // face status patches
-static const theta::video::Graphic* faces[ST_NUMFACES];
+static const video::Graphic* faces[ST_NUMFACES];
 
 // face background
 static patch_t*		faceback;
 
  // main bar right
-static const theta::video::Graphic* armsbg;
+static const video::Graphic* armsbg;
 
 // weapon ownership patches
-static const theta::video::Graphic* arms[6][2];
+static const video::Graphic* arms[6][2];
 
 // ready-weapon widget
-static std::unique_ptr<theta::status::Number> w_ready;
+static std::unique_ptr<status::Number> w_ready;
 
  // in deathmatch only, summary of frags stats
-static std::unique_ptr<theta::status::Number> w_frags;
+static std::unique_ptr<status::Number> w_frags;
 
 // health widget
-static std::unique_ptr<theta::status::Percent> w_health;
+static std::unique_ptr<status::Percent> w_health;
 
 // arms background
-static std::unique_ptr<theta::status::Binicon> w_armsbg; 
+static std::unique_ptr<status::Binicon> w_armsbg; 
 
 
 // weapon ownership widgets
-static std::array<std::unique_ptr<theta::status::Multiicon>, 6> w_arms;
+static std::array<std::unique_ptr<status::Multiicon>, 6> w_arms;
 
 // face status widget
-static std::unique_ptr<theta::status::Multiicon> w_faces;
+static std::unique_ptr<status::Multiicon> w_faces;
 
 // keycard widgets
-static std::array<std::unique_ptr<theta::status::Multiicon>, 3> w_keyboxes;
+static std::array<std::unique_ptr<status::Multiicon>, 3> w_keyboxes;
 
 // armor widget
-static std::unique_ptr<theta::status::Percent> w_armor;
+static std::unique_ptr<status::Percent> w_armor;
 
 // ammo widgets
-static std::array<std::unique_ptr<theta::status::Number>, 4> w_ammo;
+static std::array<std::unique_ptr<status::Number>, 4> w_ammo;
 
 // max ammo widgets
-static std::array<std::unique_ptr<theta::status::Number>, 4> w_maxammo;
+static std::array<std::unique_ptr<status::Number>, 4> w_maxammo;
 
 
 
@@ -422,12 +425,12 @@ void ST_refreshBackground(void)
 {
     if (st_statusbaron)
     {
-        theta::video::DrawScaledLump(ST_X, ST_Y, DEH_String("STBAR"));
+        video::DrawScaledLump(ST_X, ST_Y, DEH_String("STBAR"));
         if (netgame)
         {
             char namebuf[9];
             DEH_snprintf(namebuf, 9, "STFB%d", consoleplayer);
-            theta::video::DrawScaledLump(ST_FX, ST_Y, namebuf);
+            video::DrawScaledLump(ST_FX, ST_Y, namebuf);
         }
     }
 }
@@ -1107,26 +1110,26 @@ static void ST_loadUnloadGraphics(load_callback_t callback)
     for (i=0;i<10;i++)
     {
 	DEH_snprintf(namebuf, 9, "STTNUM%d", i);
-        tallnum[i] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
+        tallnum[i] = &video::GraphicsManager::Instance().LoadPatch(namebuf);
 
 	DEH_snprintf(namebuf, 9, "STYSNUM%d", i);
-        shortnum[i] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
+        shortnum[i] = &video::GraphicsManager::Instance().LoadPatch(namebuf);
     }
 
     // Load percent key.
     //Note: why not load STMINUS here, too?
 
-    tallpercent = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("STTPRCNT"));
+    tallpercent = &video::GraphicsManager::Instance().LoadPatch(DEH_String("STTPRCNT"));
 
     // key cards
     for (i=0;i<NUMCARDS;i++)
     {
 	DEH_snprintf(namebuf, 9, "STKEYS%d", i);
-        keys[i] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
+        keys[i] = &video::GraphicsManager::Instance().LoadPatch(namebuf);
     }
 
     // arms background
-    armsbg = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("STARMS"));
+    armsbg = &video::GraphicsManager::Instance().LoadPatch(DEH_String("STARMS"));
 
     // arms ownership widgets
     for (i=0; i<6; i++)
@@ -1134,7 +1137,7 @@ static void ST_loadUnloadGraphics(load_callback_t callback)
 	DEH_snprintf(namebuf, 9, "STGNUM%d", i+2);
 
 	// gray #
-        arms[i][0] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
+        arms[i][0] = &video::GraphicsManager::Instance().LoadPatch(namebuf);
 
 	// yellow #
         arms[i][1] = shortnum[i + 2];
@@ -1154,29 +1157,29 @@ static void ST_loadUnloadGraphics(load_callback_t callback)
 	for (j=0; j<ST_NUMSTRAIGHTFACES; j++)
 	{
 	    DEH_snprintf(namebuf, 9, "STFST%d%d", i, j);
-            faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
+            faces[facenum] = &video::GraphicsManager::Instance().LoadPatch(namebuf);
             ++facenum;
 	}
 	DEH_snprintf(namebuf, 9, "STFTR%d0", i);	// turn right
-        faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
+        faces[facenum] = &video::GraphicsManager::Instance().LoadPatch(namebuf);
         ++facenum;
 	DEH_snprintf(namebuf, 9, "STFTL%d0", i);	// turn left
-        faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
+        faces[facenum] = &video::GraphicsManager::Instance().LoadPatch(namebuf);
         ++facenum;
 	DEH_snprintf(namebuf, 9, "STFOUCH%d", i);	// ouch!
-        faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
+        faces[facenum] = &video::GraphicsManager::Instance().LoadPatch(namebuf);
         ++facenum;
 	DEH_snprintf(namebuf, 9, "STFEVL%d", i);	// evil grin ;)
-        faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
+        faces[facenum] = &video::GraphicsManager::Instance().LoadPatch(namebuf);
         ++facenum;
 	DEH_snprintf(namebuf, 9, "STFKILL%d", i);	// pissed off
-        faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(namebuf);
+        faces[facenum] = &video::GraphicsManager::Instance().LoadPatch(namebuf);
         ++facenum;
     }
 
-    faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("STFGOD0"));
+    faces[facenum] = &video::GraphicsManager::Instance().LoadPatch(DEH_String("STFGOD0"));
     ++facenum;
-    faces[facenum] = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("STFDEAD0"));
+    faces[facenum] = &video::GraphicsManager::Instance().LoadPatch(DEH_String("STFDEAD0"));
     ++facenum;
 }
 
@@ -1251,7 +1254,7 @@ void ST_createWidgets(void)
     int i;
 
     // ready weapon ammo
-    w_ready = std::make_unique<theta::status::Number>(ST_AMMOX, ST_AMMOY,
+    w_ready = std::make_unique<status::Number>(ST_AMMOX, ST_AMMOY,
         tallnum, &plyr->ammo[weaponinfo[plyr->readyweapon].ammo],
         &st_statusbaron, ST_AMMOWIDTH);
 
@@ -1259,68 +1262,68 @@ void ST_createWidgets(void)
     w_ready->SetData(plyr->readyweapon);
 
     // health percentage
-    w_health = std::make_unique<theta::status::Percent>(ST_HEALTHX, ST_HEALTHY,
+    w_health = std::make_unique<status::Percent>(ST_HEALTHX, ST_HEALTHY,
         tallnum, &plyr->health, &st_statusbaron, tallpercent);
 
     // arms background
-    w_armsbg = std::make_unique<theta::status::Binicon>(ST_ARMSBGX, ST_ARMSBGY,
+    w_armsbg = std::make_unique<status::Binicon>(ST_ARMSBGX, ST_ARMSBGY,
         *armsbg, &st_notdeathmatch, &st_statusbaron);
 
     // weapons owned
     for(i = 0;i < 6;i++)
     {
-        w_arms[i] = std::make_unique<theta::status::Multiicon>(
+        w_arms[i] = std::make_unique<status::Multiicon>(
             ST_ARMSX + (i % 3) * ST_ARMSXSPACE, ST_ARMSY + (i / 3) * ST_ARMSYSPACE,
             arms[i], &plyr->weaponowned[i + 1], &st_armson
         );
     }
 
     // frags sum
-    w_frags = std::make_unique<theta::status::Number>(ST_FRAGSX, ST_FRAGSY,
+    w_frags = std::make_unique<status::Number>(ST_FRAGSX, ST_FRAGSY,
         tallnum, &st_fragscount, &st_fragson, ST_FRAGSWIDTH);
 
     // faces
-    w_faces = std::make_unique<theta::status::Multiicon>(
+    w_faces = std::make_unique<status::Multiicon>(
         ST_FACESX, ST_FACESY, faces, &st_faceindex, &st_statusbaron);
 
     // armor percentage - should be colored later
-    w_armor = std::make_unique<theta::status::Percent>(ST_ARMORX,
+    w_armor = std::make_unique<status::Percent>(ST_ARMORX,
         ST_ARMORY, tallnum, &plyr->armorpoints, &st_statusbaron, tallpercent);
 
     // keyboxes 0-2
-    w_keyboxes[0] = std::make_unique<theta::status::Multiicon>(
+    w_keyboxes[0] = std::make_unique<status::Multiicon>(
         ST_KEY0X, ST_KEY0Y, keys, &keyboxes[0], &st_statusbaron);
 
-    w_keyboxes[1] = std::make_unique<theta::status::Multiicon>(
+    w_keyboxes[1] = std::make_unique<status::Multiicon>(
         ST_KEY1X, ST_KEY1Y, keys, &keyboxes[1], &st_statusbaron);
 
-    w_keyboxes[2] = std::make_unique<theta::status::Multiicon>(
+    w_keyboxes[2] = std::make_unique<status::Multiicon>(
         ST_KEY2X, ST_KEY2Y, keys, &keyboxes[2], &st_statusbaron);
 
     // ammo count (all four kinds)
-    w_ammo[0] = std::make_unique<theta::status::Number>(ST_AMMO0X, ST_AMMO0Y,
+    w_ammo[0] = std::make_unique<status::Number>(ST_AMMO0X, ST_AMMO0Y,
         shortnum, &plyr->ammo[0], &st_statusbaron, ST_AMMO0WIDTH);
 
-    w_ammo[1] = std::make_unique<theta::status::Number>(ST_AMMO1X, ST_AMMO1Y,
+    w_ammo[1] = std::make_unique<status::Number>(ST_AMMO1X, ST_AMMO1Y,
         shortnum, &plyr->ammo[1], &st_statusbaron, ST_AMMO1WIDTH);
 
-    w_ammo[2] = std::make_unique<theta::status::Number>(ST_AMMO2X, ST_AMMO2Y,
+    w_ammo[2] = std::make_unique<status::Number>(ST_AMMO2X, ST_AMMO2Y,
         shortnum, &plyr->ammo[2], &st_statusbaron, ST_AMMO2WIDTH);
 
-    w_ammo[3] = std::make_unique<theta::status::Number>(ST_AMMO3X, ST_AMMO3Y,
+    w_ammo[3] = std::make_unique<status::Number>(ST_AMMO3X, ST_AMMO3Y,
         shortnum, &plyr->ammo[3], &st_statusbaron, ST_AMMO3WIDTH);
 
     // max ammo count (all four kinds)
-    w_maxammo[0] = std::make_unique<theta::status::Number>(ST_MAXAMMO0X, ST_MAXAMMO0Y,
+    w_maxammo[0] = std::make_unique<status::Number>(ST_MAXAMMO0X, ST_MAXAMMO0Y,
         shortnum, &plyr->maxammo[0], &st_statusbaron, ST_MAXAMMO0WIDTH);
 
-    w_maxammo[1] = std::make_unique<theta::status::Number>(ST_MAXAMMO1X, ST_MAXAMMO1Y,
+    w_maxammo[1] = std::make_unique<status::Number>(ST_MAXAMMO1X, ST_MAXAMMO1Y,
         shortnum, &plyr->maxammo[1], &st_statusbaron, ST_MAXAMMO1WIDTH);
 
-    w_maxammo[2] = std::make_unique<theta::status::Number>(ST_MAXAMMO2X, ST_MAXAMMO2Y,
+    w_maxammo[2] = std::make_unique<status::Number>(ST_MAXAMMO2X, ST_MAXAMMO2Y,
         shortnum, &plyr->maxammo[2], &st_statusbaron, ST_MAXAMMO2WIDTH);
 
-    w_maxammo[3] = std::make_unique<theta::status::Number>(ST_MAXAMMO3X, ST_MAXAMMO3Y,
+    w_maxammo[3] = std::make_unique<status::Number>(ST_MAXAMMO3X, ST_MAXAMMO3Y,
         shortnum, &plyr->maxammo[3], &st_statusbaron, ST_MAXAMMO3WIDTH);
 }
 
@@ -1355,3 +1358,4 @@ void ST_Init (void)
     st_backing_screen = (pixel_t *) Z_Malloc(ST_WIDTH * ST_HEIGHT * sizeof(*st_backing_screen), PU_STATIC, 0);
 }
 
+}

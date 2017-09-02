@@ -31,6 +31,9 @@
 #include "doomtype.h"
 #include "i_swap.h"
 
+namespace theta
+{
+
 /*
  * Cryptographic API.
  *
@@ -954,3 +957,4 @@ unsigned int PRNG_Random(void)
     return result;
 }
 
+}

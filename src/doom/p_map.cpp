@@ -39,6 +39,9 @@
 // Data.
 #include "sounds.h"
 
+namespace theta
+{
+
 // Spechit overrun magic value.
 //
 // This is the value used by PrBoom-plus.  I think the value below is 
@@ -1446,3 +1449,4 @@ static void SpechitOverrun(line_t *ld)
     }
 }
 
+}

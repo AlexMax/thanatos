@@ -26,6 +26,9 @@
 // State.
 #include "r_state.h"
 
+namespace theta
+{
+
 //
 // P_CheckSight
 //
@@ -347,4 +350,4 @@ P_CheckSight
     return P_CrossBSPNode (numnodes-1);	
 }
 
-
+}

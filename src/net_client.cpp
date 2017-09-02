@@ -39,6 +39,9 @@
 #include "w_checksum.h"
 #include "w_wad.h"
 
+namespace theta
+{
+
 extern void D_ReceiveTic(ticcmd_t *ticcmds, boolean *playeringame);
 
 typedef enum
@@ -1102,4 +1105,6 @@ void NET_Init(void)
 void NET_BindVariables(void)
 {
     M_BindStringVariable("player_name", &net_player_name);
+}
+
 }

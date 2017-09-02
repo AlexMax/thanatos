@@ -37,7 +37,8 @@
 #include "c_console.h"
 
 
-
+namespace theta
+{
 
 // Fineangles in the SCREENWIDTH wide window.
 #define FIELDOFVIEW		2048	
@@ -656,9 +657,6 @@ R_SetViewSize
 
 #define M_PI 3.14159265358979323846
 
-namespace theta
-{
-
 namespace render
 {
 
@@ -685,7 +683,7 @@ void SetupProjection()
 
     // Set the world view ratio, then set the renderer view width and height
     // based on the resulting buffer width/height.
-    theta::system::SetWorldView(1.0, letterbox_amount);
+    system::SetWorldView(1.0, letterbox_amount);
     viewwidth = I_VideoBuffer->GetWidth();
     viewheight = I_VideoBuffer->GetHeight();
 
@@ -738,8 +736,6 @@ void SetupProjection()
 
 }
 
-}
-
 //
 // R_ExecuteSetViewSize
 //
@@ -754,7 +750,7 @@ void R_ExecuteSetViewSize (void)
 
     setsizeneeded = false;
 
-    theta::render::SetupProjection();
+    render::SetupProjection();
 
     // This used to be the place where the "Low Detail" drawers were set, if
     // detailshift was set.  Not anymore though...
@@ -937,4 +933,6 @@ void R_RenderPlayerView (player_t* player)
 
     // Check for new console commands.
     NetUpdate ();				
+}
+
 }

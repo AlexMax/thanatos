@@ -23,7 +23,8 @@
 #include "doomdef.h"
 
 
-
+namespace theta
+{
 
 // Read events from all input devices
 
@@ -46,6 +47,8 @@ void D_StartTitle (void);
 extern  gameaction_t    gameaction;
 
 extern double max_display_time;
+
+}
 
 #endif
 

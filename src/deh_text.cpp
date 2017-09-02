@@ -27,6 +27,9 @@
 #include "deh_io.h"
 #include "deh_main.h"
 
+namespace theta
+{
+
 // Given a string length, find the maximum length of a 
 // string that can replace it.
 
@@ -111,3 +114,4 @@ deh_section_t deh_section_text =
     NULL,
 };
 
+}

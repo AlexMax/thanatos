@@ -30,6 +30,9 @@
 // Needed because we are refering to patches.
 #include "v_patch.h"
 
+namespace theta
+{
+
 //
 // VIDEO
 //
@@ -65,9 +68,6 @@ void V_DrawShadowedPatch(int x, int y, patch_t *patch);
 void V_DrawXlaPatch(int x, int y, patch_t * patch);     // villsa [STRIFE]
 void V_DrawPatchDirect(int x, int y, patch_t *patch);
 
-namespace theta
-{
-
 namespace video
 {
 
@@ -75,8 +75,6 @@ void DrawScaledGraphic(int x, int y, const Graphic& graphic);
 void DrawScaledLump(int x, int y, const std::string& lump);
 void DrawPageGraphic(const Graphic& graphic);
 void DrawPageLump(const std::string& lump);
-
-}
 
 }
 
@@ -121,6 +119,8 @@ void V_LoadTintTable(void);
 void V_LoadXlaTable(void);
 
 void V_DrawMouseSpeedBox(int speed);
+
+}
 
 #endif
 

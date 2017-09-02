@@ -17,7 +17,12 @@
 #ifndef DOOM_STATDUMP_H
 #define DOOM_STATDUMP_H
 
+namespace theta
+{
+
 void StatCopy(wbstartstruct_t *stats);
 void StatDump(void);
+
+}
 
 #endif /* #ifndef DOOM_STATDUMP_H */

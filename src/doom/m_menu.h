@@ -24,6 +24,9 @@
 
 #include "d_event.h"
 
+namespace theta
+{
+
 //
 // MENUS
 //
@@ -56,6 +59,6 @@ void M_StartControlPanel (void);
 extern int detailLevel;
 extern int screenblocks;
 
-
+}
 
 #endif    

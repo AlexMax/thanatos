@@ -33,7 +33,8 @@
 // State.
 #include "r_state.h"
 
-
+namespace theta
+{
 
 //
 // TELEPORTATION
@@ -131,3 +132,4 @@ EV_Teleport
     return 0;
 }
 
+}

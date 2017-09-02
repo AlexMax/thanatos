@@ -27,6 +27,9 @@
 #include "m_argv.h"
 #include "m_config.h"
 
+namespace theta
+{
+
 static const int scancode_translate_table[] = SCANCODE_TO_KEYS_ARRAY;
 
 // Lookup table for mapping ASCII characters to their equivalent when
@@ -465,4 +468,6 @@ void I_BindInputVariables(void)
     M_BindIntVariable("mouse_threshold",           &mouse_threshold);
     M_BindIntVariable("vanilla_keyboard_mapping",  &vanilla_keyboard_mapping);
     M_BindIntVariable("novert",                    &novert);
+}
+
 }

@@ -19,6 +19,9 @@
 #ifndef __DOOMKEYS__
 #define __DOOMKEYS__
 
+namespace theta
+{
+
 //
 // DOOM keyboard definition.
 // This is the stuff configured by Setup.Exe.
@@ -147,6 +150,8 @@
     { '[', "[" },   { ']', "]" },   { ';', ";" },   { '`', "`" },    \
     { ',', "," },   { '.', "." },   { '/', "/" },   { '\\', "\\" },  \
     { '\'', "\'" },                                                  \
+}
+
 }
 
 #endif          // __DOOMKEYS__

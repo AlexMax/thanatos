@@ -31,6 +31,9 @@
 #define MAXWIDTH 4096
 #define MAXHEIGHT 4096
 
+namespace theta
+{
+
 // Screen width and height.
 
 #define SCREENWIDTH 640
@@ -97,17 +100,12 @@ void I_StartTic (void);
 
 void I_EnableLoadingDisk(int xoffs, int yoffs);
 
-namespace theta
-{
-
 namespace system
 {
 
 void SetWorldView(double width, double height);
 
 extern std::unique_ptr<RendererInterface> renderer;
-
-}
 
 }
 
@@ -135,5 +133,7 @@ extern unsigned int joywait;
 
 extern int fps_counter;
 extern boolean display_fps_counter;
+
+}
 
 #endif

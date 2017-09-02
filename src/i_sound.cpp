@@ -29,6 +29,9 @@
 #include "m_argv.h"
 #include "m_config.h"
 
+namespace theta
+{
+
 // Sound sample rate to use for digital output (Hz)
 
 int snd_samplerate = 44100;
@@ -448,3 +451,4 @@ void I_BindSoundVariables(void)
     M_BindFloatVariable("libsamplerate_scale",   &libsamplerate_scale);
 }
 
+}

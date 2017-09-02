@@ -23,6 +23,9 @@
 #include <unordered_map>
 #include <vector>
 
+namespace theta
+{
+
 namespace console
 {
 
@@ -39,6 +42,8 @@ public:
     void Add(const char* name, CommandImplementation func);
     void Execute(const std::string& line);
 };
+
+}
 
 }
 
