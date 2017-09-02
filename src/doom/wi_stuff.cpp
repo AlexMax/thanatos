@@ -252,12 +252,12 @@ static std::array<Animation, 9> epsd1animinfo
 
 static std::array<Animation, 6> epsd2animinfo
 {
-    Animation(Animation::Type::level, TICRATE / 3, 3, 104, 168, 0),
-    Animation(Animation::Type::level, TICRATE / 3, 3, 40, 136, 0),
-    Animation(Animation::Type::level, TICRATE / 3, 3, 160, 96, 0),
-    Animation(Animation::Type::level, TICRATE / 3, 3, 104, 80, 0),
-    Animation(Animation::Type::level, TICRATE / 3, 3, 120, 32, 0),
-    Animation(Animation::Type::level, TICRATE / 4, 3, 40, 0, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 104, 168, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 40, 136, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 160, 96, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 104, 80, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 120, 32, 0),
+    Animation(Animation::Type::always, TICRATE / 4, 3, 40, 0, 0),
 };
 
 static std::array<std::size_t, NUMEPISODES> NUMANIMS
@@ -490,31 +490,37 @@ void WI_drawOnLnode(int n, std::vector<std::reference_wrapper<const video::Graph
 
 void WI_initAnimatedBack(void)
 {
-    int		i;
-    Animation*	a;
-
     if (gamemode == commercial)
-	return;
-
-    if (wbs->epsd > 2)
-	return;
-
-    for (i=0;i<NUMANIMS[wbs->epsd];i++)
     {
-	a = &anims[wbs->epsd][i];
-
-	// init variables
-	a->ctr = -1;
-
-	// specify the next time to draw it
-	if (a->type == Animation::Type::always)
-	    a->nexttic = bcnt + 1 + (M_Random()%a->period);
-	else if (a->type == Animation::Type::random)
-	    a->nexttic = bcnt + 1 + a->data2+(M_Random()%a->data1);
-	else if (a->type == Animation::Type::level)
-	    a->nexttic = bcnt + 1;
+        return;
     }
 
+    if (wbs->epsd > 2)
+    {
+        return;
+    }
+
+    for (int i = 0;i < NUMANIMS[wbs->epsd];i++)
+    {
+        Animation* a = &anims[wbs->epsd][i];
+
+        // init variables
+        a->ctr = -1;
+
+        // specify the next time to draw it
+        if (a->type == Animation::Type::always)
+        {
+            a->nexttic = bcnt + 1 + (M_Random() % a->period);
+        }
+        else if (a->type == Animation::Type::random)
+        {
+            a->nexttic = bcnt + 1 + a->data2 + (M_Random() % a->data1);
+        }
+        else if (a->type == Animation::Type::level)
+        {
+            a->nexttic = bcnt + 1;
+        }
+    }
 }
 
 void WI_updateAnimatedBack(void)
@@ -586,6 +592,7 @@ void WI_drawAnimatedBack(void)
 
         if (a->ctr >= 0)
         {
+            fmt::printf("%d, %d, %s\n", a->loc.x, a->loc.y, video::GraphicsManager().Instance().DebugNameOf(a->p[a->ctr]));
             video::DrawScaledGraphic(a->loc.x, a->loc.y, a->p[a->ctr]);
         }
     }
