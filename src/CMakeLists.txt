@@ -122,15 +122,15 @@ if(SAMPLERATE_FOUND)
 endif()
 
 if(CMAKE_RC_COMPILER)
-    add_executable("${PROGRAM_PREFIX}doom" ${SOURCE_FILES_WITH_DEH}
+    add_executable("${PACKAGE_TARNAME}" ${SOURCE_FILES_WITH_DEH}
         resource.rc)
 else()
-    add_executable("${PROGRAM_PREFIX}doom" ${SOURCE_FILES_WITH_DEH})
+    add_executable("${PACKAGE_TARNAME}" ${SOURCE_FILES_WITH_DEH})
 endif()
 
-target_link_libraries("${PROGRAM_PREFIX}doom" doom ${EXTRA_LIBS})
+target_link_libraries("${PACKAGE_TARNAME}" doom ${EXTRA_LIBS})
 
 if(MSVC)
     # Suppress default manifest and use the one in the resource file instead.
-    set_property(TARGET "${PROGRAM_PREFIX}doom" PROPERTY LINK_FLAGS "/MANIFEST:NO" APPEND)
+    set_property(TARGET "${PACKAGE_TARNAME}" PROPERTY LINK_FLAGS "/MANIFEST:NO" APPEND)
 endif()
