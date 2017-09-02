@@ -26,19 +26,21 @@
 namespace theta
 {
 
+template <typename TYPE>
 class ArrayView
 {
 private:
-    const byte* data = nullptr;
+    TYPE* data;
     std::size_t size;
 public:
     // Initialize array view with array of arbitrary size.
     template <std::size_t SIZE>
-    ArrayView(std::array<byte, SIZE>& a)
+    ArrayView(std::array<TYPE, SIZE>& a)
         : data(a.data()), size(a.size()) { }
-
-    const byte* GetData();
-    std::size_t GetSize();
+    TYPE& operator[] (std::size_t index) { return this->data[index]; }
+    const TYPE& operator[] (std::size_t index) const { return this->data[index]; }
+    const TYPE* GetData() const { return this->data; }
+    std::size_t GetSize() const { return this->size; }
 };
 
 }

@@ -539,7 +539,7 @@ void D_PageTicker (void)
 //
 void D_PageDrawer (void)
 {
-    theta::video::DrawPage(pagename);
+    theta::video::DrawPageLump(pagename);
 }
 
 

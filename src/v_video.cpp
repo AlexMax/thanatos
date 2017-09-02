@@ -509,7 +509,13 @@ void DrawScaledLump(int x, int y, const std::string& lump)
 }
 
 // Draw a page using the appropriate renderer method.
-void DrawPage(const char* lump)
+void DrawPageGraphic(const Graphic& graphic)
+{
+    system::renderer->SetPageGraphic(graphic);
+}
+
+// Draw a page using the appropriate renderer method.
+void DrawPageLump(const std::string& lump)
 {
     system::renderer->SetPageGraphic(GraphicsManager::Instance().LoadPatch(lump));
 }

@@ -17,8 +17,13 @@
 //
 
 
+#include <array>
+#include <functional> // reference_wrapper
+#include <vector>
+
 #include <stdio.h>
 
+#include "array_view.h"
 #include "z_zone.h"
 
 #include "m_misc.h"
@@ -80,7 +85,7 @@
 #define SP_STATSY		50
 
 #define SP_TIMEX		16
-#define SP_TIMEY		(SCREENHEIGHT-32)
+#define SP_TIMEY		(VIRTUALHEIGHT - 32)
 
 
 // NET GAME STUFF
@@ -106,29 +111,20 @@
 
 
 
-typedef enum
-{
-    ANIM_ALWAYS,
-    ANIM_RANDOM,
-    ANIM_LEVEL
-
-} animenum_t;
-
-typedef struct
+struct Point
 {
     int		x;
     int		y;
-    
-} point_t;
-
+    Point(int x, int y) : x(x), y(y) { }
+};
 
 //
 // Animation.
-// There is another anim_t used in p_spec.
 //
-typedef struct
+struct Animation
 {
-    animenum_t	type;
+    enum class Type { always, random, level };
+    Type type;
 
     // period in tics between animations
     int		period;
@@ -137,7 +133,7 @@ typedef struct
     int		nanims;
 
     // location of animation
-    point_t	loc;
+    Point	loc;
 
     // ALWAYS: n/a,
     // RANDOM: period deviation (<256),
@@ -150,7 +146,7 @@ typedef struct
     int		data2; 
 
     // actual graphics for frames of animations
-    patch_t*	p[3]; 
+    std::vector<std::reference_wrapper<const theta::video::Graphic>> p;
 
     // following must be initialized to zero before use!
 
@@ -166,50 +162,55 @@ typedef struct
     // used by RANDOM and LEVEL when animating
     int		state;  
 
-} anim_t;
+    Animation(Type type, int period, int nanims, int x, int y, int nexttic) :
+        type(type), period(period), nanims(nanims), loc(Point(x, y)),
+        nexttic(nexttic) { }
+};
 
 
-static point_t lnodes[NUMEPISODES][NUMMAPS] =
+static std::array<std::array<Point, NUMMAPS>, NUMEPISODES - 1> lnodes
 {
     // Episode 0 World Map
+    std::array<Point, NUMMAPS>
     {
-	{ 185, 164 },	// location of level 0 (CJ)
-	{ 148, 143 },	// location of level 1 (CJ)
-	{ 69, 122 },	// location of level 2 (CJ)
-	{ 209, 102 },	// location of level 3 (CJ)
-	{ 116, 89 },	// location of level 4 (CJ)
-	{ 166, 55 },	// location of level 5 (CJ)
-	{ 71, 56 },	// location of level 6 (CJ)
-	{ 135, 29 },	// location of level 7 (CJ)
-	{ 71, 24 }	// location of level 8 (CJ)
+        Point(185, 164),    // location of level 0 (CJ)
+        Point(148, 143),    // location of level 1 (CJ)
+        Point(69, 122),     // location of level 2 (CJ)
+        Point(209, 102),    // location of level 3 (CJ)
+        Point(116, 89),     // location of level 4 (CJ)
+        Point(166, 55),     // location of level 5 (CJ)
+        Point(71, 56),      // location of level 6 (CJ)
+        Point(135, 29),     // location of level 7 (CJ)
+        Point(71, 24),      // location of level 8 (CJ)
     },
 
     // Episode 1 World Map should go here
+    std::array<Point, NUMMAPS>
     {
-	{ 254, 25 },	// location of level 0 (CJ)
-	{ 97, 50 },	// location of level 1 (CJ)
-	{ 188, 64 },	// location of level 2 (CJ)
-	{ 128, 78 },	// location of level 3 (CJ)
-	{ 214, 92 },	// location of level 4 (CJ)
-	{ 133, 130 },	// location of level 5 (CJ)
-	{ 208, 136 },	// location of level 6 (CJ)
-	{ 148, 140 },	// location of level 7 (CJ)
-	{ 235, 158 }	// location of level 8 (CJ)
+        Point(254, 25),     // location of level 0 (CJ)
+        Point(97, 50),      // location of level 1 (CJ)
+        Point(188, 64),     // location of level 2 (CJ)
+        Point(128, 78),     // location of level 3 (CJ)
+        Point(214, 92),     // location of level 4 (CJ)
+        Point(133, 130),    // location of level 5 (CJ)
+        Point(208, 136),    // location of level 6 (CJ)
+        Point(148, 140),    // location of level 7 (CJ)
+        Point(235, 158),    // location of level 8 (CJ)
     },
 
     // Episode 2 World Map should go here
+    std::array<Point, NUMMAPS>
     {
-	{ 156, 168 },	// location of level 0 (CJ)
-	{ 48, 154 },	// location of level 1 (CJ)
-	{ 174, 95 },	// location of level 2 (CJ)
-	{ 265, 75 },	// location of level 3 (CJ)
-	{ 130, 48 },	// location of level 4 (CJ)
-	{ 279, 23 },	// location of level 5 (CJ)
-	{ 198, 48 },	// location of level 6 (CJ)
-	{ 140, 25 },	// location of level 7 (CJ)
-	{ 281, 136 }	// location of level 8 (CJ)
+        Point(156, 168),    // location of level 0 (CJ)
+        Point(48, 154),     // location of level 1 (CJ)
+        Point(174, 95),     // location of level 2 (CJ)
+        Point(265, 75),     // location of level 3 (CJ)
+        Point(130, 48),     // location of level 4 (CJ)
+        Point(279, 23),     // location of level 5 (CJ)
+        Point(198, 48),     // location of level 6 (CJ)
+        Point(140, 25),     // location of level 7 (CJ)
+        Point(281, 136),    // location of level 8 (CJ)
     }
-
 };
 
 
@@ -219,60 +220,55 @@ static point_t lnodes[NUMEPISODES][NUMMAPS] =
 //  as they replace 320x200 full screen frames.
 //
 
-#define ANIM(type, period, nanims, x, y, nexttic)            \
-   { (type), (period), (nanims), { (x), (y) }, (nexttic),    \
-     0, { NULL, NULL, NULL }, 0, 0, 0, 0 }
-
-
-static anim_t epsd0animinfo[] =
+static std::array<Animation, 10> epsd0animinfo
 {
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 224, 104, 0),
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 184, 160, 0),
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 112, 136, 0),
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 72, 112, 0),
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 88, 96, 0),
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 64, 48, 0),
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 192, 40, 0),
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 136, 16, 0),
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 80, 16, 0),
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 64, 24, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 224, 104, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 184, 160, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 112, 136, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 72, 112, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 88, 96, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 64, 48, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 192, 40, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 136, 16, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 80, 16, 0),
+    Animation(Animation::Type::always, TICRATE / 3, 3, 64, 24, 0)
 };
 
-static anim_t epsd1animinfo[] =
+static std::array<Animation, 9> epsd1animinfo
 {
-    ANIM(ANIM_LEVEL, TICRATE/3, 1, 128, 136, 1),
-    ANIM(ANIM_LEVEL, TICRATE/3, 1, 128, 136, 2),
-    ANIM(ANIM_LEVEL, TICRATE/3, 1, 128, 136, 3),
-    ANIM(ANIM_LEVEL, TICRATE/3, 1, 128, 136, 4),
-    ANIM(ANIM_LEVEL, TICRATE/3, 1, 128, 136, 5),
-    ANIM(ANIM_LEVEL, TICRATE/3, 1, 128, 136, 6),
-    ANIM(ANIM_LEVEL, TICRATE/3, 1, 128, 136, 7),
-    ANIM(ANIM_LEVEL, TICRATE/3, 3, 192, 144, 8),
-    ANIM(ANIM_LEVEL, TICRATE/3, 1, 128, 136, 8),
+    Animation(Animation::Type::level, TICRATE / 3, 1, 128, 136, 1),
+    Animation(Animation::Type::level, TICRATE / 3, 1, 128, 136, 2),
+    Animation(Animation::Type::level, TICRATE / 3, 1, 128, 136, 3),
+    Animation(Animation::Type::level, TICRATE / 3, 1, 128, 136, 4),
+    Animation(Animation::Type::level, TICRATE / 3, 1, 128, 136, 5),
+    Animation(Animation::Type::level, TICRATE / 3, 1, 128, 136, 6),
+    Animation(Animation::Type::level, TICRATE / 3, 1, 128, 136, 7),
+    Animation(Animation::Type::level, TICRATE / 3, 3, 192, 144, 8),
+    Animation(Animation::Type::level, TICRATE / 3, 1, 128, 136, 8),
 };
 
-static anim_t epsd2animinfo[] =
+static std::array<Animation, 6> epsd2animinfo
 {
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 104, 168, 0),
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 40, 136, 0),
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 160, 96, 0),
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 104, 80, 0),
-    ANIM(ANIM_ALWAYS, TICRATE/3, 3, 120, 32, 0),
-    ANIM(ANIM_ALWAYS, TICRATE/4, 3, 40, 0, 0),
+    Animation(Animation::Type::level, TICRATE / 3, 3, 104, 168, 0),
+    Animation(Animation::Type::level, TICRATE / 3, 3, 40, 136, 0),
+    Animation(Animation::Type::level, TICRATE / 3, 3, 160, 96, 0),
+    Animation(Animation::Type::level, TICRATE / 3, 3, 104, 80, 0),
+    Animation(Animation::Type::level, TICRATE / 3, 3, 120, 32, 0),
+    Animation(Animation::Type::level, TICRATE / 4, 3, 40, 0, 0),
 };
 
-static int NUMANIMS[NUMEPISODES] =
+static std::array<std::size_t, NUMEPISODES> NUMANIMS
 {
-    arrlen(epsd0animinfo),
-    arrlen(epsd1animinfo),
-    arrlen(epsd2animinfo),
+    epsd0animinfo.size(),
+    epsd1animinfo.size(),
+    epsd2animinfo.size(),
 };
 
-static anim_t *anims[NUMEPISODES] =
+static std::array<theta::ArrayView<Animation>, NUMEPISODES - 1> anims
 {
-    epsd0animinfo,
-    epsd1animinfo,
-    epsd2animinfo
+    theta::ArrayView<Animation>(epsd0animinfo),
+    theta::ArrayView<Animation>(epsd1animinfo),
+    theta::ArrayView<Animation>(epsd2animinfo),
 };
 
 
@@ -344,55 +340,55 @@ static patch_t*		yah[3] = { NULL, NULL, NULL };
 static patch_t*		splat[2] = { NULL, NULL };
 
 // %, : graphics
-static patch_t*		percent;
-static patch_t*		colon;
+static const theta::video::Graphic* percent;
+static const theta::video::Graphic* colon;
 
 // 0-9 graphic
-static patch_t*		num[10];
+static std::vector<std::reference_wrapper<const theta::video::Graphic>> num;
 
 // minus sign
-static patch_t*		wiminus;
+static const theta::video::Graphic* wiminus;
 
 // "Finished!" graphics
-static patch_t*		finished;
+static const theta::video::Graphic* finished;
 
 // "Entering" graphic
-static patch_t*		entering; 
+static const theta::video::Graphic* entering;
 
 // "secret"
-static patch_t*		sp_secret;
+static const theta::video::Graphic* sp_secret;
 
  // "Kills", "Scrt", "Items", "Frags"
-static patch_t*		kills;
-static patch_t*		secret;
-static patch_t*		items;
-static patch_t*		frags;
+static const theta::video::Graphic* kills;
+static const theta::video::Graphic* secret;
+static const theta::video::Graphic* items;
+static const theta::video::Graphic* frags;
 
 // Time sucks.
-static patch_t*		timepatch;
-static patch_t*		par;
-static patch_t*		sucks;
+static const theta::video::Graphic* timepatch;
+static const theta::video::Graphic* par;
+static const theta::video::Graphic* sucks;
 
 // "killers", "victims"
-static patch_t*		killers;
-static patch_t*		victims; 
+static const theta::video::Graphic* killers;
+static const theta::video::Graphic* victims;
 
 // "Total", your face, your dead face
-static patch_t*		total;
-static patch_t*		star;
-static patch_t*		bstar;
+static const theta::video::Graphic* total;
+static const theta::video::Graphic* star;
+static const theta::video::Graphic* bstar;
 
 // "red P[1..MAXPLAYERS]"
-static patch_t*		p[MAXPLAYERS];
+static std::vector<std::reference_wrapper<const theta::video::Graphic>> p;
 
 // "gray P[1..MAXPLAYERS]"
-static patch_t*		bp[MAXPLAYERS];
+static std::vector<std::reference_wrapper<const theta::video::Graphic>> bp;
 
  // Name graphics of each level (centered)
-static patch_t**	lnames;
+static std::vector<std::reference_wrapper<const theta::video::Graphic>> lnames;
 
 // Buffer storing the backdrop
-static patch_t *background;
+static const theta::video::Graphic* background;
 
 //
 // CODE
@@ -401,7 +397,7 @@ static patch_t *background;
 // slam background
 void WI_slamBackground(void)
 {
-    V_DrawPatch(0, 0, background);
+    theta::video::DrawPageGraphic(*background);
 }
 
 // The ticker is used to detect keys
@@ -420,29 +416,19 @@ void WI_drawLF(void)
     if (gamemode != commercial || wbs->last < NUMCMAPS)
     {
         // draw <LevelName> 
-        V_DrawPatch((SCREENWIDTH - SHORT(lnames[wbs->last]->width))/2,
-                    y, lnames[wbs->last]);
+        theta::video::DrawScaledGraphic(
+            (VIRTUALWIDTH - lnames[wbs->last].get().width) / 2, y,
+            lnames[wbs->last].get());
 
         // draw "Finished!"
-        y += (5*SHORT(lnames[wbs->last]->height))/4;
+        y += (5 * lnames[wbs->last].get().height) / 4;
 
-        V_DrawPatch((SCREENWIDTH - SHORT(finished->width)) / 2, y, finished);
+        theta::video::DrawScaledGraphic(
+            (VIRTUALWIDTH - finished->width) / 2, y, *finished);
     }
-    else if (wbs->last == NUMCMAPS)
+    else if (wbs->last >= NUMCMAPS)
     {
-        // MAP33 - nothing is displayed!
-    }
-    else if (wbs->last > NUMCMAPS)
-    {
-        // > MAP33.  Doom bombs out here with a Bad V_DrawPatch error.
-        // I'm pretty sure that doom2.exe is just reading into random
-        // bits of memory at this point, but let's try to be accurate
-        // anyway.  This deliberately triggers a V_DrawPatch error.
-
-        patch_t tmp = { SCREENWIDTH, SCREENHEIGHT, 1, 1, 
-                        { 0, 0, 0, 0, 0, 0, 0, 0 } };
-
-        V_DrawPatch(0, y, &tmp);
+        I_Error("Invalid map graphic");
     }
 }
 
@@ -454,17 +440,13 @@ void WI_drawEL(void)
     int y = WI_TITLEY;
 
     // draw "Entering"
-    V_DrawPatch((SCREENWIDTH - SHORT(entering->width))/2,
-		y,
-                entering);
+    theta::video::DrawScaledGraphic((VIRTUALWIDTH - entering->width) / 2, y, *entering);
 
     // draw level
-    y += (5*SHORT(lnames[wbs->next]->height))/4;
+    y += (5 * lnames[wbs->next].get().height) / 4;
 
-    V_DrawPatch((SCREENWIDTH - SHORT(lnames[wbs->next]->width))/2,
-		y, 
-                lnames[wbs->next]);
-
+    theta::video::DrawScaledGraphic(
+        (VIRTUALWIDTH - lnames[wbs->next].get().width) / 2, y, lnames[wbs->next]);
 }
 
 void
@@ -519,7 +501,7 @@ WI_drawOnLnode
 void WI_initAnimatedBack(void)
 {
     int		i;
-    anim_t*	a;
+    Animation*	a;
 
     if (gamemode == commercial)
 	return;
@@ -535,11 +517,11 @@ void WI_initAnimatedBack(void)
 	a->ctr = -1;
 
 	// specify the next time to draw it
-	if (a->type == ANIM_ALWAYS)
+	if (a->type == Animation::Type::always)
 	    a->nexttic = bcnt + 1 + (M_Random()%a->period);
-	else if (a->type == ANIM_RANDOM)
+	else if (a->type == Animation::Type::random)
 	    a->nexttic = bcnt + 1 + a->data2+(M_Random()%a->data1);
-	else if (a->type == ANIM_LEVEL)
+	else if (a->type == Animation::Type::level)
 	    a->nexttic = bcnt + 1;
     }
 
@@ -548,7 +530,7 @@ void WI_initAnimatedBack(void)
 void WI_updateAnimatedBack(void)
 {
     int		i;
-    anim_t*	a;
+    Animation*	a;
 
     if (gamemode == commercial)
 	return;
@@ -564,12 +546,12 @@ void WI_updateAnimatedBack(void)
 	{
 	    switch (a->type)
 	    {
-	      case ANIM_ALWAYS:
+            case Animation::Type::always:
 		if (++a->ctr >= a->nanims) a->ctr = 0;
 		a->nexttic = bcnt + a->period;
 		break;
 
-	      case ANIM_RANDOM:
+	    case Animation::Type::random:
 		a->ctr++;
 		if (a->ctr == a->nanims)
 		{
@@ -579,8 +561,8 @@ void WI_updateAnimatedBack(void)
 		else a->nexttic = bcnt + a->period;
 		break;
 		
-	      case ANIM_LEVEL:
-		// gawd-awful hack for level anims
+            case Animation::Type::level:
+                // gawd-awful hack for level anims
 		if (!(state == StatCount && i == 7)
 		    && wbs->next == a->data1)
 		{
@@ -598,23 +580,25 @@ void WI_updateAnimatedBack(void)
 
 void WI_drawAnimatedBack(void)
 {
-    int			i;
-    anim_t*		a;
-
     if (gamemode == commercial)
-	return;
-
-    if (wbs->epsd > 2)
-	return;
-
-    for (i=0 ; i<NUMANIMS[wbs->epsd] ; i++)
     {
-	a = &anims[wbs->epsd][i];
-
-	if (a->ctr >= 0)
-	    V_DrawPatch(a->loc.x, a->loc.y, a->p[a->ctr]);
+        return;
     }
 
+    if (wbs->epsd > 2)
+    {
+        return;
+    }
+
+    for (int i = 0;i < NUMANIMS[wbs->epsd];i++)
+    {
+        Animation* a = &anims[wbs->epsd][i];
+
+        if (a->ctr >= 0)
+        {
+            theta::video::DrawScaledGraphic(a->loc.x, a->loc.y, a->p[a->ctr]);
+        }
+    }
 }
 
 //
@@ -624,73 +608,68 @@ void WI_drawAnimatedBack(void)
 // Returns new x position.
 //
 
-int
-WI_drawNum
-( int		x,
-  int		y,
-  int		n,
-  int		digits )
+int WI_drawNum(int x, int y, int n, int digits)
 {
-
-    int		fontwidth = SHORT(num[0]->width);
-    int		neg;
-    int		temp;
+    int fontwidth = num[0].get().width;
 
     if (digits < 0)
     {
-	if (!n)
-	{
-	    // make variable-length zeros 1 digit long
-	    digits = 1;
-	}
-	else
-	{
-	    // figure out # of digits in #
-	    digits = 0;
-	    temp = n;
+        if (!n)
+        {
+            // make variable-length zeros 1 digit long
+            digits = 1;
+        }
+        else
+        {
+            // figure out # of digits in #
+            digits = 0;
+            int temp = n;
 
-	    while (temp)
-	    {
-		temp /= 10;
-		digits++;
-	    }
-	}
+            while (temp)
+            {
+                temp /= 10;
+                digits++;
+            }
+        }
     }
 
-    neg = n < 0;
+    int neg = n < 0;
     if (neg)
-	n = -n;
+    {
+        n = -n;
+    }
 
     // if non-number, do not draw it
     if (n == 1994)
-	return 0;
+    {
+        return 0;
+    }
 
     // draw the new number
     while (digits--)
     {
-	x -= fontwidth;
-	V_DrawPatch(x, y, num[ n % 10 ]);
-	n /= 10;
+        x -= fontwidth;
+        theta::video::DrawScaledGraphic(x, y, num[ n % 10 ]);
+        n /= 10;
     }
 
     // draw a minus sign if necessary
     if (neg)
-	V_DrawPatch(x-=8, y, wiminus);
+    {
+        theta::video::DrawScaledGraphic(x -= 8, y, *wiminus);
+    }
 
     return x;
-
 }
 
-void
-WI_drawPercent
-( int		x,
-  int		y,
-  int		p )
+void WI_drawPercent(int x, int y, int p)
 {
     if (p < 0)
-	return;
+    {
+        return;
+    }
 
-    V_DrawPatch(x, y, percent);
+    theta::video::DrawScaledGraphic(x, y, *percent);
     WI_drawNum(x, y, p, -1);
 }
 
@@ -700,39 +679,34 @@ WI_drawPercent
 // Display level completion time and par,
 //  or "sucks" message if overflow.
 //
-void
-WI_drawTime
-( int		x,
-  int		y,
-  int		t )
+void WI_drawTime(int x, int y, int t)
 {
-
-    int		div;
-    int		n;
-
-    if (t<0)
-	return;
-
-    if (t <= 61*59)
+    if (t < 0)
     {
-	div = 1;
+        return;
+    }
 
-	do
-	{
-	    n = (t / div) % 60;
-	    x = WI_drawNum(x, y, n, 2) - SHORT(colon->width);
-	    div *= 60;
+    if (t <= 61 * 59)
+    {
+        int div = 1;
 
-	    // draw
-	    if (div==60 || t / div)
-		V_DrawPatch(x, y, colon);
-	    
-	} while (t / div);
+        do
+        {
+            int n = (t / div) % 60;
+            x = WI_drawNum(x, y, n, 2) - colon->width;
+            div *= 60;
+
+            // draw
+            if (div == 60 || t / div)
+            {
+                theta::video::DrawScaledGraphic(x, y, *colon);
+            }
+        } while (t / div);
     }
     else
     {
-	// "sucks"
-	V_DrawPatch(x - SHORT(sucks->width), y, sucks); 
+        // "sucks"
+        theta::video::DrawScaledGraphic(x - sucks->width, y, *sucks);
     }
 }
 
@@ -1000,85 +974,78 @@ void WI_updateDeathmatchStats(void)
 
 void WI_drawDeathmatchStats(void)
 {
-
-    int		i;
     int		j;
-    int		x;
-    int		y;
     int		w;
 
     WI_slamBackground();
-    
+
     // draw animated background
     WI_drawAnimatedBack(); 
     WI_drawLF();
 
     // draw stat titles (top line)
-    V_DrawPatch(DM_TOTALSX-SHORT(total->width)/2,
-		DM_MATRIXY-WI_SPACINGY+10,
-		total);
-    
-    V_DrawPatch(DM_KILLERSX, DM_KILLERSY, killers);
-    V_DrawPatch(DM_VICTIMSX, DM_VICTIMSY, victims);
+    theta::video::DrawScaledGraphic(DM_TOTALSX - total->width / 2,
+        DM_MATRIXY - WI_SPACINGY + 10, *total);
+
+    theta::video::DrawScaledGraphic(DM_KILLERSX, DM_KILLERSY, *killers);
+    theta::video::DrawScaledGraphic(DM_VICTIMSX, DM_VICTIMSY, *victims);
 
     // draw P?
-    x = DM_MATRIXX + DM_SPACINGX;
-    y = DM_MATRIXY;
+    int x = DM_MATRIXX + DM_SPACINGX;
+    int y = DM_MATRIXY;
 
-    for (i=0 ; i<MAXPLAYERS ; i++)
+    for (int i = 0;i < MAXPLAYERS;i++)
     {
-	if (playeringame[i])
-	{
-	    V_DrawPatch(x-SHORT(p[i]->width)/2,
-			DM_MATRIXY - WI_SPACINGY,
-			p[i]);
-	    
-	    V_DrawPatch(DM_MATRIXX-SHORT(p[i]->width)/2,
-			y,
-			p[i]);
+        if (playeringame[i])
+        {
+            theta::video::DrawScaledGraphic(x - p[i].get().width / 2,
+                DM_MATRIXY - WI_SPACINGY, p[i]);
 
-	    if (i == me)
-	    {
-		V_DrawPatch(x-SHORT(p[i]->width)/2,
-			    DM_MATRIXY - WI_SPACINGY,
-			    bstar);
+            theta::video::DrawScaledGraphic(DM_MATRIXX - p[i].get().width / 2,
+                y, p[i]);
 
-		V_DrawPatch(DM_MATRIXX-SHORT(p[i]->width)/2,
-			    y,
-			    star);
-	    }
-	}
-	else
-	{
-	    // V_DrawPatch(x-SHORT(bp[i]->width)/2,
-	    //   DM_MATRIXY - WI_SPACINGY, bp[i]);
-	    // V_DrawPatch(DM_MATRIXX-SHORT(bp[i]->width)/2,
-	    //   y, bp[i]);
-	}
-	x += DM_SPACINGX;
-	y += WI_SPACINGY;
+            if (i == me)
+            {
+                theta::video::DrawScaledGraphic(x - p[i].get().width / 2,
+                    DM_MATRIXY - WI_SPACINGY, *bstar);
+
+                theta::video::DrawScaledGraphic(DM_MATRIXX - p[i].get().width / 2,
+                    y, *star);
+            }
+        }
+        else
+        {
+            // V_DrawPatch(x-SHORT(bp[i]->width)/2,
+            //   DM_MATRIXY - WI_SPACINGY, bp[i]);
+            // V_DrawPatch(DM_MATRIXX-SHORT(bp[i]->width)/2,
+            //   y, bp[i]);
+        }
+        x += DM_SPACINGX;
+        y += WI_SPACINGY;
     }
 
     // draw stats
     y = DM_MATRIXY+10;
-    w = SHORT(num[0]->width);
+    w = num[0].get().width;
 
-    for (i=0 ; i<MAXPLAYERS ; i++)
+    for (int i = 0;i < MAXPLAYERS;i++)
     {
-	x = DM_MATRIXX + DM_SPACINGX;
+        x = DM_MATRIXX + DM_SPACINGX;
 
-	if (playeringame[i])
-	{
-	    for (j=0 ; j<MAXPLAYERS ; j++)
-	    {
-		if (playeringame[j])
-		    WI_drawNum(x+w, y, dm_frags[i][j], 2);
+        if (playeringame[i])
+        {
+            for (j = 0;j < MAXPLAYERS;j++)
+            {
+                if (playeringame[j])
+                {
+                    WI_drawNum(x + w, y, dm_frags[i][j], 2);
+                }
 
-		x += DM_SPACINGX;
-	    }
-	    WI_drawNum(DM_TOTALSX+w, y, dm_totals[i], 2);
-	}
-	y += WI_SPACINGY;
+                x += DM_SPACINGX;
+            }
+            WI_drawNum(DM_TOTALSX + w, y, dm_totals[i], 2);
+        }
+        y += WI_SPACINGY;
     }
 }
 
@@ -1271,57 +1238,67 @@ void WI_updateNetgameStats(void)
 
 void WI_drawNetgameStats(void)
 {
-    int		i;
-    int		x;
-    int		y;
-    int		pwidth = SHORT(percent->width);
+    int i;
+    int x;
+    int y;
+    int pwidth = percent->width;
 
     WI_slamBackground();
-    
+
     // draw animated background
     WI_drawAnimatedBack(); 
 
     WI_drawLF();
 
     // draw stat titles (top line)
-    V_DrawPatch(NG_STATSX+NG_SPACINGX-SHORT(kills->width),
-		NG_STATSY, kills);
+    theta::video::DrawScaledGraphic(NG_STATSX + NG_SPACINGX - kills->width,
+        NG_STATSY, *kills);
 
-    V_DrawPatch(NG_STATSX+2*NG_SPACINGX-SHORT(items->width),
-		NG_STATSY, items);
+    theta::video::DrawScaledGraphic(NG_STATSX + 2 * NG_SPACINGX - items->width,
+        NG_STATSY, *items);
 
-    V_DrawPatch(NG_STATSX+3*NG_SPACINGX-SHORT(secret->width),
-		NG_STATSY, secret);
-    
+    theta::video::DrawScaledGraphic(NG_STATSX + 3 * NG_SPACINGX - secret->width,
+        NG_STATSY, *secret);
+
     if (dofrags)
-	V_DrawPatch(NG_STATSX+4*NG_SPACINGX-SHORT(frags->width),
-		    NG_STATSY, frags);
-
-    // draw stats
-    y = NG_STATSY + SHORT(kills->height);
-
-    for (i=0 ; i<MAXPLAYERS ; i++)
     {
-	if (!playeringame[i])
-	    continue;
-
-	x = NG_STATSX;
-	V_DrawPatch(x-SHORT(p[i]->width), y, p[i]);
-
-	if (i == me)
-	    V_DrawPatch(x-SHORT(p[i]->width), y, star);
-
-	x += NG_SPACINGX;
-	WI_drawPercent(x-pwidth, y+10, cnt_kills[i]);	x += NG_SPACINGX;
-	WI_drawPercent(x-pwidth, y+10, cnt_items[i]);	x += NG_SPACINGX;
-	WI_drawPercent(x-pwidth, y+10, cnt_secret[i]);	x += NG_SPACINGX;
-
-	if (dofrags)
-	    WI_drawNum(x, y+10, cnt_frags[i], -1);
-
-	y += WI_SPACINGY;
+        theta::video::DrawScaledGraphic(NG_STATSX + 4 * NG_SPACINGX - frags->width,
+            NG_STATSY, *frags);
     }
 
+    // draw stats
+    y = NG_STATSY + kills->height;
+
+    for (i = 0;i < MAXPLAYERS;i++)
+    {
+        if (!playeringame[i])
+        {
+            continue;
+        }
+
+        x = NG_STATSX;
+        theta::video::DrawScaledGraphic(x - p[i].get().width, y, p[i]);
+
+        if (i == me)
+        {
+            theta::video::DrawScaledGraphic(x - p[i].get().width, y, *star);
+        }
+
+        x += NG_SPACINGX;
+        WI_drawPercent(x - pwidth, y + 10, cnt_kills[i]);
+        x += NG_SPACINGX;
+        WI_drawPercent(x - pwidth, y + 10, cnt_items[i]);
+        x += NG_SPACINGX;
+        WI_drawPercent(x - pwidth, y + 10, cnt_secret[i]);
+        x += NG_SPACINGX;
+
+        if (dofrags)
+        {
+            WI_drawNum(x, y + 10, cnt_frags[i], -1);
+        }
+
+        y += WI_SPACINGY;
+    }
 }
 
 static int	sp_state;
@@ -1447,35 +1424,32 @@ void WI_updateStats(void)
 void WI_drawStats(void)
 {
     // line height
-    int lh;	
-
-    lh = (3*SHORT(num[0]->height))/2;
+    int lh = (3 * num[0].get().height) / 2;
 
     WI_slamBackground();
 
     // draw animated background
     WI_drawAnimatedBack();
-    
+
     WI_drawLF();
 
-    V_DrawPatch(SP_STATSX, SP_STATSY, kills);
-    WI_drawPercent(SCREENWIDTH - SP_STATSX, SP_STATSY, cnt_kills[0]);
+    theta::video::DrawScaledGraphic(SP_STATSX, SP_STATSY, *kills);
+    WI_drawPercent(VIRTUALWIDTH - SP_STATSX, SP_STATSY, cnt_kills[0]);
 
-    V_DrawPatch(SP_STATSX, SP_STATSY+lh, items);
-    WI_drawPercent(SCREENWIDTH - SP_STATSX, SP_STATSY+lh, cnt_items[0]);
+    theta::video::DrawScaledGraphic(SP_STATSX, SP_STATSY + lh, *items);
+    WI_drawPercent(VIRTUALWIDTH - SP_STATSX, SP_STATSY + lh, cnt_items[0]);
 
-    V_DrawPatch(SP_STATSX, SP_STATSY+2*lh, sp_secret);
-    WI_drawPercent(SCREENWIDTH - SP_STATSX, SP_STATSY+2*lh, cnt_secret[0]);
+    theta::video::DrawScaledGraphic(SP_STATSX, SP_STATSY + 2 * lh, *sp_secret);
+    WI_drawPercent(VIRTUALWIDTH - SP_STATSX, SP_STATSY + 2 * lh, cnt_secret[0]);
 
-    V_DrawPatch(SP_TIMEX, SP_TIMEY, timepatch);
-    WI_drawTime(SCREENWIDTH/2 - SP_TIMEX, SP_TIMEY, cnt_time);
+    theta::video::DrawScaledGraphic(SP_TIMEX, SP_TIMEY, *timepatch);
+    WI_drawTime(VIRTUALWIDTH / 2 - SP_TIMEX, SP_TIMEY, cnt_time);
 
     if (wbs->epsd < 3)
     {
-	V_DrawPatch(SCREENWIDTH/2 + SP_TIMEX, SP_TIMEY, par);
-	WI_drawTime(SCREENWIDTH - SP_TIMEX, SP_TIMEY, cnt_par);
+        theta::video::DrawScaledGraphic(VIRTUALWIDTH / 2 + SP_TIMEX, SP_TIMEY, *par);
+        WI_drawTime(VIRTUALWIDTH - SP_TIMEX, SP_TIMEY, cnt_par);
     }
-
 }
 
 void WI_checkForAccelerate(void)
@@ -1546,139 +1520,147 @@ void WI_Ticker(void)
 
 }
 
-typedef void (*load_callback_t)(const char *lumpname, patch_t **variable);
-
 // Common load/unload function.  Iterates over all the graphics
 // lumps to be loaded/unloaded into memory.
+// [AM] For now, this just loads things.
 
-static void WI_loadUnloadData(load_callback_t callback)
+static void WI_loadData2()
 {
     int i, j;
     char name[9];
-    anim_t *a;
+    Animation* a;
 
+    lnames.clear();
     if (gamemode == commercial)
     {
-	for (i=0 ; i<NUMCMAPS ; i++)
-	{
-	    DEH_snprintf(name, 9, "CWILV%2.2d", i);
-            callback(name, &lnames[i]);
-	}
+        for (i = 0;i < NUMCMAPS;i++)
+        {
+            DEH_snprintf(name, 9, "CWILV%2.2d", i);
+            lnames.emplace_back(std::cref(theta::video::GraphicsManager::Instance().LoadPatch(name)));
+        }
     }
     else
     {
-	for (i=0 ; i<NUMMAPS ; i++)
-	{
-	    DEH_snprintf(name, 9, "WILV%d%d", wbs->epsd, i);
-            callback(name, &lnames[i]);
-	}
+        for (i = 0;i < NUMMAPS;i++)
+        {
+            DEH_snprintf(name, 9, "WILV%d%d", wbs->epsd, i);
+            lnames.emplace_back(std::cref(theta::video::GraphicsManager::Instance().LoadPatch(name)));
+        }
 
-	// you are here
-        callback(DEH_String("WIURH0"), &yah[0]);
+        // you are here
+        /*callback(DEH_String("WIURH0"), yah[0]);
 
-	// you are here (alt.)
-        callback(DEH_String("WIURH1"), &yah[1]);
+        // you are here (alt.)
+        callback(DEH_String("WIURH1"), yah[1]);
 
-	// splat
-        callback(DEH_String("WISPLAT"), &splat[0]);
+        // splat
+        callback(DEH_String("WISPLAT"), splat[0]);*/
 
-	if (wbs->epsd < 3)
-	{
-	    for (j=0;j<NUMANIMS[wbs->epsd];j++)
-	    {
-		a = &anims[wbs->epsd][j];
-		for (i=0;i<a->nanims;i++)
-		{
-		    // MONDO HACK!
-		    if (wbs->epsd != 1 || j != 8)
-		    {
-			// animations
-			DEH_snprintf(name, 9, "WIA%d%.2d%.2d", wbs->epsd, j, i);
-                        callback(name, &a->p[i]);
-		    }
-		    else
-		    {
-			// HACK ALERT!
-			a->p[i] = anims[1][4].p[i];
-		    }
-		}
-	    }
-	}
+        if (wbs->epsd < 3)
+        {
+            for (j = 0;j < NUMANIMS[wbs->epsd];j++)
+            {
+                a = &anims[wbs->epsd][j];
+                a->p.clear();
+                for (i = 0;i < a->nanims;i++)
+                {
+                    // MONDO HACK!
+                    if (wbs->epsd != 1 || j != 8)
+                    {
+                        // animations
+                        DEH_snprintf(name, 9, "WIA%d%.2d%.2d", wbs->epsd, j, i);
+                        a->p.emplace_back(std::cref(theta::video::GraphicsManager::Instance().LoadPatch(name)));
+                    }
+                    else
+                    {
+                        // HACK ALERT!
+                        a->p.emplace_back(anims[1][4].p[i]);
+                    }
+                }
+            }
+        }
     }
 
     // More hacks on minus sign.
-    callback(DEH_String("WIMINUS"), &wiminus);
+    wiminus = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIMINUS"));
 
-    for (i=0;i<10;i++)
+    num.clear();
+    for (i = 0;i < 10;i++)
     {
-	 // numbers 0-9
-	DEH_snprintf(name, 9, "WINUM%d", i);
-        callback(name, &num[i]);
+        // numbers 0-9
+        DEH_snprintf(name, 9, "WINUM%d", i);
+        num.emplace_back(std::cref(theta::video::GraphicsManager::Instance().LoadPatch(name)));
     }
 
     // percent sign
-    callback(DEH_String("WIPCNT"), &percent);
+    percent = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIPCNT"));
 
     // "finished"
-    callback(DEH_String("WIF"), &finished);
+    finished = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIF"));
 
     // "entering"
-    callback(DEH_String("WIENTER"), &entering);
+    entering = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIENTER"));
 
     // "kills"
-    callback(DEH_String("WIOSTK"), &kills);
+    kills = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOSTK"));
 
     // "scrt"
-    callback(DEH_String("WIOSTS"), &secret);
+    secret = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOSTS"));
 
      // "secret"
-    callback(DEH_String("WISCRT2"), &sp_secret);
+    sp_secret = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WISCRT2"));
 
     // french wad uses WIOBJ (?)
     if (W_CheckNumForName(DEH_String("WIOBJ")) >= 0)
     {
     	// "items"
-    	if (netgame && !deathmatch)
-            callback(DEH_String("WIOBJ"), &items);
-    	else
-            callback(DEH_String("WIOSTI"), &items);
+        if (netgame && !deathmatch)
+        {
+            items = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOBJ"));
+        }
+        else
+        {
+            items = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOSTI"));
+        }
     } else {
-        callback(DEH_String("WIOSTI"), &items);
+        items = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIOSTI"));
     }
 
     // "frgs"
-    callback(DEH_String("WIFRGS"), &frags);
+    frags = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIFRGS"));
 
     // ":"
-    callback(DEH_String("WICOLON"), &colon);
+    colon = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WICOLON"));
 
     // "time"
-    callback(DEH_String("WITIME"), &timepatch);
+    timepatch = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WITIME"));
 
     // "sucks"
-    callback(DEH_String("WISUCKS"), &sucks);
+    sucks = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WISUCKS"));
 
     // "par"
-    callback(DEH_String("WIPAR"), &par);
+    par = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIPAR"));
 
     // "killers" (vertical)
-    callback(DEH_String("WIKILRS"), &killers);
+    killers = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIKILRS"));
 
     // "victims" (horiz)
-    callback(DEH_String("WIVCTMS"), &victims);
+    victims = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIVCTMS"));
 
     // "total"
-    callback(DEH_String("WIMSTT"), &total);
+    total = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("WIMSTT"));
 
-    for (i=0 ; i<MAXPLAYERS ; i++)
+    p.clear();
+    bp.clear();
+    for (i = 0;i < MAXPLAYERS;i++)
     {
-	// "1,2,3,4"
-	DEH_snprintf(name, 9, "STPB%d", i);
-        callback(name, &p[i]);
+        // "1,2,3,4"
+        DEH_snprintf(name, 9, "STPB%d", i);
+        p.emplace_back(std::cref(theta::video::GraphicsManager::Instance().LoadPatch(name)));
 
-	// "1,2,3,4"
-	DEH_snprintf(name, 9, "WIBP%d", i+1);
-        callback(name, &bp[i]);
+        // "1,2,3,4"
+        DEH_snprintf(name, 9, "WIBP%d", i+1);
+        bp.emplace_back(std::cref(theta::video::GraphicsManager::Instance().LoadPatch(name)));
     }
 
     // Background image
@@ -1697,39 +1679,31 @@ static void WI_loadUnloadData(load_callback_t callback)
     }
 
     // Draw backdrop and save to a temporary buffer
-
-    callback(name, &background);
-}
-
-static void WI_loadCallback(const char *name, patch_t **variable)
-{
-    *variable = static_cast<patch_t*>(W_CacheLumpName(name, PU_STATIC));
+    background = &theta::video::GraphicsManager::Instance().LoadPatch(name);
 }
 
 void WI_loadData(void)
 {
     if (gamemode == commercial)
     {
-	NUMCMAPS = 32;
-	lnames = (patch_t **) Z_Malloc(sizeof(patch_t*) * NUMCMAPS,
-				       PU_STATIC, NULL);
+        NUMCMAPS = 32;
+        lnames.reserve(NUMCMAPS);
     }
     else
     {
-	lnames = (patch_t **) Z_Malloc(sizeof(patch_t*) * NUMMAPS,
-				       PU_STATIC, NULL);
+        lnames.reserve(NUMMAPS);
     }
 
-    WI_loadUnloadData(WI_loadCallback);
+    WI_loadData2();
 
     // These two graphics are special cased because we're sharing
     // them with the status bar code
 
     // your face
-    star = static_cast<patch_t*>(W_CacheLumpName(DEH_String("STFST01"), PU_STATIC));
+    star = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("STFST01"));
 
     // dead face
-    bstar = static_cast<patch_t*>(W_CacheLumpName(DEH_String("STFDEAD0"), PU_STATIC));
+    star = &theta::video::GraphicsManager::Instance().LoadPatch(DEH_String("STFDEAD0"));
 }
 
 static void WI_unloadCallback(const char *name, patch_t **variable)
@@ -1740,7 +1714,10 @@ static void WI_unloadCallback(const char *name, patch_t **variable)
 
 void WI_unloadData(void)
 {
-    WI_loadUnloadData(WI_unloadCallback);
+    // [AM] If we ever decide to unallocate the intermission graphics,
+    //      we'll do it here.
+
+    // WI_loadUnloadData(WI_unloadCallback);
 
     // We do not free these lumps as they are shared with the status
     // bar code.

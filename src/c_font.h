@@ -26,7 +26,7 @@
 namespace console
 {
 
-typedef std::unordered_map<byte, theta::ArrayView> Font;
+typedef std::unordered_map<byte, theta::ArrayView<byte>> Font;
 extern Font ConsoleFont;
 
 }

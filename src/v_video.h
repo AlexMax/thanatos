@@ -73,7 +73,8 @@ namespace video
 
 void DrawScaledGraphic(int x, int y, const Graphic& graphic);
 void DrawScaledLump(int x, int y, const std::string& lump);
-void DrawPage(const char* name);
+void DrawPageGraphic(const Graphic& graphic);
+void DrawPageLump(const std::string& lump);
 
 }
 
