@@ -165,9 +165,9 @@ struct Animation
     // used by RANDOM and LEVEL when animating
     int		state;  
 
-    Animation(Type type, int period, int nanims, int x, int y, int nexttic) :
+    Animation(Type type, int period, int nanims, int x, int y, int data1) :
         type(type), period(period), nanims(nanims), loc(Point(x, y)),
-        nexttic(nexttic) { }
+        data1(data1) { }
 };
 
 
@@ -525,53 +525,60 @@ void WI_initAnimatedBack(void)
 
 void WI_updateAnimatedBack(void)
 {
-    int		i;
-    Animation*	a;
-
     if (gamemode == commercial)
-	return;
-
-    if (wbs->epsd > 2)
-	return;
-
-    for (i=0;i<NUMANIMS[wbs->epsd];i++)
     {
-	a = &anims[wbs->epsd][i];
-
-	if (bcnt == a->nexttic)
-	{
-	    switch (a->type)
-	    {
-            case Animation::Type::always:
-		if (++a->ctr >= a->nanims) a->ctr = 0;
-		a->nexttic = bcnt + a->period;
-		break;
-
-	    case Animation::Type::random:
-		a->ctr++;
-		if (a->ctr == a->nanims)
-		{
-		    a->ctr = -1;
-		    a->nexttic = bcnt+a->data2+(M_Random()%a->data1);
-		}
-		else a->nexttic = bcnt + a->period;
-		break;
-		
-            case Animation::Type::level:
-                // gawd-awful hack for level anims
-		if (!(state == StatCount && i == 7)
-		    && wbs->next == a->data1)
-		{
-		    a->ctr++;
-		    if (a->ctr == a->nanims) a->ctr--;
-		    a->nexttic = bcnt + a->period;
-		}
-		break;
-	    }
-	}
-
+        return;
     }
 
+    if (wbs->epsd > 2)
+    {
+        return;
+    }
+
+    for (int i = 0;i < NUMANIMS[wbs->epsd];i++)
+    {
+        Animation* a = &anims[wbs->epsd][i];
+
+        if (bcnt == a->nexttic)
+        {
+            switch (a->type)
+            {
+            case Animation::Type::always:
+                if (++a->ctr >= a->nanims)
+                {
+                    a->ctr = 0;
+                }
+                a->nexttic = bcnt + a->period;
+                break;
+            case Animation::Type::random:
+                a->ctr++;
+                if (a->ctr == a->nanims)
+                {
+                    a->ctr = -1;
+                    a->nexttic = bcnt + a->data2 + (M_Random() % a->data1);
+                }
+                else
+                {
+                    a->nexttic = bcnt + a->period;
+                }
+                break;
+            case Animation::Type::level:
+                // gawd-awful hack for level anims
+                if (!(state == StatCount && i == 7) && wbs->next == a->data1)
+                {
+                    a->ctr++;
+                    if (a->ctr == a->nanims)
+                    {
+                        a->ctr--;
+                    }
+                    a->nexttic = bcnt + a->period;
+                }
+                break;
+            default:
+                I_Error("Unknown Animation Type.");
+            }
+        }
+    }
 }
 
 void WI_drawAnimatedBack(void)
@@ -592,7 +599,6 @@ void WI_drawAnimatedBack(void)
 
         if (a->ctr >= 0)
         {
-            fmt::printf("%d, %d, %s\n", a->loc.x, a->loc.y, video::GraphicsManager().Instance().DebugNameOf(a->p[a->ctr]));
             video::DrawScaledGraphic(a->loc.x, a->loc.y, a->p[a->ctr]);
         }
     }
