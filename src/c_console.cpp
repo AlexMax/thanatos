@@ -405,13 +405,13 @@ const video::DrawList* Input::GetDrawer(int width)
             if (fit != ConsoleFont.end())
             {
                 auto letter = fit->second;
-                patch = const_cast<patch_t*>(reinterpret_cast<const patch_t*>(letter.GetData()));
+                patch = const_cast<patch_t*>(reinterpret_cast<const patch_t*>(letter.data()));
             }
             else
             {
                 // Use space as fallback.  If that doesn't work, crash.
                 auto letter = ConsoleFont.at(32);
-                patch = const_cast<patch_t*>(reinterpret_cast<const patch_t*>(letter.GetData()));
+                patch = const_cast<patch_t*>(reinterpret_cast<const patch_t*>(letter.data()));
             }
 
             if (patch->width + dx > width)
@@ -543,13 +543,13 @@ void Draw()
                 if (fit != ConsoleFont.end())
                 {
                     auto letter = fit->second;
-                    patch = const_cast<patch_t*>(reinterpret_cast<const patch_t*>(letter.GetData()));
+                    patch = const_cast<patch_t*>(reinterpret_cast<const patch_t*>(letter.data()));
                 }
                 else
                 {
                     // Use space as fallback.  If that doesn't work, crash.
                     auto letter = ConsoleFont.at(32);
-                    patch = const_cast<patch_t*>(reinterpret_cast<const patch_t*>(letter.GetData()));
+                    patch = const_cast<patch_t*>(reinterpret_cast<const patch_t*>(letter.data()));
                 }
 
                 if (patch->width + x > SCREENWIDTH)

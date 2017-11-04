@@ -43,7 +43,6 @@ target_link_libraries("${PROGRAM_PREFIX}server"
 
 set(GAME_SOURCE_FILES
     aes_prng.cpp      aes_prng.h
-    array_view.cpp    array_view.h
     c_commands.cpp     c_commands.h
     c_console.cpp     c_console.h
     c_font.cpp        c_font.h
@@ -113,7 +112,7 @@ set(DEHACKED_SOURCE_FILES
 set(SOURCE_FILES ${COMMON_SOURCE_FILES} ${GAME_SOURCE_FILES})
 set(SOURCE_FILES_WITH_DEH ${SOURCE_FILES} ${DEHACKED_SOURCE_FILES})
 
-set(EXTRA_LIBS SDL2::SDL2 SDL2::mixer SDL2::net fmt)
+set(EXTRA_LIBS SDL2::SDL2 SDL2::mixer SDL2::net fmt GSL)
 if(PNG_FOUND)
     list(APPEND EXTRA_LIBS png)
 endif()

@@ -20,7 +20,8 @@
 
 #include <unordered_map>
 
-#include "array_view.h"
+#include <gsl/span>
+
 #include "doomtype.h"
 
 namespace theta
@@ -29,7 +30,7 @@ namespace theta
 namespace console
 {
 
-typedef std::unordered_map<byte, theta::ArrayView> Font;
+typedef std::unordered_map<byte, gsl::span<byte>> Font;
 extern Font ConsoleFont;
 
 }
