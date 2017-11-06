@@ -30,7 +30,7 @@ namespace theta
 namespace console
 {
 
-typedef std::unordered_map<byte, gsl::span<byte>> Font;
+typedef std::unordered_map<byte, gsl::span<const byte>> Font;
 extern Font ConsoleFont;
 
 }

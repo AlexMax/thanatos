@@ -4,11 +4,11 @@ if(MSVC)
     add_definitions(-D__BASE_FILE__=\"%\(Filename\)%\(Extension\)\")
 endif()
 
-foreach(SUBDIR doom resource)
+foreach(SUBDIR doom)
     add_subdirectory(${SUBDIR})
 endforeach()
 
-include_directories(${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_BINARY_DIR})
 
 # Common source files used by absolutely everything:
 

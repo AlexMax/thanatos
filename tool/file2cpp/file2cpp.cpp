@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
     }
 
     // Write the header
-    auto bytes = std::fprintf(outfile, "std::array<unsigned char, %d> %s{\n", insize, basefile.c_str());
+    auto bytes = std::fprintf(outfile, "const std::array<unsigned char, %d> %s{\n", insize, basefile.c_str());
     if (bytes < 0)
     {
         std::fprintf(stderr, "can't write file %s (%s)\n", argv[1], std::strerror(errno));
