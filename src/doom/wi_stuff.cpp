@@ -23,7 +23,8 @@
 
 #include <stdio.h>
 
-#include "array_view.h"
+#include <gsl/span>
+
 #include "z_zone.h"
 
 #include "m_misc.h"
@@ -267,11 +268,11 @@ static std::array<std::size_t, NUMEPISODES> NUMANIMS
     epsd2animinfo.size(),
 };
 
-static std::array<ArrayView<Animation>, NUMEPISODES - 1> anims
+static std::array<gsl::span<Animation>, NUMEPISODES - 1> anims
 {
-    ArrayView<Animation>(epsd0animinfo),
-    ArrayView<Animation>(epsd1animinfo),
-    ArrayView<Animation>(epsd2animinfo),
+    gsl::make_span(epsd0animinfo),
+    gsl::make_span(epsd1animinfo),
+    gsl::make_span(epsd2animinfo),
 };
 
 

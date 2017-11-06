@@ -79,7 +79,7 @@ set(PROGRAM_PREFIX "thanatos-"
 
 configure_file(config.h.in config.h)
 
-foreach(SUBDIR lib src)
+foreach(SUBDIR lib resource src tool)
     add_subdirectory(${SUBDIR})
 endforeach()
 
