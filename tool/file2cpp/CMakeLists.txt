@@ -1,0 +1,1 @@
+add_executable(file2cpp file2cpp.cpp)

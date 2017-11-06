@@ -4,11 +4,11 @@ if(MSVC)
     add_definitions(-D__BASE_FILE__=\"%\(Filename\)%\(Extension\)\")
 endif()
 
-foreach(SUBDIR doom)
+foreach(SUBDIR doom resource)
     add_subdirectory(${SUBDIR})
 endforeach()
 
-include_directories(${CMAKE_BINARY_DIR})
+include_directories(${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 # Common source files used by absolutely everything:
 
@@ -128,6 +128,7 @@ else()
 endif()
 
 target_link_libraries("${PACKAGE_TARNAME}" doom ${EXTRA_LIBS})
+add_dependencies("${PACKAGE_TARNAME}" resource)
 
 if(MSVC)
     # Suppress default manifest and use the one in the resource file instead.
