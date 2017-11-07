@@ -230,7 +230,6 @@ extern const video::Graphic* hu_font[HU_FONTSIZE];
 void F_TextWrite (void)
 {
     byte*	src;
-    pixel_t*	dest;
     
     int		x,y,w;
     signed int	count;
@@ -241,23 +240,29 @@ void F_TextWrite (void)
     
     // erase the entire screen to a tiled background
     src = static_cast<byte*>(W_CacheLumpName ( finaleflat , PU_CACHE));
-    dest = I_VideoBuffer->GetRawPixels();
+
+    auto doompal = static_cast<byte*>(W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
+    video::RGBABuffer buffer(VIRTUALWIDTH, VIRTUALHEIGHT);
+    auto dest = buffer.GetRawPixels();
 	
-    for (y=0 ; y<SCREENHEIGHT ; y++)
+    for (y = 0;y < VIRTUALHEIGHT;y++)
     {
-	for (x=0 ; x<SCREENWIDTH/64 ; x++)
-	{
-	    memcpy (dest, src+((y&63)<<6), 64);
-	    dest += 64;
-	}
-	if (SCREENWIDTH&63)
-	{
-	    memcpy (dest, src+((y&63)<<6), SCREENWIDTH&63);
-	    dest += (SCREENWIDTH&63);
-	}
+        for (x = 0;x < VIRTUALWIDTH;x++)
+        {
+            auto flatpos = src + ((y & 63) * 64) + (x & 63);
+
+            *dest = doompal[*(flatpos) * 3];
+            *(dest + 1) = doompal[*(flatpos) * 3 + 1];
+            *(dest + 2) = doompal[*(flatpos) * 3 + 2];
+            *(dest + 3) = 0xFF;
+            dest += 4;
+        }
     }
 
-    V_MarkRect (0, 0, SCREENWIDTH, SCREENHEIGHT);
+    video::Graphic graphic(buffer, VIRTUALWIDTH, VIRTUALHEIGHT, 0, 0);
+    video::DrawPageGraphic(graphic);
+
+    V_MarkRect (0, 0, VIRTUALWIDTH, VIRTUALHEIGHT);
     
     // draw some of the text onto the screen
     cx = 10;
@@ -287,7 +292,7 @@ void F_TextWrite (void)
 	}
 		
         w = hu_font[c]->width;
-	if (cx+w > SCREENWIDTH)
+	if (cx+w > VIRTUALWIDTH)
 	    break;
         video::DrawScaledGraphic(cx, cy, *hu_font[c]);
 	cx+=w;
