@@ -21,6 +21,8 @@
 #include <memory>
 #include <string>
 
+#include <gsl/span>
+
 #include "SDL.h"
 #include "glad/glad.h"
 
@@ -53,6 +55,7 @@ public:
     Shader(const Shader &obj) = delete;
     ~Shader();
     void Source(const char* source);
+    void Source(gsl::span<const byte> source);
     bool Compile();
     GLuint Ref() const;
     std::string Log() const;

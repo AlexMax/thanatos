@@ -61,6 +61,12 @@ void Shader::Source(const char* source)
     glShaderSource(this->shader, 1, &source, NULL);
 }
 
+// Set the shader source based on included file
+void Shader::Source(gsl::span<const byte> source)
+{
+    this->Source(std::string(source.cbegin(), source.cend()).c_str());
+}
+
 // Compile a shader.  Returns true if successful, otherwise false.
 bool Shader::Compile()
 {
@@ -152,41 +158,22 @@ void Renderer::constructGraphics()
     }
 
     // Vertex Shader
-    const char* vertexShaderSource =
-        "#version 330 core\n\n"
-
-        "layout (location = 0) in vec3 aPos;\n"
-        "layout (location = 1) in vec2 aTexCoord;\n\n"
-
-        "out vec2 testTexCoord;\n\n"
-
-        "void main()\n"
-        "{\n"
-        "    gl_Position = vec4(aPos, 1.0);\n"
-        "    testTexCoord = aTexCoord;\n"
-        "}";
     Shader vertexShader(Shader::type::vertex);
-    vertexShader.Source(vertexShaderSource);
+    {
+#include "resource/shader/graphics.vert.glsl.h"
+        vertexShader.Source(graphics);
+    }
     if (vertexShader.Compile() == false)
     {
         I_Error("Vertex Shader Compile Error:\n%s\n", vertexShader.Log().c_str());
     }
 
     // Fragment Shader
-    const char* fragmentShaderSource =
-        "#version 330 core\n\n"
-
-        "out vec4 oFragColor;\n"
-        "in vec2 testTexCoord;\n\n"
-
-        "uniform sampler2D uTexture;\n\n"
-
-        "void main()\n"
-        "{\n"
-        "    oFragColor = texture(uTexture, testTexCoord);\n"
-        "}\n";
     Shader fragmentShader(Shader::type::fragment);
-    fragmentShader.Source(fragmentShaderSource);
+    {
+#include "resource/shader/graphics.frag.glsl.h"
+        fragmentShader.Source(graphics);
+    }
     if (fragmentShader.Compile() == false)
     {
         I_Error("Fragment Shader Compile Error:\n%s\n", fragmentShader.Log().c_str());
@@ -255,41 +242,22 @@ void Renderer::constructPage()
     }
 
     // Vertex Shader
-    const char* vertexShaderSource =
-        "#version 330 core\n\n"
-
-        "layout (location = 0) in vec3 aPos;\n"
-        "layout (location = 1) in vec2 aTexCoord;\n\n"
-
-        "out vec2 testTexCoord;\n\n"
-
-        "void main()\n"
-        "{\n"
-        "    gl_Position = vec4(aPos, 1.0);\n"
-        "    testTexCoord = aTexCoord;\n"
-        "}";
     Shader vertexShader(Shader::type::vertex);
-    vertexShader.Source(vertexShaderSource);
+    {
+#include "resource/shader/page.vert.glsl.h"
+        vertexShader.Source(page);
+    }
     if (vertexShader.Compile() == false)
     {
         I_Error("Vertex Shader Compile Error:\n%s\n", vertexShader.Log().c_str());
     }
 
     // Fragment Shader
-    const char* fragmentShaderSource =
-        "#version 330 core\n\n"
-
-        "out vec4 oFragColor;\n"
-        "in vec2 testTexCoord;\n\n"
-
-        "uniform sampler2D uTexture;\n\n"
-
-        "void main()\n"
-        "{\n"
-        "    oFragColor = texture(uTexture, testTexCoord);\n"
-        "}\n";
     Shader fragmentShader(Shader::type::fragment);
-    fragmentShader.Source(fragmentShaderSource);
+    {
+#include "resource/shader/page.frag.glsl.h"
+        fragmentShader.Source(page);
+    }
     if (fragmentShader.Compile() == false)
     {
         I_Error("Fragment Shader Compile Error:\n%s\n", fragmentShader.Log().c_str());
@@ -358,44 +326,22 @@ void Renderer::constructWorld()
     }
 
     // Vertex Shader
-    const char* vertexShaderSource =
-        "#version 330 core\n\n"
-
-        "layout (location = 0) in vec3 aPos;\n"
-        "layout (location = 1) in vec2 aTexCoord;\n\n"
-
-        "out vec2 testTexCoord;\n\n"
-
-        "void main()\n"
-        "{\n"
-        "    gl_Position = vec4(aPos, 1.0);\n"
-        "    testTexCoord = aTexCoord;\n"
-        "}";
     Shader vertexShader(Shader::type::vertex);
-    vertexShader.Source(vertexShaderSource);
+    {
+#include "resource/shader/world.vert.glsl.h"
+        vertexShader.Source(world);
+    }
     if (vertexShader.Compile() == false)
     {
         I_Error("Vertex Shader Compile Error:\n%s\n", vertexShader.Log().c_str());
     }
 
     // Fragment Shader
-    const char* fragmentShaderSource =
-        "#version 330 core\n\n"
-
-        "out vec4 oFragColor;\n"
-        "in vec3 testColor;\n"
-        "in vec2 testTexCoord;\n\n"
-
-        "uniform sampler2D uTexture;\n"
-        "uniform sampler2D uPalette;\n\n"
-
-        "void main()\n"
-        "{\n"
-        "    vec4 index = texture(uTexture, testTexCoord);\n"
-        "    oFragColor = texture(uPalette, vec2(index.x, 0.0));\n"
-        "}\n";
     Shader fragmentShader(Shader::type::fragment);
-    fragmentShader.Source(fragmentShaderSource);
+    {
+#include "resource/shader/world.frag.glsl.h"
+        fragmentShader.Source(world);
+    }
     if (fragmentShader.Compile() == false)
     {
         I_Error("Fragment Shader Compile Error:\n%s\n", fragmentShader.Log().c_str());

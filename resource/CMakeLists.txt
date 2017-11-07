@@ -9,6 +9,15 @@ foreach(index RANGE 032 126)
     endif()
 endforeach()
 
+# Shaders
+set(SHADER_FILES
+    graphics.vert.glsl  graphics.frag.glsl
+    page.vert.glsl      page.frag.glsl
+    world.vert.glsl     world.frag.glsl)
+foreach(file ${SHADER_FILES})
+    list(APPEND RESOURCE_FILES "shader/${file}")
+endforeach()
+
 # Turn resources into headers
 set(RESOURCE_HEADERS)
 foreach(resource ${RESOURCE_FILES})
