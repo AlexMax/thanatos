@@ -721,6 +721,15 @@ void Renderer::SetPageGraphic(const video::Graphic& handle)
             handle.data.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
             handle.data.GetRawPixels());
     }
+
+    // FIXME: Gross hack - clear any graphics that were queued before the
+    //        page was set.  This gives the appearance of the page "covering
+    //        up" any previously drawn graphics, which is necessary to prevent
+    //        graphical glitches - such as status bars appearing on help
+    //        screens.  The real solution is to not needlessly queue graphics
+    //        in the first place.
+    this->graphicsVertices.clear();
+    this->graphicsIndices.clear();
 }
 
 // Nudge OpenGL to change the size of the viewport to match the new resolution.
