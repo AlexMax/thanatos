@@ -732,6 +732,7 @@ void SetupProjection()
     pspritescale = FloatToFixed(sdwidth / VIRTUALWIDTH);
     pspriteiscale = FloatToFixed(VIRTUALWIDTH / sdwidth);
     pspriteyscale = FloatToFixed(sdwidth / VIRTUALWIDTH * 1.2);
+    pspriteyiscale = FloatToFixed(VIRTUALWIDTH / sdwidth * (5 / 6.0));
 }
 
 }

@@ -68,6 +68,7 @@ typedef struct
 fixed_t		pspritescale;
 fixed_t		pspriteiscale;
 fixed_t         pspriteyscale;
+fixed_t         pspriteyiscale;
 
 lighttable_t**	spritelights;
 
