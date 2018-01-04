@@ -84,6 +84,8 @@ void Error2(const char* file, int line, const char* error, const Arguments&... a
 
 void I_Tactile (int on, int off, int total);
 
+void *I_Realloc(void *ptr, size_t size);
+
 boolean I_GetMemoryValue(unsigned int offset, void *value, int size);
 
 // Schedule a function to be called when the program exits.

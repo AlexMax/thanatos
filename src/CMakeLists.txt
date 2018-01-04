@@ -61,6 +61,7 @@ set(GAME_SOURCE_FILES
     i_opengl.cpp      i_opengl.h
                       i_renderer.h
                     i_swap.h
+    i_midipipe.cpp    i_midipipe.h
     i_sdlmusic.cpp
     i_sdlsound.cpp
     i_sound.cpp       i_sound.h
