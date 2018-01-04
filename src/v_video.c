@@ -674,8 +674,8 @@ void WritePCXfile(char *filename, byte *data,
     pcx->ymin = 0;
     pcx->xmax = SHORT(width-1);
     pcx->ymax = SHORT(height-1);
-    pcx->hres = SHORT(width);
-    pcx->vres = SHORT(height);
+    pcx->hres = SHORT(1);
+    pcx->vres = SHORT(1);
     memset (pcx->palette,0,sizeof(pcx->palette));
     pcx->reserved = 0;                  // PCX spec: reserved byte must be zero
     pcx->color_planes = 1;		// chunky image
@@ -725,7 +725,7 @@ static void warning_fn(png_structp p, png_const_charp s)
 }
 
 void WritePNGfile(char *filename, byte *data,
-                  int inwidth, int inheight,
+                  int width, int height,
                   byte *palette)
 {
     png_structp ppng;
@@ -733,12 +733,23 @@ void WritePNGfile(char *filename, byte *data,
     png_colorp pcolor;
     FILE *handle;
     int i, j;
-    int width, height;
+    int w_factor, h_factor;
     byte *rowbuf;
 
-    // scale up to accommodate aspect ratio correction
-    width = inwidth * 5;
-    height = inheight * 6;
+    if (aspect_ratio_correct)
+    {
+        // scale up to accommodate aspect ratio correction
+        w_factor = 5;
+        h_factor = 6;
+
+        width *= w_factor;
+        height *= h_factor;
+    }
+    else
+    {
+        w_factor = 1;
+        h_factor = 1;
+    }
 
     handle = fopen(filename, "wb");
     if (!handle)
@@ -750,12 +761,14 @@ void WritePNGfile(char *filename, byte *data,
                                    error_fn, warning_fn);
     if (!ppng)
     {
+        fclose(handle);
         return;
     }
 
     pinfo = png_create_info_struct(ppng);
     if (!pinfo)
     {
+        fclose(handle);
         png_destroy_write_struct(&ppng, NULL);
         return;
     }
@@ -769,6 +782,7 @@ void WritePNGfile(char *filename, byte *data,
     pcolor = malloc(sizeof(*pcolor) * 256);
     if (!pcolor)
     {
+        fclose(handle);
         png_destroy_write_struct(&ppng, &pinfo);
         return;
     }
@@ -794,11 +808,11 @@ void WritePNGfile(char *filename, byte *data,
             // expand the row 5x
             for (j = 0; j < SCREENWIDTH; j++)
             {
-                memset(rowbuf + j * 5, *(data + i*SCREENWIDTH + j), 5);
+                memset(rowbuf + j * w_factor, *(data + i*SCREENWIDTH + j), w_factor);
             }
 
             // write the row 6 times
-            for (j = 0; j < 6; j++)
+            for (j = 0; j < h_factor; j++)
             {
                 png_write_row(ppng, rowbuf);
             }

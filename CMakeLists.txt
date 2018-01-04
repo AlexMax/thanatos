@@ -13,7 +13,7 @@ endif()
 project("Chocolate Doom" VERSION "3.0.0" LANGUAGES C)
 
 set(PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
-set(PACKAGE_VERSION "${PROJECT_VERSION}-beta1")
+set(PACKAGE_VERSION "${PROJECT_VERSION}")
 set(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
 set(PACKAGE_TARNAME "chocolate-doom")
 set(PACKAGE_BUGREPORT "chocolate-doom-dev-list@chocolate-doom.org")
@@ -68,7 +68,7 @@ set(PROGRAM_PREFIX "chocolate-"
 
 configure_file(config.h.in config.h)
 
-foreach(SUBDIR src)
+foreach(SUBDIR midiproc src)
     add_subdirectory(${SUBDIR})
 endforeach()
 

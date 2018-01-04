@@ -25,6 +25,8 @@
 #include "SDL.h"
 #include "SDL_mixer.h"
 
+#include "i_midipipe.h"
+
 #include "config.h"
 #include "doomtype.h"
 #include "memio.h"
@@ -470,7 +472,7 @@ static void AddSubstituteMusic(subst_music_t *subst)
 {
     ++subst_music_len;
     subst_music =
-        realloc(subst_music, sizeof(subst_music_t) * subst_music_len);
+        I_Realloc(subst_music, sizeof(subst_music_t) * subst_music_len);
     memcpy(&subst_music[subst_music_len - 1], subst, sizeof(subst_music_t));
 }
 
@@ -876,6 +878,9 @@ static void I_SDL_ShutdownMusic(void)
 {
     if (music_initialized)
     {
+#if defined(_WIN32)
+        I_MidiPipe_ShutdownServer();
+#endif
         Mix_HaltMusic();
         music_initialized = false;
 
@@ -972,6 +977,11 @@ static boolean I_SDL_InitMusic(void)
         LoadSubstituteConfigs();
     }
 
+#if defined(_WIN32)
+    // [AM] Start up midiproc to handle playing MIDI music.
+    I_MidiPipe_InitServer();
+#endif
+
     return music_initialized;
 }
 
@@ -993,6 +1003,9 @@ static void UpdateMusicVolume(void)
         vol = (current_music_volume * MIX_MAX_VOLUME) / 127;
     }
 
+#if defined(_WIN32)
+    I_MidiPipe_SetVolume(vol);
+#endif
     Mix_VolumeMusic(vol);
 }
 
@@ -1017,7 +1030,7 @@ static void I_SDL_PlaySong(void *handle, boolean looping)
         return;
     }
 
-    if (handle == NULL)
+    if (handle == NULL && !midi_server_registered)
     {
         return;
     }
@@ -1044,7 +1057,16 @@ static void I_SDL_PlaySong(void *handle, boolean looping)
         SDL_UnlockAudio();
     }
 
-    Mix_PlayMusic(current_track_music, loops);
+#if defined(_WIN32)
+    if (midi_server_registered)
+    {
+        I_MidiPipe_PlaySong(loops);
+    }
+    else
+#endif
+    {
+        Mix_PlayMusic(current_track_music, loops);
+    }
 }
 
 static void I_SDL_PauseSong(void)
@@ -1078,7 +1100,17 @@ static void I_SDL_StopSong(void)
         return;
     }
 
-    Mix_HaltMusic();
+#if defined(_WIN32)
+    if (midi_server_registered)
+    {
+        I_MidiPipe_StopSong();
+    }
+    else
+#endif
+    {
+        Mix_HaltMusic();
+    }
+
     playing_substitute = false;
     current_track_music = NULL;
 }
@@ -1189,23 +1221,37 @@ static void *I_SDL_RegisterSong(void *data, int len)
     // by now, but Mix_SetMusicCMD() only works with Mix_LoadMUS(), so
     // we have to generate a temporary file.
 
-    music = Mix_LoadMUS(filename);
-
-    if (music == NULL)
+#if defined(_WIN32)
+    // [AM] If we do not have an external music command defined, play
+    //      music with the MIDI server.
+    if (midi_server_initialized)
     {
-        // Failed to load
-
-        fprintf(stderr, "Error loading midi: %s\n", Mix_GetError());
+        music = NULL;
+        if (!I_MidiPipe_RegisterSong(filename))
+        {
+            fprintf(stderr, "Error loading midi: %s\n",
+                "Could not communicate with midiproc.");
+        }
     }
-
-    // Remove the temporary MIDI file; however, when using an external
-    // MIDI program we can't delete the file. Otherwise, the program
-    // won't find the file to play. This means we leave a mess on
-    // disk :(
-
-    if (strlen(snd_musiccmd) == 0)
+    else
+#endif
     {
-        remove(filename);
+        music = Mix_LoadMUS(filename);
+        if (music == NULL)
+        {
+            // Failed to load
+            fprintf(stderr, "Error loading midi: %s\n", Mix_GetError());
+        }
+
+        // Remove the temporary MIDI file; however, when using an external
+        // MIDI program we can't delete the file. Otherwise, the program
+        // won't find the file to play. This means we leave a mess on
+        // disk :(
+
+        if (strlen(snd_musiccmd) == 0)
+        {
+            remove(filename);
+        }
     }
 
     free(filename);
