@@ -59,6 +59,7 @@ set(GAME_SOURCE_FILES
     i_input.cpp       i_input.h
     i_joystick.cpp    i_joystick.h
                     i_swap.h
+    i_midipipe.cpp    i_midipipe.h
     i_sdlmusic.cpp
     i_sdlsound.cpp
     i_sound.cpp       i_sound.h
