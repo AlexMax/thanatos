@@ -551,9 +551,10 @@ void R_InitTextureMapping (void)
 
     for (i=0 ; i<FINEANGLES/2 ; i++)
     {
-	if (finetangent[i] > FRACUNIT*2)
+        // [AM] Increased from +-2, super-high resolutions might need more?
+	if (finetangent[i] > FRACUNIT*4)
 	    t = -1;
-	else if (finetangent[i] < -FRACUNIT*2)
+	else if (finetangent[i] < -FRACUNIT*4)
 	    t = viewwidth+1;
 	else
 	{
