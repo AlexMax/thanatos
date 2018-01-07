@@ -108,7 +108,7 @@ namespace theta
 
 typedef struct
 {
-    int x, y;
+    double x, y;
 } fpoint_t;
 
 typedef struct
@@ -196,19 +196,18 @@ static int 	grid = 0;
 static int 	leveljuststarted = 1; 	// kluge until AM_LevelInit() is called
 
 boolean    	automapactive = false;
-static int 	finit_width = VIRTUALWIDTH;
-static int 	finit_height = VIRTUALHEIGHT - ST_HEIGHT;
+static double   finit_width = VIRTUALWIDTH;
+static double   finit_height = VIRTUALHEIGHT - ST_HEIGHT;
 
 // location of window on screen
-static int 	f_x;
-static int	f_y;
+static double   f_x;
+static double   f_y;
 
 // size of window on screen
-static int 	f_w;
-static int	f_h;
+static double   f_w;
+static double   f_h;
 
 static int 	lightlev; 		// used for funky strobing effect
-static pixel_t*	fb; 			// pseudo-frame buffer
 static int 	amclock;
 
 static mpoint_t m_paninc; // how far the window pans each tic (map coords)
@@ -266,20 +265,20 @@ cheatseq_t cheat_amap = CHEAT("iddt", 0);
 static boolean stopped = true;
 
 // translates between frame-buffer and map distances
-fixed_t FTOM(int x) {
-    return FixedMul((x << FRACBITS), scale_ftom);
+fixed_t FTOM(double x) {
+    return FixedMul(FloatToFixed(x), scale_ftom);
 }
 
-int MTOF(fixed_t x) {
-    return FixedMul(x, scale_mtof) >> FRACBITS;
+double MTOF(fixed_t x) {
+    return FixedToFloat(FixedMul(x, scale_mtof));
 }
 
 // translates between frame-buffer and map coordinates
-fixed_t CXMTOF(fixed_t x) {
+double CXMTOF(fixed_t x) {
     return f_x + MTOF(x - m_x);
 }
 
-fixed_t CYMTOF(fixed_t y) {
+double CYMTOF(fixed_t y) {
     return f_y + (f_h - MTOF(y - m_y));
 }
 
@@ -349,7 +348,7 @@ void AM_restoreScaleAndLoc(void)
     m_y2 = m_y + m_h;
 
     // Change the scaling multipliers
-    scale_mtof = FixedDiv(f_w<<FRACBITS, m_w);
+    scale_mtof = FixedDiv(FloatToFixed(f_w), m_w);
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
 }
 
@@ -396,11 +395,11 @@ void AM_findMinMaxBoundaries(void)
     min_w = 2*PLAYERRADIUS; // const? never changed?
     min_h = 2*PLAYERRADIUS;
 
-    a = FixedDiv(f_w<<FRACBITS, max_w);
-    b = FixedDiv(f_h<<FRACBITS, max_h);
+    a = FixedDiv(FloatToFixed(f_w), max_w);
+    b = FixedDiv(FloatToFixed(f_h), max_h);
   
     min_scale_mtof = a < b ? a : b;
-    max_scale_mtof = FixedDiv(f_h<<FRACBITS, 2*PLAYERRADIUS);
+    max_scale_mtof = FixedDiv(FloatToFixed(f_h), 2*PLAYERRADIUS);
 
 }
 
@@ -443,7 +442,6 @@ void AM_initVariables(void)
     static event_t st_notify = { ev_keyup, AM_MSGENTERED, 0, 0 };
 
     automapactive = true;
-    fb = I_VideoBuffer->GetRawPixels();
 
     f_oldloc.x = INT_MAX;
     amclock = 0;
@@ -866,15 +864,6 @@ void AM_Ticker (void)
 
 
 //
-// Clear automap frame buffer.
-//
-void AM_clearFB(int color)
-{
-    memset(fb, color, f_w*f_h*sizeof(*fb));
-}
-
-
-//
 // Automap clipping of lines.
 //
 // Based on Cohen-Sutherland clipping algorithm but with a slightly
@@ -1022,10 +1011,10 @@ AM_clipMline
 //
 void AM_drawFline(fline_t* fl, int color)
 {
-    float x1 = (fl->a.x / (finit_width / 2.0)) - 1.0;
-    float y1 = (fl->a.y / (finit_height / 2.0)) - 1.0;
-    float x2 = (fl->b.x / (finit_width / 2.0)) - 1.0;
-    float y2 = (fl->b.y / (finit_height / 2.0)) - 1.0;
+    double x1 = (fl->a.x / (finit_width / 2.0)) - 1.0;
+    double y1 = (fl->a.y / (finit_height / 2.0)) - 1.0;
+    double x2 = (fl->b.x / (finit_width / 2.0)) - 1.0;
+    double y2 = (fl->b.y / (finit_height / 2.0)) - 1.0;
 
     system::renderer->DrawMapLine(x1, y1, x2, y2);
 }
@@ -1307,15 +1296,14 @@ void AM_drawMarks(void)
 
 void AM_drawCrosshair(int color)
 {
-    fb[(f_w*(f_h+1))/2] = color; // single point for now
-
+    system::renderer->DrawMapLine(-0.01, 0.0, 0.01, 0.0);
+    system::renderer->DrawMapLine(0.0, -0.01, 0.0, 0.01);
 }
 
 void AM_Drawer (void)
 {
     if (!automapactive) return;
 
-    AM_clearFB(BACKGROUND);
     if (grid)
 	AM_drawGrid(GRIDCOLORS);
     AM_drawWalls();
