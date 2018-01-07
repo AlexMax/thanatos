@@ -79,7 +79,7 @@ public:
 class Renderer : public RendererInterface
 {
 private:
-    enum class renderSources { none, world, page };
+    enum class renderSources { none, world, map, page };
     bool constructed;
     SDL_GLContext context;
     GLint maxTextureSize;
@@ -97,6 +97,12 @@ private:
     GLuint graphicsVAO;
     GLuint graphicsVBO;
     std::vector<GLfloat> graphicsVertices;
+
+    void constructMap();
+    std::unique_ptr<Program> mapProgram;
+    GLuint mapVAO;
+    GLuint mapVBO;
+    std::vector<GLfloat> mapVertices;
 
     void constructPage();
     const video::Graphic* pageGraphic;
@@ -122,6 +128,7 @@ public:
     void Render();
     void AddGraphic(const video::Graphic& handle);
     void DrawGraphic(const video::Graphic& handle, int x, int y, double scalex, double scaley);
+    void DrawMapLine(float x1, float y1, float x2, float y2);
     int GetWidth() const;
     int GetHeight() const;
     void SetPageGraphic(const video::Graphic& handle);

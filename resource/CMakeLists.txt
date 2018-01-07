@@ -12,6 +12,7 @@ endforeach()
 # Shaders
 set(SHADER_FILES
     graphics.vert.glsl  graphics.frag.glsl
+    map.vert.glsl       map.frag.glsl
     page.vert.glsl      page.frag.glsl
     world.vert.glsl     world.frag.glsl)
 foreach(file ${SHADER_FILES})

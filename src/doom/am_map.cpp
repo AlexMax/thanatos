@@ -203,8 +203,8 @@ static int 	grid = 0;
 static int 	leveljuststarted = 1; 	// kluge until AM_LevelInit() is called
 
 boolean    	automapactive = false;
-static int 	finit_width = SCREENWIDTH;
-static int 	finit_height = SCREENHEIGHT - ST_HEIGHT;
+static int 	finit_width = VIRTUALWIDTH;
+static int 	finit_height = VIRTUALHEIGHT - ST_HEIGHT;
 
 // location of window on screen
 static int 	f_x;
@@ -1004,80 +1004,19 @@ AM_clipMline
 
 
 //
-// Classic Bresenham w/ whatever optimizations needed for speed
+// Actually do the drawing of the line.
 //
-void
-AM_drawFline
-( fline_t*	fl,
-  int		color )
+// This function used to actually draw a line on a screen, pixel by pixel.
+// Now we let the renderer take care of things.
+//
+void AM_drawFline(fline_t* fl, int color)
 {
-    register int x;
-    register int y;
-    register int dx;
-    register int dy;
-    register int sx;
-    register int sy;
-    register int ax;
-    register int ay;
-    register int d;
-    
-    static int fuck = 0;
+    float x1 = (fl->a.x / (finit_width / 2.0)) - 1.0;
+    float y1 = (fl->a.y / (finit_height / 2.0)) - 1.0;
+    float x2 = (fl->b.x / (finit_width / 2.0)) - 1.0;
+    float y2 = (fl->b.y / (finit_height / 2.0)) - 1.0;
 
-    // For debugging only
-    if (      fl->a.x < 0 || fl->a.x >= f_w
-	   || fl->a.y < 0 || fl->a.y >= f_h
-	   || fl->b.x < 0 || fl->b.x >= f_w
-	   || fl->b.y < 0 || fl->b.y >= f_h)
-    {
-        DEH_fprintf(stderr, "fuck %d \r", fuck++);
-	return;
-    }
-
-#define PUTDOT(xx,yy,cc) fb[(yy)*f_w+(xx)]=(cc)
-
-    dx = fl->b.x - fl->a.x;
-    ax = 2 * (dx<0 ? -dx : dx);
-    sx = dx<0 ? -1 : 1;
-
-    dy = fl->b.y - fl->a.y;
-    ay = 2 * (dy<0 ? -dy : dy);
-    sy = dy<0 ? -1 : 1;
-
-    x = fl->a.x;
-    y = fl->a.y;
-
-    if (ax > ay)
-    {
-	d = ay - ax/2;
-	while (1)
-	{
-	    PUTDOT(x,y,color);
-	    if (x == fl->b.x) return;
-	    if (d>=0)
-	    {
-		y += sy;
-		d -= ax;
-	    }
-	    x += sx;
-	    d += ay;
-	}
-    }
-    else
-    {
-	d = ax - ay/2;
-	while (1)
-	{
-	    PUTDOT(x, y, color);
-	    if (y == fl->b.y) return;
-	    if (d >= 0)
-	    {
-		x += sx;
-		d -= ay;
-	    }
-	    y += sy;
-	    d += ax;
-	}
-    }
+    system::renderer->DrawMapLine(x1, y1, x2, y2);
 }
 
 

@@ -179,7 +179,7 @@ void Renderer::constructGraphics()
         I_Error("Fragment Shader Compile Error:\n%s\n", fragmentShader.Log().c_str());
     }
 
-    // Page Shader Program.
+    // Graphics Shader Program.
     this->graphicsProgram = std::make_unique<Program>();
     this->graphicsProgram->Attach(vertexShader);
     this->graphicsProgram->Attach(fragmentShader);
@@ -188,7 +188,7 @@ void Renderer::constructGraphics()
         I_Error("Shader Program Link Error:\n%s\n", this->graphicsProgram->Log().c_str());
     }
 
-    // Bind the square to a VAO containing a VBO and our IBO.
+    // Come up with a VAO containing a VBO and our IBO to hold our graphics.
     glGenVertexArrays(1, &this->graphicsVAO);
     glBindVertexArray(this->graphicsVAO);
 
@@ -230,6 +230,65 @@ void Renderer::constructGraphics()
 
     // Set up the graphics atlas of the same size.
     this->graphicsAtlas = std::make_unique<video::Atlas>(atlas_size, atlas_size);
+}
+
+// Constructs the map, which handles drawing the automap.
+void Renderer::constructMap()
+{
+    if (this->constructed)
+    {
+        I_Error("Something called Renderer::constructScreen twice");
+    }
+
+    // Vertex Shader
+    Shader vertexShader(Shader::type::vertex);
+    {
+#include "resource/shader/map.vert.glsl.h"
+        vertexShader.Source(map);
+    }
+    if (vertexShader.Compile() == false)
+    {
+        I_Error("Vertex Shader Compile Error:\n%s\n", vertexShader.Log().c_str());
+    }
+
+    // Fragment Shader
+    Shader fragmentShader(Shader::type::fragment);
+    {
+#include "resource/shader/map.frag.glsl.h"
+        fragmentShader.Source(map);
+    }
+    if (fragmentShader.Compile() == false)
+    {
+        I_Error("Fragment Shader Compile Error:\n%s\n", fragmentShader.Log().c_str());
+    }
+
+    // Map Shader Program.
+    this->mapProgram = std::make_unique<Program>();
+    this->mapProgram->Attach(vertexShader);
+    this->mapProgram->Attach(fragmentShader);
+    if (this->mapProgram->Link() == false)
+    {
+        I_Error("Shader Program Link Error:\n%s\n", this->mapProgram->Log().c_str());
+    }
+
+    // Come up with a VAO containing a VBO to hold our map lines.
+    glGenVertexArrays(1, &this->mapVAO);
+    glBindVertexArray(this->mapVAO);
+
+    glGenBuffers(1, &this->mapVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, this->mapVBO);
+
+    // location 0 (vPos)
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+    glEnableVertexAttribArray(0);
+
+    // Location 1 (vColor)
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    // Unbind our VBO and VAO so we don't accidentally modify them.
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 // Constructs the page, the target of any full-screen 2D renderings like
@@ -469,6 +528,7 @@ Renderer::Renderer(SDL_Window* window) :
     window(window),
     graphicsAtlas(nullptr), graphicsIBO(0), graphicsIndices(0), graphicsPixels(0),
     graphicsProgram(nullptr), graphicsVAO(0), graphicsVBO(0), graphicsVertices(0),
+    mapProgram(nullptr), mapVAO(0), mapVBO(0), mapVertices(0),
     pageGraphic(nullptr), pagePixels(0), pageProgram(nullptr), pageVAO(0),
     worldPixels(0), worldPalettes(0), worldProgram(nullptr), worldVAO(0), worldVBO(0)
 {
@@ -543,6 +603,9 @@ Renderer::Renderer(SDL_Window* window) :
     // Set up the page view.
     this->constructPage();
 
+    // Set up the map view.
+    this->constructMap();
+
     // Prevent nefarious people from calling constructor-only methods.
     this->constructed = true;
 }
@@ -575,6 +638,21 @@ void Renderer::Render()
         glUseProgram(this->worldProgram->Ref());
         glBindVertexArray(this->worldVAO);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
+    else if (this->renderSource == renderSources::map)
+    {
+        // Render the automap.
+        glUseProgram(this->mapProgram->Ref());
+        glBindVertexArray(this->mapVAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, this->mapVBO);
+        glBufferData(GL_ARRAY_BUFFER,
+            this->mapVertices.size() * sizeof(decltype(this->mapVertices)::value_type),
+            this->mapVertices.data(), GL_STATIC_DRAW);
+
+        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(this->mapVertices.size()));
+
+        this->mapVertices.clear();
     }
     else if (this->renderSource == renderSources::page)
     {
@@ -693,6 +771,19 @@ void Renderer::DrawGraphic(const video::Graphic& handle, int x, int y, double sc
     {
         this->graphicsIndices.emplace_back(offset + v);
     }
+}
+
+// Draw a line that should show up on the minimap.
+void Renderer::DrawMapLine(float x1, float y1, float x2, float y2)
+{
+    this->renderSource = renderSources::map;
+
+    this->mapVertices.emplace_back(static_cast<GLfloat>(x1));
+    this->mapVertices.emplace_back(static_cast<GLfloat>(-y1));
+    this->mapVertices.emplace_back(static_cast<GLfloat>(0));
+    this->mapVertices.emplace_back(static_cast<GLfloat>(x2));
+    this->mapVertices.emplace_back(static_cast<GLfloat>(-y2));
+    this->mapVertices.emplace_back(static_cast<GLfloat>(0));
 }
 
 // Get the height of the viewport.
