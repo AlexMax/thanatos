@@ -128,7 +128,7 @@ public:
     void Render();
     void AddGraphic(const video::Graphic& handle);
     void DrawGraphic(const video::Graphic& handle, int x, int y, double scalex, double scaley);
-    void DrawMapLine(float x1, float y1, float x2, float y2);
+    void DrawMapLine(double x1, double y1, double x2, double y2);
     int GetWidth() const;
     int GetHeight() const;
     void SetPageGraphic(const video::Graphic& handle);

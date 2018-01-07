@@ -36,7 +36,7 @@ public:
     virtual void Render() = 0;
     virtual void AddGraphic(const video::Graphic& handle) = 0;
     virtual void DrawGraphic(const video::Graphic& handle, int x, int y, double scalex, double scaley) = 0;
-    virtual void DrawMapLine(float x1, float y1, float x2, float y2) = 0;
+    virtual void DrawMapLine(double x1, double y1, double x2, double y2) = 0;
     virtual int GetHeight() const = 0;
     virtual int GetWidth() const = 0;
     virtual void SetPageGraphic(const video::Graphic& handle) = 0;

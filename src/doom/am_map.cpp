@@ -103,13 +103,6 @@ namespace theta
 // pulls out to 0.5x in 1 second
 #define M_ZOOMOUT       ((int) (FRACUNIT/1.02))
 
-// translates between frame-buffer and map distances
-#define FTOM(x) FixedMul(((x)<<FRACBITS),scale_ftom)
-#define MTOF(x) (FixedMul((x),scale_mtof)>>FRACBITS)
-// translates between frame-buffer and map coordinates
-#define CXMTOF(x)  (f_x + MTOF((x)-m_x))
-#define CYMTOF(y)  (f_y + (f_h - MTOF((y)-m_y)))
-
 // the following is crap
 #define LINE_NEVERSEE ML_DONTDRAW
 
@@ -271,6 +264,24 @@ static int followplayer = 1; // specifies whether to follow the player around
 cheatseq_t cheat_amap = CHEAT("iddt", 0);
 
 static boolean stopped = true;
+
+// translates between frame-buffer and map distances
+fixed_t FTOM(int x) {
+    return FixedMul((x << FRACBITS), scale_ftom);
+}
+
+int MTOF(fixed_t x) {
+    return FixedMul(x, scale_mtof) >> FRACBITS;
+}
+
+// translates between frame-buffer and map coordinates
+fixed_t CXMTOF(fixed_t x) {
+    return f_x + MTOF(x - m_x);
+}
+
+fixed_t CYMTOF(fixed_t y) {
+    return f_y + (f_h - MTOF(y - m_y));
+}
 
 // Calculates the slope and slope according to the x-axis of a line
 // segment in map coordinates (with the upright y-axis n' all) so

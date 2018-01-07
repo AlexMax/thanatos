@@ -774,7 +774,7 @@ void Renderer::DrawGraphic(const video::Graphic& handle, int x, int y, double sc
 }
 
 // Draw a line that should show up on the minimap.
-void Renderer::DrawMapLine(float x1, float y1, float x2, float y2)
+void Renderer::DrawMapLine(double x1, double y1, double x2, double y2)
 {
     this->renderSource = renderSources::map;
 
