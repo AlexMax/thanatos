@@ -774,15 +774,23 @@ void Renderer::DrawGraphic(const video::Graphic& handle, int x, int y, double sc
 }
 
 // Draw a line that should show up on the minimap.
+//
+// Origin is in the top left and goes to the bottom right.
 void Renderer::DrawMapLine(double x1, double y1, double x2, double y2)
 {
     this->renderSource = renderSources::map;
 
+    // Scale to OpenGL coordinates
+    x1 = (x1 * 2.0) - 1.0;
+    y1 = (y1 * -2.0) + 1.0;
+    x2 = (x2 * 2.0) - 1.0;
+    y2 = (y2 * -2.0) + 1.0;
+
     this->mapVertices.emplace_back(static_cast<GLfloat>(x1));
-    this->mapVertices.emplace_back(static_cast<GLfloat>(-y1));
+    this->mapVertices.emplace_back(static_cast<GLfloat>(y1));
     this->mapVertices.emplace_back(static_cast<GLfloat>(0));
     this->mapVertices.emplace_back(static_cast<GLfloat>(x2));
-    this->mapVertices.emplace_back(static_cast<GLfloat>(-y2));
+    this->mapVertices.emplace_back(static_cast<GLfloat>(y2));
     this->mapVertices.emplace_back(static_cast<GLfloat>(0));
 }
 

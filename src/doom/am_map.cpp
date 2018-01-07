@@ -534,8 +534,8 @@ void AM_LevelInit(void)
     leveljuststarted = 0;
 
     f_x = f_y = 0;
-    f_w = finit_width;
-    f_h = finit_height;
+    f_w = 1.0;
+    f_h = 1.0;
 
     AM_clearMarks();
 
@@ -862,6 +862,39 @@ void AM_Ticker (void)
 
 }
 
+// Outcode type
+typedef uint8_t outcodes_t;
+
+// Valid Outcodes
+static const outcodes_t OUT_LEFT = 1;
+static const outcodes_t OUT_RIGHT = 1 << 1;
+static const outcodes_t OUT_BOTTOM = 1 << 2;
+static const outcodes_t OUT_TOP = 1 << 3;
+
+// Calculate Outcodes
+outcodes_t DoOutcode(double mx, double my)
+{
+    outcodes_t oc = 0;
+
+    if (my < 0)
+    {
+        oc |= OUT_TOP;
+    }
+    else if (my > f_h)
+    {
+        oc |= OUT_BOTTOM;
+    }
+    if (mx < 0)
+    {
+        oc |= OUT_LEFT;
+    }
+    else if (mx > f_w)
+    {
+        oc |= OUT_RIGHT;
+    }
+
+    return oc;
+}
 
 //
 // Automap clipping of lines.
@@ -870,59 +903,39 @@ void AM_Ticker (void)
 // faster reject and precalculated slopes.  If the speed is needed,
 // use a hash algorithm to handle  the common cases.
 //
-boolean
-AM_clipMline
-( mline_t*	ml,
-  fline_t*	fl )
+boolean AM_clipMline (mline_t* ml, fline_t* fl)
 {
-    enum
-    {
-	LEFT	=1,
-	RIGHT	=2,
-	BOTTOM	=4,
-	TOP	=8
-    };
-    
-    register int	outcode1 = 0;
-    register int	outcode2 = 0;
-    register int	outside;
+    outcodes_t outcode1 = 0;
+    outcodes_t outcode2 = 0;
+    outcodes_t outside;
     
     fpoint_t	tmp;
-    int		dx;
-    int		dy;
+    double      dx;
+    double      dy;
 
-    
-#define DOOUTCODE(oc, mx, my) \
-    (oc) = 0; \
-    if ((my) < 0) (oc) |= TOP; \
-    else if ((my) >= f_h) (oc) |= BOTTOM; \
-    if ((mx) < 0) (oc) |= LEFT; \
-    else if ((mx) >= f_w) (oc) |= RIGHT;
-
-    
     // do trivial rejects and outcodes
     if (ml->a.y > m_y2)
-	outcode1 = TOP;
+	outcode1 = OUT_TOP;
     else if (ml->a.y < m_y)
-	outcode1 = BOTTOM;
+	outcode1 = OUT_BOTTOM;
 
     if (ml->b.y > m_y2)
-	outcode2 = TOP;
+	outcode2 = OUT_TOP;
     else if (ml->b.y < m_y)
-	outcode2 = BOTTOM;
+	outcode2 = OUT_BOTTOM;
     
     if (outcode1 & outcode2)
 	return false; // trivially outside
 
     if (ml->a.x < m_x)
-	outcode1 |= LEFT;
+	outcode1 |= OUT_LEFT;
     else if (ml->a.x > m_x2)
-	outcode1 |= RIGHT;
+	outcode1 |= OUT_RIGHT;
     
     if (ml->b.x < m_x)
-	outcode2 |= LEFT;
+	outcode2 |= OUT_LEFT;
     else if (ml->b.x > m_x2)
-	outcode2 |= RIGHT;
+	outcode2 |= OUT_RIGHT;
     
     if (outcode1 & outcode2)
 	return false; // trivially outside
@@ -933,8 +946,8 @@ AM_clipMline
     fl->b.x = CXMTOF(ml->b.x);
     fl->b.y = CYMTOF(ml->b.y);
 
-    DOOUTCODE(outcode1, fl->a.x, fl->a.y);
-    DOOUTCODE(outcode2, fl->b.x, fl->b.y);
+    outcode1 = DoOutcode(fl->a.x, fl->a.y);
+    outcode2 = DoOutcode(fl->b.x, fl->b.y);
 
     if (outcode1 & outcode2)
 	return false;
@@ -949,32 +962,32 @@ AM_clipMline
 	    outside = outcode2;
 	
 	// clip to each side
-	if (outside & TOP)
+	if (outside & OUT_TOP)
 	{
 	    dy = fl->a.y - fl->b.y;
 	    dx = fl->b.x - fl->a.x;
-	    tmp.x = fl->a.x + (dx*(fl->a.y))/dy;
+	    tmp.x = fl->a.x + (dx * (fl->a.y)) / dy;
 	    tmp.y = 0;
 	}
-	else if (outside & BOTTOM)
+	else if (outside & OUT_BOTTOM)
 	{
 	    dy = fl->a.y - fl->b.y;
 	    dx = fl->b.x - fl->a.x;
-	    tmp.x = fl->a.x + (dx*(fl->a.y-f_h))/dy;
-	    tmp.y = f_h-1;
+	    tmp.x = fl->a.x + (dx * (fl->a.y - f_h)) / dy;
+	    tmp.y = f_h;
 	}
-	else if (outside & RIGHT)
+	else if (outside & OUT_RIGHT)
 	{
 	    dy = fl->b.y - fl->a.y;
 	    dx = fl->b.x - fl->a.x;
-	    tmp.y = fl->a.y + (dy*(f_w-1 - fl->a.x))/dx;
-	    tmp.x = f_w-1;
+	    tmp.y = fl->a.y + (dy * (f_w - fl->a.x)) / dx;
+	    tmp.x = f_w;
 	}
-	else if (outside & LEFT)
+	else if (outside & OUT_LEFT)
 	{
 	    dy = fl->b.y - fl->a.y;
 	    dx = fl->b.x - fl->a.x;
-	    tmp.y = fl->a.y + (dy*(-fl->a.x))/dx;
+	    tmp.y = fl->a.y + (dy * (-fl->a.x)) / dx;
 	    tmp.x = 0;
 	}
         else
@@ -986,12 +999,12 @@ AM_clipMline
 	if (outside == outcode1)
 	{
 	    fl->a = tmp;
-	    DOOUTCODE(outcode1, fl->a.x, fl->a.y);
+            outcode1 = DoOutcode(fl->a.x, fl->a.y);
 	}
 	else
 	{
 	    fl->b = tmp;
-	    DOOUTCODE(outcode2, fl->b.x, fl->b.y);
+            outcode2 = DoOutcode(fl->b.x, fl->b.y);
 	}
 	
 	if (outcode1 & outcode2)
@@ -1000,7 +1013,6 @@ AM_clipMline
 
     return true;
 }
-#undef DOOUTCODE
 
 
 //
@@ -1011,12 +1023,7 @@ AM_clipMline
 //
 void AM_drawFline(fline_t* fl, int color)
 {
-    double x1 = (fl->a.x / (finit_width / 2.0)) - 1.0;
-    double y1 = (fl->a.y / (finit_height / 2.0)) - 1.0;
-    double x2 = (fl->b.x / (finit_width / 2.0)) - 1.0;
-    double y2 = (fl->b.y / (finit_height / 2.0)) - 1.0;
-
-    system::renderer->DrawMapLine(x1, y1, x2, y2);
+    system::renderer->DrawMapLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y);
 }
 
 
@@ -1296,8 +1303,8 @@ void AM_drawMarks(void)
 
 void AM_drawCrosshair(int color)
 {
-    system::renderer->DrawMapLine(-0.01, 0.0, 0.01, 0.0);
-    system::renderer->DrawMapLine(0.0, -0.01, 0.0, 0.01);
+    system::renderer->DrawMapLine(0.49, 0.5, 0.51, 0.5);
+    system::renderer->DrawMapLine(0.5, 0.49, 0.5, 0.51);
 }
 
 void AM_Drawer (void)
