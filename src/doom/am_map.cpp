@@ -1059,38 +1059,39 @@ void AM_drawGrid(int color)
 
     // Figure out start of vertical gridlines
     start = m_x;
-    if ((start-bmaporgx)%(MAPBLOCKUNITS<<FRACBITS))
-	start += (MAPBLOCKUNITS<<FRACBITS)
-	    - ((start-bmaporgx)%(MAPBLOCKUNITS<<FRACBITS));
+    if ((start - bmaporgx) % (MAPBLOCKUNITS << FRACBITS))
+    {
+        start -= ((start - bmaporgx) % (MAPBLOCKUNITS << FRACBITS));
+    }
     end = m_x + m_w;
 
     // draw vertical gridlines
     ml.a.y = m_y;
-    ml.b.y = m_y+m_h;
-    for (x=start; x<end; x+=(MAPBLOCKUNITS<<FRACBITS))
+    ml.b.y = m_y + m_h;
+    for (x = start;x < end;x += (MAPBLOCKUNITS << FRACBITS))
     {
-	ml.a.x = x;
-	ml.b.x = x;
-	AM_drawMline(&ml, color);
+        ml.a.x = x;
+        ml.b.x = x;
+        AM_drawMline(&ml, color);
     }
 
     // Figure out start of horizontal gridlines
     start = m_y;
-    if ((start-bmaporgy)%(MAPBLOCKUNITS<<FRACBITS))
-	start += (MAPBLOCKUNITS<<FRACBITS)
-	    - ((start-bmaporgy)%(MAPBLOCKUNITS<<FRACBITS));
+    if ((start - bmaporgy) % (MAPBLOCKUNITS << FRACBITS))
+    {
+        start -= ((start - bmaporgy) % (MAPBLOCKUNITS << FRACBITS));
+    }
     end = m_y + m_h;
 
     // draw horizontal gridlines
     ml.a.x = m_x;
     ml.b.x = m_x + m_w;
-    for (y=start; y<end; y+=(MAPBLOCKUNITS<<FRACBITS))
+    for (y = start;y < end;y += (MAPBLOCKUNITS << FRACBITS))
     {
-	ml.a.y = y;
-	ml.b.y = y;
-	AM_drawMline(&ml, color);
+        ml.a.y = y;
+        ml.b.y = y;
+        AM_drawMline(&ml, color);
     }
-
 }
 
 //
