@@ -92,16 +92,16 @@ namespace theta
 #define AM_NUMMARKPOINTS 10
 
 // scale on entry
-#define INITSCALEMTOF (.2*FRACUNIT)
+static const double INITSCALEMTOF = 0.2;
 // how much the automap moves window per tic in frame-buffer coordinates
 // moves 140 pixels in 1 second
 #define F_PANINC	4
 // how much zoom-in per tic
 // goes to 2x in 1 second
-#define M_ZOOMIN        ((int) (1.02*FRACUNIT))
+static const double M_ZOOMIN = 1.02;
 // how much zoom-out per tic
 // pulls out to 0.5x in 1 second
-#define M_ZOOMOUT       ((int) (FRACUNIT/1.02))
+static const double M_ZOOMOUT = 0.98;
 
 // the following is crap
 #define LINE_NEVERSEE ML_DONTDRAW
@@ -211,8 +211,8 @@ static int 	lightlev; 		// used for funky strobing effect
 static int 	amclock;
 
 static mpoint_t m_paninc; // how far the window pans each tic (map coords)
-static fixed_t 	mtof_zoommul; // how far the window zooms in each tic (map coords)
-static fixed_t 	ftom_zoommul; // how far the window zooms in each tic (fb coords)
+static double   mtof_zoommul; // how far the window zooms in each tic (map coords)
+static double   ftom_zoommul; // how far the window zooms in each tic (fb coords)
 
 static fixed_t 	m_x, m_y;   // LL x,y where the window is on the map (map coords)
 static fixed_t 	m_x2, m_y2; // UR x,y where the window is on the map (map coords)
@@ -237,8 +237,8 @@ static fixed_t 	min_w;
 static fixed_t  min_h;
 
 
-static fixed_t 	min_scale_mtof; // used to tell when to stop zooming out
-static fixed_t 	max_scale_mtof; // used to tell when to stop zooming in
+static double min_scale_mtof; // used to tell when to stop zooming out
+static double max_scale_mtof; // used to tell when to stop zooming in
 
 // old stuff for recovery later
 static fixed_t old_m_w, old_m_h;
@@ -248,9 +248,9 @@ static fixed_t old_m_x, old_m_y;
 static mpoint_t f_oldloc;
 
 // used by MTOF to scale from map-to-frame-buffer coords
-static fixed_t scale_mtof = (fixed_t)INITSCALEMTOF;
+static double scale_mtof = INITSCALEMTOF;
 // used by FTOM to scale from frame-buffer-to-map coords (=1/scale_mtof)
-static fixed_t scale_ftom;
+static double scale_ftom;
 
 static player_t *plr; // the player represented by an arrow
 
@@ -266,11 +266,11 @@ static boolean stopped = true;
 
 // translates between frame-buffer and map distances
 fixed_t FTOM(double x) {
-    return FixedMul(FloatToFixed(x), scale_ftom);
+    return FloatToFixed(x * scale_ftom);
 }
 
 double MTOF(fixed_t x) {
-    return FixedToFloat(FixedMul(x, scale_mtof));
+    return FixedToFloat(x) * scale_mtof;
 }
 
 // translates between frame-buffer and map coordinates
@@ -348,8 +348,8 @@ void AM_restoreScaleAndLoc(void)
     m_y2 = m_y + m_h;
 
     // Change the scaling multipliers
-    scale_mtof = FixedDiv(FloatToFixed(f_w), m_w);
-    scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
+    scale_mtof = f_w / FixedToFloat(m_w);
+    scale_ftom = 1 / scale_mtof;
 }
 
 //
@@ -369,38 +369,40 @@ void AM_addMark(void)
 //
 void AM_findMinMaxBoundaries(void)
 {
-    int i;
-    fixed_t a;
-    fixed_t b;
-
     min_x = min_y =  INT_MAX;
     max_x = max_y = -INT_MAX;
-  
-    for (i=0;i<numvertexes;i++)
+
+    for (int i = 0;i < numvertexes;i++)
     {
-	if (vertexes[i].x < min_x)
-	    min_x = vertexes[i].x;
-	else if (vertexes[i].x > max_x)
-	    max_x = vertexes[i].x;
-    
-	if (vertexes[i].y < min_y)
-	    min_y = vertexes[i].y;
-	else if (vertexes[i].y > max_y)
-	    max_y = vertexes[i].y;
+        if (vertexes[i].x < min_x)
+        {
+            min_x = vertexes[i].x;
+        }
+        else if (vertexes[i].x > max_x)
+        {
+            max_x = vertexes[i].x;
+        }
+        if (vertexes[i].y < min_y)
+        {
+            min_y = vertexes[i].y;
+        }
+        else if (vertexes[i].y > max_y)
+        {
+            max_y = vertexes[i].y;
+        }
     }
-  
+
     max_w = max_x - min_x;
     max_h = max_y - min_y;
 
     min_w = 2*PLAYERRADIUS; // const? never changed?
     min_h = 2*PLAYERRADIUS;
 
-    a = FixedDiv(FloatToFixed(f_w), max_w);
-    b = FixedDiv(FloatToFixed(f_h), max_h);
-  
-    min_scale_mtof = a < b ? a : b;
-    max_scale_mtof = FixedDiv(FloatToFixed(f_h), 2*PLAYERRADIUS);
+    double a = f_w / FixedToFloat(max_w);
+    double b = f_h / FixedToFloat(max_h);
 
+    min_scale_mtof = a < b ? a : b;
+    max_scale_mtof = f_h / (2.0 * FixedToFloat(PLAYERRADIUS));
 }
 
 
@@ -448,8 +450,8 @@ void AM_initVariables(void)
     lightlev = 0;
 
     m_paninc.x = m_paninc.y = 0;
-    ftom_zoommul = FRACUNIT;
-    mtof_zoommul = FRACUNIT;
+    ftom_zoommul = 1.0;
+    mtof_zoommul = 1.0;
 
     m_w = FTOM(f_w);
     m_h = FTOM(f_h);
@@ -540,10 +542,10 @@ void AM_LevelInit(void)
     AM_clearMarks();
 
     AM_findMinMaxBoundaries();
-    scale_mtof = FixedDiv(min_scale_mtof, (int) (0.7*FRACUNIT));
+    scale_mtof = min_scale_mtof / 0.7;
     if (scale_mtof > max_scale_mtof)
 	scale_mtof = min_scale_mtof;
-    scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
+    scale_ftom = 1 / scale_mtof;
 }
 
 
@@ -590,7 +592,7 @@ void AM_Start (void)
 void AM_minOutWindowScale(void)
 {
     scale_mtof = min_scale_mtof;
-    scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
+    scale_ftom = 1 / scale_mtof;
     AM_activateNewScale();
 }
 
@@ -600,7 +602,7 @@ void AM_minOutWindowScale(void)
 void AM_maxOutWindowScale(void)
 {
     scale_mtof = max_scale_mtof;
-    scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
+    scale_ftom = 1 / scale_mtof;
     AM_activateNewScale();
 }
 
@@ -764,8 +766,8 @@ AM_Responder
         }
         else if (key == key_map_zoomout || key == key_map_zoomin)
         {
-            mtof_zoommul = FRACUNIT;
-            ftom_zoommul = FRACUNIT;
+            mtof_zoommul = 1.0;
+            ftom_zoommul = 1.0;
         }
     }
 
@@ -781,8 +783,8 @@ void AM_changeWindowScale(void)
 {
 
     // Change the scaling multipliers
-    scale_mtof = FixedMul(scale_mtof, mtof_zoommul);
-    scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
+    scale_mtof = scale_mtof * mtof_zoommul;
+    scale_ftom = 1 / scale_mtof;
 
     if (scale_mtof < min_scale_mtof)
 	AM_minOutWindowScale();
