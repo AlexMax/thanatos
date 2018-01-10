@@ -569,6 +569,9 @@ void AM_Start (void)
 {
     static int lastlevel = -1, lastepisode = -1;
 
+    // [AM] Ensure that the map is drawn in the right spot on the screen.
+    system::renderer->SetMapGeometry(0.0, 0.0, 1.0, ST_Y / (double)VIRTUALHEIGHT);
+
     if (!stopped) AM_Stop();
     stopped = false;
     if (lastlevel != gamemap || lastepisode != gameepisode)

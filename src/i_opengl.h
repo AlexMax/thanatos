@@ -99,6 +99,12 @@ private:
     std::vector<GLfloat> graphicsVertices;
 
     void constructMap();
+    struct {
+        double x;
+        double y;
+        double w;
+        double h;
+    } mapGeometry { 0.0, 0.0, 1.0, 1.0 };
     std::unique_ptr<Program> mapProgram;
     GLuint mapVAO;
     GLuint mapVBO;
@@ -131,6 +137,7 @@ public:
     void DrawMapLine(double x1, double y1, double x2, double y2);
     int GetWidth() const;
     int GetHeight() const;
+    void SetMapGeometry(double x, double y, double w, double h);
     void SetPageGraphic(const video::Graphic& handle);
     void SetResolution(int width, int height);
     void SetWorldPalette(const byte* palette);

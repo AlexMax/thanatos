@@ -773,6 +773,17 @@ void Renderer::DrawGraphic(const video::Graphic& handle, int x, int y, double sc
     }
 }
 
+// Set the position of the automap on the screen.
+//
+// All parameters have a range from 0.0 to 1.0.  Origin is in the top left.
+void Renderer::SetMapGeometry(double x, double y, double w, double h)
+{
+    this->mapGeometry.x = x;
+    this->mapGeometry.y = y;
+    this->mapGeometry.w = w;
+    this->mapGeometry.h = h;
+}
+
 // Draw a line that should show up on the minimap.
 //
 // Origin is in the top left and goes to the bottom right.
@@ -780,7 +791,13 @@ void Renderer::DrawMapLine(double x1, double y1, double x2, double y2)
 {
     this->renderSource = renderSources::map;
 
-    // Scale to OpenGL coordinates
+    // Scale to set geometry-aware coordinates
+    x1 = this->mapGeometry.x + (x1 * this->mapGeometry.w);
+    y1 = this->mapGeometry.y + (y1 * this->mapGeometry.h);
+    x2 = this->mapGeometry.x + (x2 * this->mapGeometry.w);
+    y2 = this->mapGeometry.y + (y2 * this->mapGeometry.h);
+
+    // Scale again to OpenGL coordinates
     x1 = (x1 * 2.0) - 1.0;
     y1 = (y1 * -2.0) + 1.0;
     x2 = (x2 * 2.0) - 1.0;

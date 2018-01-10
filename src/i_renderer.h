@@ -39,6 +39,7 @@ public:
     virtual void DrawMapLine(double x1, double y1, double x2, double y2) = 0;
     virtual int GetHeight() const = 0;
     virtual int GetWidth() const = 0;
+    virtual void SetMapGeometry(double x, double y, double w, double h) = 0;
     virtual void SetPageGraphic(const video::Graphic& handle) = 0;
     virtual void SetResolution(int width, int height) = 0;
     virtual void SetWorldPalette(const byte* palette) = 0;
