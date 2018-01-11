@@ -95,7 +95,8 @@ namespace theta
 static const double INITSCALEMTOF = 0.2;
 // how much the automap moves window per tic in frame-buffer coordinates
 // moves 140 pixels in 1 second
-#define F_PANINC	4
+// [AM] Scaled to floating-point framebuffer
+static const double F_PANINC = (140.0 / VIRTUALHEIGHT) / TICRATE;
 // how much zoom-in per tic
 // goes to 2x in 1 second
 static const double M_ZOOMIN = 1.02;
