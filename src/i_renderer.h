@@ -18,6 +18,8 @@
 #ifndef __I_RENDERER__
 #define __I_RENDERER__
 
+#include <gsl/span>
+
 #include "doomtype.h"
 #include "v_buffer.h"
 #include "v_graphics.h"
@@ -36,10 +38,11 @@ public:
     virtual void Render() = 0;
     virtual void AddGraphic(const video::Graphic& handle) = 0;
     virtual void DrawGraphic(const video::Graphic& handle, int x, int y, double scalex, double scaley) = 0;
-    virtual void DrawMapLine(double x1, double y1, double x2, double y2) = 0;
+    virtual void DrawMapLine(double x1, double y1, double x2, double y2, byte index) = 0;
     virtual int GetHeight() const = 0;
     virtual int GetWidth() const = 0;
     virtual void SetMapGeometry(double x, double y, double w, double h) = 0;
+    virtual void SetMapPalette(const gsl::span<byte>& palette) = 0;
     virtual void SetPageGraphic(const video::Graphic& handle) = 0;
     virtual void SetResolution(int width, int height) = 0;
     virtual void SetWorldPalette(const byte* palette) = 0;

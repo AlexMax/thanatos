@@ -18,6 +18,8 @@
 
 
 #include <stdio.h>
+#include <array>
+#include <gsl/span>
 
 #include "deh_main.h"
 
@@ -86,6 +88,35 @@ namespace theta
 #define GRIDCOLORS	(GRAYS + GRAYSRANGE/2)
 #define GRIDRANGE	0
 #define XHAIRCOLORS	GRAYS
+
+static std::array<byte, 3 * 11> map_palette{
+    0, 0, 0,       // Background
+    255, 255, 255, // You
+    255, 0, 0,     // Walls
+    155, 0, 0,     // Teleporters
+    131, 131, 131, // Cheated walls
+    179, 115, 71,  // FD walls
+    255, 255, 0,   // CD walls
+    111, 111, 111, // Computer map walls
+    119, 255, 111, // Things
+    131, 131, 131, // Grid lines
+    131, 131, 131, // Crosshair
+};
+
+enum PaletteIndex
+{
+    background,
+    you,
+    walls,
+    teles,
+    tswalls,
+    fdwalls,
+    cdwalls,
+    pwwalls,
+    things,
+    gridlines,
+    xhair,
+};
 
 // drawing stuff
 
@@ -583,6 +614,7 @@ void AM_Start (void)
 
     // [AM] Ensure that the map is drawn in the right spot on the screen.
     system::renderer->SetMapGeometry(0.0, 0.0, 1.0, ST_Y / (double)VIRTUALHEIGHT);
+    system::renderer->SetMapPalette(gsl::make_span(map_palette));
 
     if (!stopped) AM_Stop();
     stopped = false;
@@ -1056,7 +1088,7 @@ void AM_drawFline(fline_t* fl, int color)
     double x1 = fl->a.x / f_w;
     double x2 = fl->b.x / f_w;
 
-    system::renderer->DrawMapLine(x1, fl->a.y, x2, fl->b.y);
+    system::renderer->DrawMapLine(x1, fl->a.y, x2, fl->b.y, color);
 }
 
 
@@ -1143,35 +1175,46 @@ void AM_drawWalls(void)
 		continue;
 	    if (!lines[i].backsector)
 	    {
-		AM_drawMline(&l, WALLCOLORS+lightlev);
+		AM_drawMline(&l, PaletteIndex::walls);
 	    }
 	    else
 	    {
-		if (lines[i].special == 39)
+                // [AM] Vanilla only showed W1 teles, we're showing both kinds
+		if (lines[i].special == 39 || lines[i].special == 97)
 		{ // teleporters
-		    AM_drawMline(&l, WALLCOLORS+WALLRANGE/2);
+		    AM_drawMline(&l, PaletteIndex::teles);
 		}
 		else if (lines[i].flags & ML_SECRET) // secret door
 		{
-		    if (cheating) AM_drawMline(&l, SECRETWALLCOLORS + lightlev);
-		    else AM_drawMline(&l, WALLCOLORS+lightlev);
+                    if (cheating)
+                    {
+                        // [AM] Maybe one day?  Kinda useless though...
+                        AM_drawMline(&l, PaletteIndex::walls);
+                    }
+                    else
+                    {
+                        AM_drawMline(&l, PaletteIndex::walls);
+                    }
 		}
 		else if (lines[i].backsector->floorheight
 			   != lines[i].frontsector->floorheight) {
-		    AM_drawMline(&l, FDWALLCOLORS + lightlev); // floor level change
+		    AM_drawMline(&l, PaletteIndex::fdwalls); // floor level change
 		}
 		else if (lines[i].backsector->ceilingheight
 			   != lines[i].frontsector->ceilingheight) {
-		    AM_drawMline(&l, CDWALLCOLORS+lightlev); // ceiling level change
+		    AM_drawMline(&l, PaletteIndex::cdwalls); // ceiling level change
 		}
 		else if (cheating) {
-		    AM_drawMline(&l, TSWALLCOLORS+lightlev);
+		    AM_drawMline(&l, PaletteIndex::tswalls);
 		}
 	    }
 	}
 	else if (plr->powers[pw_allmap])
 	{
-	    if (!(lines[i].flags & LINE_NEVERSEE)) AM_drawMline(&l, GRAYS+3);
+            if (!(lines[i].flags & LINE_NEVERSEE))
+            {
+                AM_drawMline(&l, PaletteIndex::pwwalls);
+            }
 	}
     }
 }
@@ -1259,16 +1302,21 @@ void AM_drawPlayers(void)
 
     if (!netgame)
     {
-	if (cheating)
-	    AM_drawLineCharacter
-		(cheat_player_arrow, arrlen(cheat_player_arrow), 0,
-		 plr->mo->angle, WHITE, plr->mo->x, plr->mo->y);
-	else
-	    AM_drawLineCharacter
-		(player_arrow, arrlen(player_arrow), 0, plr->mo->angle,
-		 WHITE, plr->mo->x, plr->mo->y);
-	return;
+        if (cheating)
+        {
+            AM_drawLineCharacter(cheat_player_arrow, arrlen(cheat_player_arrow), 0,
+                plr->mo->angle, PaletteIndex::you, plr->mo->x, plr->mo->y);
+        }
+        else
+        {
+            AM_drawLineCharacter(player_arrow, arrlen(player_arrow), 0,
+                plr->mo->angle, PaletteIndex::you, plr->mo->x, plr->mo->y);
+        }
+        return;
     }
+
+    // [AM] FIXME: Player colors.  Until I get working netcode, I don't
+    //      really care about any of this.
 
     for (i=0;i<MAXPLAYERS;i++)
     {
@@ -1293,10 +1341,7 @@ void AM_drawPlayers(void)
 
 }
 
-void
-AM_drawThings
-( int	colors,
-  int 	colorrange)
+void AM_drawThings(int colors)
 {
     int		i;
     mobj_t*	t;
@@ -1337,8 +1382,8 @@ void AM_drawMarks(void)
 
 void AM_drawCrosshair(int color)
 {
-    system::renderer->DrawMapLine(0.49, 0.5, 0.51, 0.5);
-    system::renderer->DrawMapLine(0.5, 0.49, 0.5, 0.51);
+    system::renderer->DrawMapLine(0.49, 0.5, 0.51, 0.5, PaletteIndex::xhair);
+    system::renderer->DrawMapLine(0.5, 0.49, 0.5, 0.51, PaletteIndex::xhair);
 }
 
 void AM_Drawer (void)
@@ -1346,12 +1391,12 @@ void AM_Drawer (void)
     if (!automapactive) return;
 
     if (grid)
-	AM_drawGrid(GRIDCOLORS);
+	AM_drawGrid(PaletteIndex::gridlines);
     AM_drawWalls();
     AM_drawPlayers();
     if (cheating==2)
-	AM_drawThings(THINGCOLORS, THINGRANGE);
-    AM_drawCrosshair(XHAIRCOLORS);
+	AM_drawThings(PaletteIndex::things);
+    AM_drawCrosshair(PaletteIndex::xhair);
 
     AM_drawMarks();
 

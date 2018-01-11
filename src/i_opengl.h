@@ -105,6 +105,8 @@ private:
         double w;
         double h;
     } mapGeometry { 0.0, 0.0, 1.0, 1.0 };
+    GLuint mapPalette;
+    GLsizei mapPaletteSize;
     std::unique_ptr<Program> mapProgram;
     GLuint mapVAO;
     GLuint mapVBO;
@@ -134,10 +136,11 @@ public:
     void Render();
     void AddGraphic(const video::Graphic& handle);
     void DrawGraphic(const video::Graphic& handle, int x, int y, double scalex, double scaley);
-    void DrawMapLine(double x1, double y1, double x2, double y2);
+    void DrawMapLine(double x1, double y1, double x2, double y2, byte index);
     int GetWidth() const;
     int GetHeight() const;
     void SetMapGeometry(double x, double y, double w, double h);
+    void SetMapPalette(const gsl::span<byte>& palette);
     void SetPageGraphic(const video::Graphic& handle);
     void SetResolution(int width, int height);
     void SetWorldPalette(const byte* palette);

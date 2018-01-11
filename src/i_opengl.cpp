@@ -289,6 +289,18 @@ void Renderer::constructMap()
     // Unbind our VBO and VAO so we don't accidentally modify them.
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    // We need a texture that contains the map palette.
+    glGenTextures(1, &this->mapPalette);
+    glBindTexture(GL_TEXTURE_2D, this->mapPalette);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    // Assign texture unit 0 to our palette.
+    glUseProgram(this->mapProgram->Ref());
+    glUniform1i(glGetUniformLocation(this->mapProgram->Ref(), "uPalette"), 0);
 }
 
 // Constructs the page, the target of any full-screen 2D renderings like
@@ -528,7 +540,7 @@ Renderer::Renderer(SDL_Window* window) :
     window(window),
     graphicsAtlas(nullptr), graphicsIBO(0), graphicsIndices(0), graphicsPixels(0),
     graphicsProgram(nullptr), graphicsVAO(0), graphicsVBO(0), graphicsVertices(0),
-    mapProgram(nullptr), mapVAO(0), mapVBO(0), mapVertices(0),
+    mapPalette(0), mapProgram(nullptr), mapVAO(0), mapVBO(0), mapVertices(0),
     pageGraphic(nullptr), pagePixels(0), pageProgram(nullptr), pageVAO(0),
     worldPixels(0), worldPalettes(0), worldProgram(nullptr), worldVAO(0), worldVBO(0)
 {
@@ -642,6 +654,9 @@ void Renderer::Render()
     else if (this->renderSource == renderSources::map)
     {
         // Render the automap.
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, this->mapPalette);
+
         glUseProgram(this->mapProgram->Ref());
         glBindVertexArray(this->mapVAO);
 
@@ -784,10 +799,20 @@ void Renderer::SetMapGeometry(double x, double y, double w, double h)
     this->mapGeometry.h = h;
 }
 
+// Set the current palette for the 3D rendered world view.
+void Renderer::SetMapPalette(const gsl::span<byte>& palette)
+{
+    this->mapPaletteSize = static_cast<GLsizei>(palette.size_bytes() / 3);
+
+    glBindTexture(GL_TEXTURE_2D, this->mapPalette);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, this->mapPaletteSize,
+        1, 0, GL_RGB, GL_UNSIGNED_BYTE, &palette[0]);
+}
+
 // Draw a line that should show up on the minimap.
 //
 // Origin is in the top left and goes to the bottom right.
-void Renderer::DrawMapLine(double x1, double y1, double x2, double y2)
+void Renderer::DrawMapLine(double x1, double y1, double x2, double y2, byte index)
 {
     this->renderSource = renderSources::map;
 
@@ -805,10 +830,10 @@ void Renderer::DrawMapLine(double x1, double y1, double x2, double y2)
 
     this->mapVertices.emplace_back(static_cast<GLfloat>(x1));
     this->mapVertices.emplace_back(static_cast<GLfloat>(y1));
-    this->mapVertices.emplace_back(static_cast<GLfloat>(0));
+    this->mapVertices.emplace_back(static_cast<GLfloat>((index + 0.5) / this->mapPaletteSize));
     this->mapVertices.emplace_back(static_cast<GLfloat>(x2));
     this->mapVertices.emplace_back(static_cast<GLfloat>(y2));
-    this->mapVertices.emplace_back(static_cast<GLfloat>(0));
+    this->mapVertices.emplace_back(static_cast<GLfloat>((index + 0.5) / this->mapPaletteSize));
 }
 
 // Get the height of the viewport.
