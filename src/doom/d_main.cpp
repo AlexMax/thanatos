@@ -227,6 +227,10 @@ void D_Display (void)
 	R_ExecuteSetViewSize ();
 	oldgamestate = GS_NONE;                      // force background redraw
 	borderdrawcount = 3;
+
+        // [AM] FIXME: This has nothing to do with the r_* renderer, but
+        //      putting it here works well enough for now.
+        automap::OnResolutionChange();
     }
 
     // save the current screen if about to wipe

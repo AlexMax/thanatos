@@ -528,6 +528,13 @@ void AM_clearMarks(void)
     markpointnum = 0;
 }
 
+// Set the x scaling of the automap to whatever the dimensions of the
+// renderer happens to be, so we get a square grid.
+static void SetAspectRatio()
+{
+    f_w = system::renderer->GetWidth() / static_cast<double>(system::renderer->GetHeight());
+}
+
 //
 // should be called at the start of every level
 // right now, i figure it out myself
@@ -539,6 +546,8 @@ void AM_LevelInit(void)
     f_x = f_y = 0;
     f_w = 1.0;
     f_h = 1.0;
+
+    SetAspectRatio();
 
     AM_clearMarks();
 
@@ -607,6 +616,20 @@ void AM_maxOutWindowScale(void)
     AM_activateNewScale();
 }
 
+namespace automap
+{
+
+void OnResolutionChange()
+{
+    SetAspectRatio();
+    AM_findMinMaxBoundaries();
+    if (scale_mtof > max_scale_mtof)
+    {
+        scale_mtof = min_scale_mtof;
+    }
+}
+
+}
 
 //
 // Handle events (user inputs) in automap mode
@@ -1029,7 +1052,11 @@ boolean AM_clipMline (mline_t* ml, fline_t* fl)
 //
 void AM_drawFline(fline_t* fl, int color)
 {
-    system::renderer->DrawMapLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y);
+    // Scale x coordinates into 0.0-1.0 range expected by the renderer.
+    double x1 = fl->a.x / f_w;
+    double x2 = fl->b.x / f_w;
+
+    system::renderer->DrawMapLine(x1, fl->a.y, x2, fl->b.y);
 }
 
 

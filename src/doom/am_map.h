@@ -48,6 +48,14 @@ void AM_Stop (void);
 
 extern cheatseq_t cheat_amap;
 
+namespace automap
+{
+
+// Called when the resolution changes
+void OnResolutionChange();
+
+}
+
 }
 
 #endif
