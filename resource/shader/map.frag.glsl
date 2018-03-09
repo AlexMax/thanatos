@@ -1,12 +1,10 @@
 #version 330 core
 
-flat in uint fColor;
+flat in vec4 fColor;
 
 out vec4 color;
 
-uniform sampler2D uPalette;
-
 void main()
 {
-    color = texelFetch(uPalette, ivec2(fColor, 0), 0);
+    color = fColor;
 }
