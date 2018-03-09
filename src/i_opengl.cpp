@@ -830,13 +830,17 @@ void Renderer::DrawMapLine(double x1, double y1, double x2, double y2, byte inde
 
     // Add to the vertex buffer
     this->mapVertices.emplace_back(mapAttributes{
-        static_cast<GLfloat>(x1),
-        static_cast<GLfloat>(y1),
+        {
+            static_cast<GLfloat>(x1),
+            static_cast<GLfloat>(y1)
+        },
         static_cast<GLuint>(index)
     });
     this->mapVertices.emplace_back(mapAttributes{
-        static_cast<GLfloat>(x2),
-        static_cast<GLfloat>(y2),
+        {
+            static_cast<GLfloat>(x2),
+            static_cast<GLfloat>(y2),
+        },
         static_cast<GLuint>(index)
     });
 }

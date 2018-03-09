@@ -18,6 +18,7 @@
 #ifndef __I_OPENGL__
 #define __I_OPENGL__
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -112,8 +113,7 @@ private:
     GLuint mapVBO;
     struct mapAttributes
     {
-        GLfloat x;
-        GLfloat y;
+        std::array<GLfloat, 2> position; // x, y
         GLuint color;
     };
     std::vector<mapAttributes> mapVertices;
