@@ -198,11 +198,11 @@ void Renderer::constructGraphics()
     glGenBuffers(1, &this->graphicsIBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->graphicsIBO);
 
-    // location 0
+    // location 0 (vPos)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
     glEnableVertexAttribArray(0);
 
-    // Location 1
+    // Location 1 (vTexCoord)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
 
@@ -363,11 +363,11 @@ void Renderer::constructPage()
     glBindBuffer(GL_ARRAY_BUFFER, VBOnum);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // location 0
+    // location 0 (vPos)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
     glEnableVertexAttribArray(0);
 
-    // Location 1
+    // Location 1 (vTexCoord)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
 
@@ -446,11 +446,11 @@ void Renderer::constructWorld()
     glBindBuffer(GL_ARRAY_BUFFER, this->worldVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // location 0
+    // location 0 (vPos)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
     glEnableVertexAttribArray(0);
 
-    // Location 1
+    // Location 1 (vTexCoord)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
 

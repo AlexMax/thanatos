@@ -1,11 +1,12 @@
 #version 330 core
 
-out vec4 oFragColor;
-in vec2 testTexCoord;
+in vec2 fTexCoord;
 
 uniform sampler2D uTexture;
 
+out vec4 color;
+
 void main()
 {
-    oFragColor = texture(uTexture, testTexCoord);
+    color = texture(uTexture, fTexCoord);
 }
