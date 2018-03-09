@@ -110,7 +110,13 @@ private:
     std::unique_ptr<Program> mapProgram;
     GLuint mapVAO;
     GLuint mapVBO;
-    std::vector<GLfloat> mapVertices;
+    struct mapAttributes
+    {
+        GLfloat x;
+        GLfloat y;
+        GLuint color;
+    };
+    std::vector<mapAttributes> mapVertices;
 
     void constructPage();
     const video::Graphic* pageGraphic;

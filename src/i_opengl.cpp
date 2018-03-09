@@ -139,7 +139,7 @@ std::string Program::Log() const
     if (len > 0)
     {
         char* buffer = static_cast<char*>(std::malloc(len));
-        glGetProgramInfoLog(this->program, sizeof(buffer), NULL, buffer);
+        glGetProgramInfoLog(this->program, len, NULL, buffer);
         return std::string(buffer);
     }
     else
@@ -279,11 +279,11 @@ void Renderer::constructMap()
     glBindBuffer(GL_ARRAY_BUFFER, this->mapVBO);
 
     // location 0 (vPos)
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(mapAttributes), 0);
     glEnableVertexAttribArray(0);
 
     // Location 1 (vColor)
-    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
+    glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(mapAttributes), (void*)offsetof(mapAttributes, color));
     glEnableVertexAttribArray(1);
 
     // Unbind our VBO and VAO so we don't accidentally modify them.
@@ -662,7 +662,7 @@ void Renderer::Render()
 
         glBindBuffer(GL_ARRAY_BUFFER, this->mapVBO);
         glBufferData(GL_ARRAY_BUFFER,
-            this->mapVertices.size() * sizeof(decltype(this->mapVertices)::value_type),
+            this->mapVertices.size() * (sizeof(mapAttributes)),
             this->mapVertices.data(), GL_STATIC_DRAW);
 
         glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(this->mapVertices.size()));
@@ -828,12 +828,17 @@ void Renderer::DrawMapLine(double x1, double y1, double x2, double y2, byte inde
     x2 = (x2 * 2.0) - 1.0;
     y2 = (y2 * -2.0) + 1.0;
 
-    this->mapVertices.emplace_back(static_cast<GLfloat>(x1));
-    this->mapVertices.emplace_back(static_cast<GLfloat>(y1));
-    this->mapVertices.emplace_back(static_cast<GLfloat>((index + 0.5) / this->mapPaletteSize));
-    this->mapVertices.emplace_back(static_cast<GLfloat>(x2));
-    this->mapVertices.emplace_back(static_cast<GLfloat>(y2));
-    this->mapVertices.emplace_back(static_cast<GLfloat>((index + 0.5) / this->mapPaletteSize));
+    // Add to the vertex buffer
+    this->mapVertices.emplace_back(mapAttributes{
+        static_cast<GLfloat>(x1),
+        static_cast<GLfloat>(y1),
+        static_cast<GLuint>(index)
+    });
+    this->mapVertices.emplace_back(mapAttributes{
+        static_cast<GLfloat>(x2),
+        static_cast<GLfloat>(y2),
+        static_cast<GLuint>(index)
+    });
 }
 
 // Get the height of the viewport.

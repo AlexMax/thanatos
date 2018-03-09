@@ -1,9 +1,9 @@
 #version 330 core
 
 layout (location = 0) in vec2 vPos;
-layout (location = 1) in float vColor;
+layout (location = 1) in uint vColor;
 
-out float fColor;
+flat out uint fColor;
 
 void main()
 {
